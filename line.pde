@@ -1,6 +1,6 @@
 class line {
 
-  float lheight = 6;
+  float lheight = 10;
   
   line() {
   }

@@ -72,7 +72,6 @@ class trackMovement {
 
         fill(col);
         noStroke();
-        //rect(p.x, p.y, detail, detail);
         ellipse(p.x + detail / 2, p.y + detail / 2, detail, detail);
       }
     }
