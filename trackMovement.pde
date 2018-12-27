@@ -6,13 +6,8 @@ class trackMovement {
   float b = col        & 0xFF;
   float avgLeft = 0;
   float avgRight = 0;
-  float avgHeight = 0;
   int countLeft = 0;
   int countRight = 0;
-  int countHeight = 0;
-  
-  float posLeft = 0;
-  float posRight = 0;
 
   boolean rup = true;
   boolean gup = true;
@@ -26,13 +21,11 @@ class trackMovement {
   }
 
   void show() {
-    
-    avgLeft = 0;
-    avgRight = 0;
-    avgHeight = 0;
-    countLeft = 0;
-    countRight = 0;
-    countHeight = 0;
+
+    avgLeft = 1;
+    avgRight = 1;
+    countLeft = 1;
+    countRight = 1;
 
     if (rup) {
       r++;
@@ -72,18 +65,9 @@ class trackMovement {
         if (p.x < video.width / 5) {
           countLeft++;
           avgLeft += p.y;
-          avgLeft /= countLeft;
-          
-          countHeight++;
-          avgHeight += p.y;
-
         } else if (p.x > (video.width / 5) * 4) {
           countRight++;
           avgRight += p.y;
-          avgRight /= countRight;
-          
-          countHeight++;
-          avgHeight += p.y;
         }
 
         fill(col);
@@ -92,17 +76,14 @@ class trackMovement {
         ellipse(p.x + detail / 2, p.y + detail / 2, detail, detail);
       }
     }
-        
-    float moveLeft = avgLeft * 100;
-    float moveRight = avgRight * 100;
-    float moveHeight = avgHeight / ((countLeft + countRight) * 100);
 
-    posLeft = lerp(posLeft, moveHeight + moveLeft, 0.1);
-    posRight = lerp(posRight, moveHeight + moveRight, 0.1);
-    
-    stroke(255);
-    strokeWeight(10);
-    line(0, moveHeight + moveLeft, video.width, moveHeight + moveRight);
-    println("Left: " +avgLeft+ " / Right: " +avgRight+ " / Height: " +avgHeight);
+    avgLeft /= countLeft;
+    avgRight /= countRight;
+
+    if (avgLeft != 1)
+      posLeft = lerp(posLeft, avgLeft, 0.5);
+
+    if (avgRight != 1)
+      posRight = lerp(posRight, avgRight, 0.5);
   }
 }

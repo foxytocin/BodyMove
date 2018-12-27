@@ -16,6 +16,10 @@ float threshold;
 float thresholdFreze;
 boolean trackMov = false;
 float adjustBrightness;
+ball b;
+line l;
+float posLeft;
+float posRight;
 
 void setup() {
   size(1280, 720);
@@ -28,6 +32,8 @@ void setup() {
   trackCol = color(255, 0, 0);
   adjustBrightness = 1;
   hideInput = false;
+  b = new ball();
+  l = new line();
   raster = new ArrayList<pixel>();
   rasterFrozen = new ArrayList<pixel>();
   trackedColors = new ArrayList<trackColor>();
@@ -48,6 +54,9 @@ void draw() {
 
   if (trackMov) {
     trackMovement.show();
+    b.update();
+    l.show(); 
+    b.show();
   }
 
   if (!mousePressed) {
