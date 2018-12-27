@@ -58,8 +58,6 @@ class trackMovement {
       frozenPixel = rasterFrozen.get(actIndex);
       float d = calcColorDifference(p, frozenPixel.col);
 
-      //println(thresholdFreze );
-
       if (d > thresholdFreze && (p.x < video.width / 5 || p.x > (video.width / 5) * 4)) {
 
         if (p.x < video.width / 5) {

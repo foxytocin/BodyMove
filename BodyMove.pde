@@ -23,9 +23,6 @@ float posRight;
 
 void setup() {
   size(1280, 720);
-  //size(600, 900);
-  //printArray(Capture.list());
-  //video = loadImage("wand3.jpg");
   video = new Capture(this, Capture.list()[0]);
   video.start();
   detail = 16;
@@ -44,8 +41,6 @@ void setup() {
 
 void draw() {
   frameRate(30);
-  //detail = floor(map(mouseX, 0, width, 5, 150));
-  //image(video, 0, 0);
   calcRaster();
   invertRaster();
 
