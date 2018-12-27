@@ -39,7 +39,7 @@ void setup() {
   trackedColors = new ArrayList<trackColor>();
   trackMovement = new trackMovement();
   threshold = 20;
-  thresholdFreze = 38;
+  thresholdFreze = 45;
 }
 
 void draw() {
@@ -47,9 +47,17 @@ void draw() {
   //detail = floor(map(mouseX, 0, width, 5, 150));
   //image(video, 0, 0);
   calcRaster();
+  invertRaster();
 
   for (trackColor tc : trackedColors) {
     tc.findColor();
+  }
+
+  showRaster(raster);
+
+  if (!trackMov) {
+    rasterFrozen.clear();
+    rasterFrozen.addAll(raster);
   }
 
   if (trackMov) {
@@ -117,12 +125,9 @@ void calcRaster() {
       raster.add(new pixel(j, i, detail, extractColorFromImage(newImg)));
     }
   }
+}
 
-  if (!trackMov) {
-    rasterFrozen.clear();
-    rasterFrozen.addAll(raster);
-  }
-
+void showRaster(ArrayList<pixel> raster) {
   if (!hideInput) {
     for (pixel p : raster) {
       p.show();
@@ -130,6 +135,24 @@ void calcRaster() {
   } else if (hideInput) {
     background(30);
   }
+}
+
+void invertRaster() {
+  ArrayList invertedRaster = new ArrayList<pixel>();
+
+  for (int i = 0; i < video.height; i += detail) {
+    int xPosPixel = 0;
+    for (int j = video.width - detail; j > 0; j -= detail) {
+      int index = (int)(j / detail) + (int)(i / detail) * (int)(video.width / detail);
+      pixel p = new pixel();
+      p = raster.get(index);
+      p.x = xPosPixel;
+      xPosPixel += detail;
+      invertedRaster.add(p);
+    }
+  }
+  raster.clear();
+  raster.addAll(invertedRaster);
 }
 
 float calcColorDifference(pixel p, color trackCol) {
