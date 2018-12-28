@@ -26,6 +26,7 @@ float posRight;
 
 void setup() {
   size(1280, 720);
+  
   video = new Capture(this, Capture.list()[0]);
   video.start();
   detail = 16;
@@ -229,7 +230,6 @@ void initHoles() {
   holes.clear();
   g.error = 0;
   g.target = 0;
-  int index = 0;
   for (int i = 0; i < 50; i++) {
     float x = random(1.5 * 50, width - 1.5 * 50);
     float y = random(1.5 * 50, height - 200);
@@ -237,12 +237,10 @@ void initHoles() {
     if (holes.size() == 0) {
       hole h = new hole(x, y);
       holes.add(h);
-      index++;
     } else {
       if (noOverlap(x, y)) {
         hole h = new hole(x, y);
         holes.add(h);
-        index++;
       }
     }
   }
