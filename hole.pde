@@ -41,10 +41,12 @@ class hole {
     if (dist(mX, mY, x, y) < 2 * b.r) {
 
       if (!touched && !target) {
+        soundError.play();
         touched = true;
         a = true;
         g.error++;
       } else if (!touched && target) {
+        soundCollect.play();
         touched = true;
         collected = true;
         g.target++;
