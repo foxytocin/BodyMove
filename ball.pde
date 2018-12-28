@@ -10,6 +10,7 @@ class ball {
   boolean wallL = false;
   boolean wallR = false;
   float mass = 2;
+  float volumeStone;
 
   ball() {
   }
@@ -54,6 +55,22 @@ class ball {
       acc -= (mx * mass);
       x += acc;
     }
+    
+    //Sound des Balls
+    if (acc > 2 && !wallL) {
+      volumeStone = map(acc, 0, 27, 0.01, 1);
+    } else if (acc < -2 && !wallR) {
+      volumeStone = map(acc, -27, 0, 1, 0.01);
+    } else {
+      soundRollingStone.stop();
+    }
+    
+    volumeStone = constrain(volumeStone, 0, 1);
+    soundRollingStone.amp(volumeStone);
+    println("ACC: " +acc+ "/ Volume: " +volumeStone);
+    if (!soundRollingStone.isPlaying() && (acc > 2 && !wallL || acc < -2 && !wallR)) {
+      soundRollingStone.play();
+    }
   }
 
   void collision() {
@@ -65,7 +82,7 @@ class ball {
       wallR = true;
       acc = 0;
       tar = video.width - r;
-    } else if (x > 2*r && x < video.width - 2*r) {
+    } else if (x > 1.5*r && x < video.width - 1.5*r) {
       wallR = false;
       wallL = false;
     }

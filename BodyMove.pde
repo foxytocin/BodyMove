@@ -1,6 +1,7 @@
 import processing.video.*;
+import processing.sound.*;
 
-color colorChange = color(0,0,0);
+color colorChange = color(0, 0, 0);
 int detail;
 ArrayList<pixel> raster;
 ArrayList<pixel> rasterFrozen;
@@ -24,9 +25,19 @@ gui g;
 float posLeft;
 float posRight;
 
+//Sound
+SoundFile soundCollect;
+SoundFile soundError;
+SoundFile soundRollingStone;
+
 void setup() {
+  // Load a soundfile from the /data folder of the sketch and play it back
+  soundCollect = new SoundFile(this, "collect.wav");
+  soundError = new SoundFile(this, "error.mp3");
+  soundRollingStone = new SoundFile(this, "rollingstone.wav");
+
   size(1280, 720);
-  
+  //printArray(Capture.list());
   video = new Capture(this, Capture.list()[0]);
   video.start();
   detail = 16;
@@ -68,23 +79,27 @@ void draw() {
     l.show(); 
     b.show();
   }
-  
+
   boolean target = true;
-  for (hole h: holes) {
-    if(h.collected) {
-        holes.remove(h);
-        //println("Hole Removed ArraySize: " +holes.size());
-        target = false;
-        break;
+  for (hole h : holes) {
+    if (h.collected) {
+      holes.remove(h);
+      //println("Hole Removed ArraySize: " +holes.size());
+      target = false;
+      break;
     }
   }
-  
-  if(!target) {
-    pickTarget();
+
+  if (!target) {
+    if (holes.size() > 0) {
+      pickTarget();
+    } else {
+      initHoles();
+    }
   }
-  
-  
-   for (hole h: holes) {
+
+
+  for (hole h : holes) {
     h.update();
     h.show();
     h.ballMatchHole(b.x, b.y -(b.r + l.lheight / 2));
@@ -137,9 +152,9 @@ void keyPressed() {
   } else if (key == 'h' && hideInput) {
     hideInput = false;
   }
-  if(key=='z') {
-     initHoles();
-   }
+  if (key=='z') {
+    initHoles();
+  }
 }
 
 void captureEvent(Capture video) {
@@ -147,8 +162,8 @@ void captureEvent(Capture video) {
 }
 
 void calcRaster() {
-  for (int i = 0; i < height; i += detail) {
-    for (int j = 0; j < width; j += detail) {
+  for (int i = 0; i < video.height; i += detail) {
+    for (int j = 0; j < video.width; j += detail) {
       PImage newImg = video.get(j, i, detail, detail);
       raster.add(new pixel(j, i, detail, extractColorFromImage(newImg)));
     }
@@ -170,7 +185,7 @@ void invertRaster() {
 
   for (int i = 0; i < video.height; i += detail) {
     int xPosPixel = 0;
-    for (int j = video.width - detail; j > 0; j -= detail) {
+    for (int j = video.width - detail; j >= 0; j -= detail) {
       int index = (int)(j / detail) + (int)(i / detail) * (int)(video.width / detail);
       pixel p = new pixel();
       p = raster.get(index);
@@ -232,7 +247,7 @@ void initHoles() {
   g.target = 0;
   for (int i = 0; i < 50; i++) {
     float x = random(1.5 * 50, width - 1.5 * 50);
-    float y = random(1.5 * 50, height - 200);
+    float y = random(1.5 * 50, height - 250);
 
     if (holes.size() == 0) {
       hole h = new hole(x, y);
