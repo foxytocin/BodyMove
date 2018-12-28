@@ -26,8 +26,8 @@ float posRight;
 
 void setup() {
   size(1280, 720);
-  
-  video = new Capture(this, Capture.list()[0]);
+  //printArray(Capture.list());
+  video = new Capture(this, Capture.list()[1]);
   video.start();
   detail = 16;
   trackCol = color(255, 0, 0);
@@ -168,10 +168,10 @@ void showRaster(ArrayList<pixel> raster) {
 void invertRaster() {
   ArrayList invertedRaster = new ArrayList<pixel>();
 
-  for (int i = 0; i < video.height; i += detail) {
+  for (int i = 0; i < height; i += detail) {
     int xPosPixel = 0;
-    for (int j = video.width - detail; j > 0; j -= detail) {
-      int index = (int)(j / detail) + (int)(i / detail) * (int)(video.width / detail);
+    for (int j = width - detail; j > 0; j -= detail) {
+      int index = (int)(j / detail) + (int)(i / detail) * (int)(width / detail);
       pixel p = new pixel();
       p = raster.get(index);
       p.x = xPosPixel;
@@ -232,7 +232,7 @@ void initHoles() {
   g.target = 0;
   for (int i = 0; i < 50; i++) {
     float x = random(1.5 * 50, width - 1.5 * 50);
-    float y = random(1.5 * 50, height - 200);
+    float y = random(1.5 * 50, height - 250);
 
     if (holes.size() == 0) {
       hole h = new hole(x, y);
