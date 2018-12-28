@@ -50,7 +50,8 @@ class trackMovement {
     if (g == 255) gup = false;
     if (g == 50) gup = true;
 
-    col = color(r, g, b);
+    col = color(r, g, b, 125);
+    colorChange = col;
 
     for (pixel p : raster) {
       int actIndex = raster.indexOf(p);
@@ -59,6 +60,7 @@ class trackMovement {
       float d = calcColorDifference(p, frozenPixel.col);
 
       if (d > thresholdFreze && (p.x < video.width / 5 || p.x > (video.width / 5) * 4)) {
+      //if (d > thresholdFreze) {
 
         if (p.x < video.width / 5) {
           countLeft++;
