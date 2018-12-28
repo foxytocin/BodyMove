@@ -1,8 +1,10 @@
 import processing.video.*;
 
+color colorChange = color(0,0,0);
 int detail;
 ArrayList<pixel> raster;
 ArrayList<pixel> rasterFrozen;
+ArrayList<hole> holes;
 ArrayList<trackColor> trackedColors;
 trackMovement trackMovement;
 boolean hideInput;
@@ -18,14 +20,13 @@ boolean trackMov = false;
 float adjustBrightness;
 ball b;
 line l;
+gui g;
 float posLeft;
 float posRight;
 
 void setup() {
   size(1280, 720);
-  //size(600, 900);
-  //printArray(Capture.list());
-  //video = loadImage("wand3.jpg");
+  
   video = new Capture(this, Capture.list()[0]);
   video.start();
   detail = 16;
@@ -34,18 +35,19 @@ void setup() {
   hideInput = false;
   b = new ball();
   l = new line();
+  g = new gui();
   raster = new ArrayList<pixel>();
   rasterFrozen = new ArrayList<pixel>();
   trackedColors = new ArrayList<trackColor>();
+  holes = new ArrayList<hole>();
+  initHoles();
   trackMovement = new trackMovement();
   threshold = 20;
-  thresholdFreze = 45;
+  thresholdFreze = 60;
 }
 
 void draw() {
   frameRate(30);
-  //detail = floor(map(mouseX, 0, width, 5, 150));
-  //image(video, 0, 0);
   calcRaster();
   invertRaster();
 
@@ -66,6 +68,29 @@ void draw() {
     l.show(); 
     b.show();
   }
+  
+  boolean target = true;
+  for (hole h: holes) {
+    if(h.collected) {
+        holes.remove(h);
+        //println("Hole Removed ArraySize: " +holes.size());
+        target = false;
+        break;
+    }
+  }
+  
+  if(!target) {
+    pickTarget();
+  }
+  
+  
+   for (hole h: holes) {
+    h.update();
+    h.show();
+    h.ballMatchHole(b.x, b.y -(b.r + l.lheight / 2));
+  }
+
+  g.show();
 
   if (!mousePressed) {
     raster.clear();
@@ -112,6 +137,9 @@ void keyPressed() {
   } else if (key == 'h' && hideInput) {
     hideInput = false;
   }
+  if(key=='z') {
+     initHoles();
+   }
 }
 
 void captureEvent(Capture video) {
@@ -190,4 +218,42 @@ color extractColorFromImage(final PImage img) {
   b /= img.pixels.length;
 
   return color(r, g, b);
+}
+
+void pickTarget() {
+  int r = (int)random(holes.size());
+  //println("Pick new Hole Nr: " +r);
+  holes.get(r).target = true;
+}
+
+void initHoles() {
+  holes.clear();
+  g.error = 0;
+  g.target = 0;
+  for (int i = 0; i < 50; i++) {
+    float x = random(1.5 * 50, width - 1.5 * 50);
+    float y = random(1.5 * 50, height - 200);
+
+    if (holes.size() == 0) {
+      hole h = new hole(x, y);
+      holes.add(h);
+    } else {
+      if (noOverlap(x, y)) {
+        hole h = new hole(x, y);
+        holes.add(h);
+      }
+    }
+  }
+  pickTarget();
+}
+
+boolean noOverlap(float x, float y) {
+  for (hole h : holes) {
+    if (dist(x, y, h.x, h.y) > 4 * h.r) {
+      continue;
+    } else {
+      return false;
+    }
+  }
+  return true;
 }
