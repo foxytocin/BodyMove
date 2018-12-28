@@ -1,6 +1,6 @@
 class ball {
 
-  float r = 40;
+  float r = 30;
   float x;
   float y;
   float acc = 0;
@@ -23,7 +23,8 @@ class ball {
   void show() {
     pushMatrix();
     translate(0, -(r + l.lheight / 2));
-    noStroke();
+    stroke(255);
+    strokeWeight(3);
     fill(0, 102, 204);
     ellipseMode(CENTER);
     ellipse(x, y, r * 2, r * 2);
