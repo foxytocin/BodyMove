@@ -4,7 +4,6 @@ import processing.sound.*;
 color colorChange = color(0, 0, 0);
 int detail;
 ArrayList<pixel> raster;
-ArrayList<pixel> invertedRaster;
 ArrayList<pixel> rasterFrozen;
 ArrayList<hole> holes;
 ArrayList<trackColor> trackedColors;
@@ -46,7 +45,6 @@ void setup() {
   l = new line();
   g = new gui();
   raster = new ArrayList<pixel>();
-  invertedRaster = new ArrayList<pixel>();
   rasterFrozen = new ArrayList<pixel>();
   trackedColors = new ArrayList<trackColor>();
   holes = new ArrayList<hole>();
@@ -59,13 +57,12 @@ void setup() {
 void draw() {
   frameRate(30);
   calcRaster();
-  invertRaster();
 
+  showRaster(raster);
+  
   for (trackColor tc : trackedColors) {
     tc.findColor();
   }
-
-  showRaster(raster);
 
   if (!trackMov) {
     rasterFrozen.clear();
@@ -113,10 +110,10 @@ void keyPressed() {
   if (key == CODED) {
     if (keyCode == RIGHT && !trackMov) {
       if (detail < video.height / 2)
-        detail += 5;
+        detail += 4;
     } else if (keyCode == LEFT && !trackMov) {
       if (detail >= 10)
-        detail -= 5;
+        detail -= 4;
     } else if (keyCode == RIGHT && trackMov) {
       if (thresholdFreze < 100)
         thresholdFreze += 2;
@@ -160,9 +157,11 @@ void captureEvent(Capture video) {
 
 void calcRaster() {
   for (int i = 0; i < video.height; i += detail) {
-    for (int j = 0; j < video.width; j += detail) {
+    int xPosPixel = 0;
+    for (int j = video.width - detail; j >= 0; j -= detail) {
       PImage newImg = video.get(j, i, detail, detail);
-      raster.add(new pixel(j, i, detail, extractColorFromImage(newImg)));
+      raster.add(new pixel(xPosPixel, i, detail, extractColorFromImage(newImg)));
+      xPosPixel += detail;
     }
   }
 }
@@ -173,27 +172,8 @@ void showRaster(ArrayList<pixel> raster) {
       p.show();
     }
   } else if (hideInput) {
-    background(30);
+    background(100);
   }
-}
-
-void invertRaster() {
-  invertedRaster.clear();
-  int videoDetail = video.width / detail;
-  for (int i = 0; i < video.height; i += detail) {
-    int xPosPixel = 0;
-    int iDetail = i / detail * videoDetail;
-    for (int j = video.width - detail; j >= 0; j -= detail) {
-      int index = (int)(j / detail) + iDetail;
-      pixel p = new pixel();
-      p = raster.get(index);
-      p.x = xPosPixel;
-      xPosPixel += detail;
-      invertedRaster.add(p);
-    }
-  }
-  raster.clear();
-  raster.addAll(invertedRaster);
 }
 
 float calcColorDifference(pixel p, color trackCol) {
@@ -213,7 +193,6 @@ void mouseClicked() {
   trackedColors.add(new trackColor(trackCol));
 }
 
-
 color extractColorFromImage(final PImage img) {
   video.loadPixels();
   color r = 0, g = 0, b = 0;
@@ -223,7 +202,7 @@ color extractColorFromImage(final PImage img) {
     g += c >> 010 & 0xFF;
     b += c        & 0xFF;
   }
-  
+
   r /= img.pixels.length;
   g /= img.pixels.length;
   b /= img.pixels.length;
@@ -253,7 +232,6 @@ void initHoles() {
       }
     }
   }
-  println(noFreeSpaceCounter);
   pickTarget();
 }
 
