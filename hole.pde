@@ -21,6 +21,7 @@ class hole {
     } else if (target) {
       fillCol = color(51, 153, 0);
     } else if (!a) {
+      //fillCol = color(colorChange);
       strokeCol = color(0,0,0);
     }
   }
