@@ -37,9 +37,8 @@ class hole {
     //text(holes.indexOf(this), x-10, y+10);
   }
 
-  void ballMatchHole(float mX, float mY) {
-    if (dist(mX, mY, x, y) < 2 * b.r) {
-
+  void ballMatchHole() {
+    if (dist(b.x, b.y, x, y) < 2 * b.r) {
       if (!touched && !target) {
         soundError.play();
         touched = true;
@@ -51,7 +50,7 @@ class hole {
         collected = true;
         g.target++;
       }
-    } else {
+    } else if(touched && a){
       touched = false;
       a = false;
     }
