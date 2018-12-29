@@ -8,6 +8,9 @@ class trackMovement {
   float avgRight = 0;
   int countLeft = 0;
   int countRight = 0;
+  float posLeft;
+  float posRight;
+  pixel frozenPixel = new pixel();
 
   boolean rup = true;
   boolean gup = true;
@@ -54,25 +57,25 @@ class trackMovement {
     colorChange = col;
 
     for (pixel p : raster) {
-      int actIndex = raster.indexOf(p);
-      pixel frozenPixel = new pixel();
-      frozenPixel = rasterFrozen.get(actIndex);
-      float d = calcColorDifference(p, frozenPixel.col);
 
-      if (d > thresholdFreze && (p.x < video.width / 5 || p.x > (video.width / 5) * 4)) {
-      //if (d > thresholdFreze) {
+      if ((p.x > 100 && p.x < video.width / 6) || (p.x > (video.width / 6) * 5) && p.x < video.width - 100) {
+        int actIndex = raster.indexOf(p);
+        frozenPixel = rasterFrozen.get(actIndex);
+        float d = calcColorDifference(p, frozenPixel.col);
 
-        if (p.x < video.width / 5) {
-          countLeft++;
-          avgLeft += p.y;
-        } else if (p.x > (video.width / 5) * 4) {
-          countRight++;
-          avgRight += p.y;
+        if (d > thresholdFreze) {
+          if (p.x < video.width / 5) {
+            countLeft++;
+            avgLeft += p.y;
+          } else if (p.x > (video.width / 5) * 4) {
+            countRight++;
+            avgRight += p.y;
+          }
+
+          fill(col);
+          noStroke();
+          ellipse(p.x + detail / 2, p.y + detail / 2, detail, detail);
         }
-
-        fill(col);
-        noStroke();
-        ellipse(p.x + detail / 2, p.y + detail / 2, detail, detail);
       }
     }
 

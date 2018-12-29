@@ -4,6 +4,7 @@ import processing.sound.*;
 color colorChange = color(0, 0, 0);
 int detail;
 ArrayList<pixel> raster;
+ArrayList<pixel> invertedRaster;
 ArrayList<pixel> rasterFrozen;
 ArrayList<hole> holes;
 ArrayList<trackColor> trackedColors;
@@ -22,8 +23,6 @@ float adjustBrightness;
 ball b;
 line l;
 gui g;
-float posLeft;
-float posRight;
 
 //Sound
 SoundFile soundCollect;
@@ -48,6 +47,7 @@ void setup() {
   l = new line();
   g = new gui();
   raster = new ArrayList<pixel>();
+  invertedRaster = new ArrayList<pixel>();
   rasterFrozen = new ArrayList<pixel>();
   trackedColors = new ArrayList<trackColor>();
   holes = new ArrayList<hole>();
@@ -84,7 +84,6 @@ void draw() {
   for (hole h : holes) {
     if (h.collected) {
       holes.remove(h);
-      //println("Hole Removed ArraySize: " +holes.size());
       target = false;
       break;
     }
@@ -98,11 +97,10 @@ void draw() {
     }
   }
 
-
   for (hole h : holes) {
     h.update();
     h.show();
-    h.ballMatchHole(b.x, b.y -(b.r + l.lheight / 2));
+    h.ballMatchHole();
   }
 
   g.show();
@@ -181,12 +179,13 @@ void showRaster(ArrayList<pixel> raster) {
 }
 
 void invertRaster() {
-  ArrayList invertedRaster = new ArrayList<pixel>();
-
+  invertedRaster.clear();
+  int videoDetail = video.width / detail;
   for (int i = 0; i < video.height; i += detail) {
     int xPosPixel = 0;
+    int iDetail = i / detail * videoDetail;
     for (int j = video.width - detail; j >= 0; j -= detail) {
-      int index = (int)(j / detail) + (int)(i / detail) * (int)(video.width / detail);
+      int index = (int)(j / detail) + iDetail;
       pixel p = new pixel();
       p = raster.get(index);
       p.x = xPosPixel;
@@ -199,12 +198,12 @@ void invertRaster() {
 }
 
 float calcColorDifference(pixel p, color trackCol) {
-  float r1 = red(p.col);
-  float g1 = green(p.col);
-  float b1 = blue(p.col);
-  float r2 = red(trackCol);
-  float g2 = green(trackCol);
-  float b2 = blue(trackCol);
+  float r1 = p.col >> 020 & 0xFF;
+  float g1 = p.col >> 010 & 0xFF;
+  float b1 = p.col        & 0xFF;
+  float r2 = trackCol >> 020 & 0xFF;
+  float g2 = trackCol >> 010 & 0xFF;
+  float b2 = trackCol        & 0xFF;
 
   return dist(r1, g1, b1, r2, g2, b2);
 }
@@ -212,8 +211,6 @@ float calcColorDifference(pixel p, color trackCol) {
 void mouseClicked() {
   int index = (int)(mouseX / detail) + (int)(mouseY / detail) * (int)(video.width / detail);
   color trackCol = raster.get(index).col;
-  //println(index);
-
   trackedColors.add(new trackColor(trackCol));
 }
 
@@ -227,7 +224,7 @@ color extractColorFromImage(final PImage img) {
     g += c >> 010 & 0xFF;
     b += c        & 0xFF;
   }
-
+  
   r /= img.pixels.length;
   g /= img.pixels.length;
   b /= img.pixels.length;
@@ -235,17 +232,13 @@ color extractColorFromImage(final PImage img) {
   return color(r, g, b);
 }
 
-void pickTarget() {
-  int r = (int)random(holes.size());
-  //println("Pick new Hole Nr: " +r);
-  holes.get(r).target = true;
-}
-
 void initHoles() {
   holes.clear();
   g.error = 0;
   g.target = 0;
-  for (int i = 0; i < 50; i++) {
+  g.qual = 100;
+  int noFreeSpaceCounter = 0;
+  while (holes.size() < 20 && noFreeSpaceCounter < 50) {
     float x = random(1.5 * 50, width - 1.5 * 50);
     float y = random(1.5 * 50, height - 250);
 
@@ -256,10 +249,18 @@ void initHoles() {
       if (noOverlap(x, y)) {
         hole h = new hole(x, y);
         holes.add(h);
+      } else {
+        noFreeSpaceCounter++;
       }
     }
   }
+  println(noFreeSpaceCounter);
   pickTarget();
+}
+
+void pickTarget() {
+  int r = (int)random(holes.size());
+  holes.get(r).target = true;
 }
 
 boolean noOverlap(float x, float y) {
