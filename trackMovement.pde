@@ -53,15 +53,15 @@ class trackMovement {
     if (g == 255) gup = false;
     if (g == 50) gup = true;
 
-    col = color(r, g, b, 125);
+    col = color(r, g, b);
     colorChange = col;
 
+    int pixelIndex = 0;
     for (pixel p : raster) {
-
       if ((p.x > 100 && p.x < video.width / 6) || (p.x > (video.width / 6) * 5) && p.x < video.width - 100) {
-        int actIndex = raster.indexOf(p);
-        frozenPixel = rasterFrozen.get(actIndex);
+        frozenPixel = rasterFrozen.get(pixelIndex);
         float d = calcColorDifference(p, frozenPixel.col);
+        float pixelWeight = d / detail;
 
         if (d > thresholdFreze) {
           if (p.x < video.width / 5) {
@@ -71,12 +71,12 @@ class trackMovement {
             countRight++;
             avgRight += p.y;
           }
-
           fill(col);
           noStroke();
-          ellipse(p.x + detail / 2, p.y + detail / 2, detail, detail);
+          ellipse(p.x + detail / 2, p.y + detail / 2, pixelWeight, pixelWeight);
         }
       }
+      pixelIndex++;
     }
 
     avgLeft /= countLeft;

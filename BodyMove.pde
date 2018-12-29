@@ -11,7 +11,6 @@ ArrayList<trackColor> trackedColors;
 trackMovement trackMovement;
 boolean hideInput;
 color trackCol;
-float worldRecord;
 int closestX;
 int closestY;
 Capture video;
