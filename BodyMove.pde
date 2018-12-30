@@ -1,12 +1,15 @@
 import processing.video.*;
 import processing.sound.*;
 
+rainbow rainbow;
 color colorChange = color(0, 0, 0);
+color backgroundCol = color(100);
 int detail;
 ArrayList<pixel> raster;
 ArrayList<pixel> rasterFrozen;
 ArrayList<hole> holes;
 ArrayList<trackColor> trackedColors;
+ArrayList<circleAnimation> circleAnimations;
 trackMovement trackMovement;
 boolean hideInput;
 color trackCol;
@@ -44,6 +47,7 @@ void setup() {
   b = new ball();
   l = new line();
   g = new gui();
+  circleAnimations = new ArrayList<circleAnimation>();
   raster = new ArrayList<pixel>();
   rasterFrozen = new ArrayList<pixel>();
   trackedColors = new ArrayList<trackColor>();
@@ -52,14 +56,15 @@ void setup() {
   trackMovement = new trackMovement();
   threshold = 20;
   thresholdFreze = 60;
+  rainbow = new rainbow();
 }
 
 void draw() {
-  frameRate(30);
+  frameRate(60);
   calcRaster();
 
   showRaster(raster);
-  
+
   for (trackColor tc : trackedColors) {
     tc.findColor();
   }
@@ -93,10 +98,25 @@ void draw() {
     }
   }
 
+  //CircleAnimation abspielen / aus dem Array entfernen wenn die Animation beendet wurde
+  for (int i = circleAnimations.size() - 1; i >= 0; i--) {
+    circleAnimation ca = circleAnimations.get(i);
+    if (ca.finished) {
+      circleAnimations.remove(i);
+    } else {
+      ca.update();
+      ca.show();
+    }
+  }
+
   for (hole h : holes) {
     h.update();
     h.show();
-    h.ballMatchHole();
+    String todo = h.ballMatchHole();
+    if (todo != null) {
+      circleAnimation a = new circleAnimation(h, todo);
+      circleAnimations.add(a);
+    }
   }
 
   g.show();
@@ -172,7 +192,7 @@ void showRaster(ArrayList<pixel> raster) {
       p.show();
     }
   } else if (hideInput) {
-    background(100);
+    background(backgroundCol);
   }
 }
 
@@ -215,10 +235,11 @@ void initHoles() {
   g.error = 0;
   g.target = 0;
   g.qual = 100;
+  g.note = 1;
   int noFreeSpaceCounter = 0;
   while (holes.size() < 20 && noFreeSpaceCounter < 50) {
-    float x = random(1.5 * 50, width - 1.5 * 50);
-    float y = random(1.5 * 50, height - 250);
+    float x = random(75, width - 75);
+    float y = random(75, height - 250);
 
     if (holes.size() == 0) {
       hole h = new hole(x, y);

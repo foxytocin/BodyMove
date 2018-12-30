@@ -9,8 +9,9 @@ class ball {
   boolean coll = true;
   boolean wallL = false;
   boolean wallR = false;
-  float mass = 4;
+  float mass = 2;
   float volumeStone;
+  int rainbowIndex = 0;
 
   ball() {
   }
@@ -19,12 +20,13 @@ class ball {
     calcPos();
     collision();
     move();
+    rainbowIndex = (int)map(g.qual, 100, 0, 2000, 20000);
   }
 
   void show() {
-    stroke(255);
+    stroke(100);
     strokeWeight(3);
-    fill(0, 102, 204);
+    fill(rainbow.rainbow[rainbowIndex]);
     ellipseMode(CENTER);
     ellipse(x, y, r * 2, r * 2);
   }

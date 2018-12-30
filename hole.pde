@@ -4,11 +4,13 @@ class hole {
   float x = 0;
   float y = 0;
   color fillCol = color(255, 255, 255);
-  color strokeCol = color(0,0,0);
+  color strokeCol = color(50);
   boolean a = false;
   boolean target = false;
   boolean touched = false;
   boolean collected = false;
+
+  hole() {};
 
   hole(float x_, float y_) {
     x = x_;
@@ -17,12 +19,13 @@ class hole {
 
   void update() {
     if (a) {
-      strokeCol = color(204,0,0);
+      strokeCol = color(252, 1, 31);
+      fillCol = color(252, 1, 31, 150);
     } else if (target) {
-      fillCol = color(51, 153, 0);
+      fillCol = color(98, 252, 2);
     } else if (!a) {
-      //fillCol = color(colorChange);
-      strokeCol = color(0,0,0);
+      strokeCol = color(50);
+      fillCol = color(255, 255, 255);
     }
   }
 
@@ -32,28 +35,30 @@ class hole {
     strokeWeight(5);
     ellipseMode(CENTER);
     ellipse(x, y, r * 2, r * 2);
-    
-    textSize(20);
-    fill(255,0,0);
-    //text(holes.indexOf(this), x-10, y+10);
   }
 
-  void ballMatchHole() {
+  String ballMatchHole() {
     if (dist(b.x, b.y, x, y) < 2 * b.r) {
       if (!touched && !target) {
         soundError.play();
+        trackMovement.error = true;
         touched = true;
         a = true;
         g.error++;
+        return "error";
       } else if (!touched && target) {
         soundCollect.play();
+        trackMovement.goal = true;
         touched = true;
         collected = true;
         g.target++;
+        return "goal";
       }
-    } else if(touched && a){
+    } else if (touched && a) {
       touched = false;
       a = false;
+      return null;
     }
+    return null;
   }
 }
