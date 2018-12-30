@@ -27,7 +27,7 @@ class circleAnimation {
   void update() {
     circleAcc += 4;
     circleSize += circleAcc;
-    alpha = map(circleSize, r, 600, 255, 0);
+    alpha = map(circleSize, r, 600, 250, 0);
     
     if(circleSize > 600)
       finished = true;

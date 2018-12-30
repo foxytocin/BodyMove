@@ -9,8 +9,11 @@ class hole {
   boolean target = false;
   boolean touched = false;
   boolean collected = false;
+  float panStone = 0.5;
 
-  hole() {};
+
+  hole() {
+  };
 
   hole(float x_, float y_) {
     x = x_;
@@ -36,9 +39,17 @@ class hole {
     ellipseMode(CENTER);
     ellipse(x, y, r * 2, r * 2);
   }
+  
+  void calStereo(float x_) {
+    panStone = map(x_, r, video.width - r, -1, 1);
+    panStone = constrain(panStone, -1, 1);
+    soundError.pan(panStone);
+    soundCollect.pan(panStone);
+  }
 
   String ballMatchHole() {
     if (dist(b.x, b.y, x, y) < 2 * b.r) {
+      calStereo(x);
       if (!touched && !target) {
         soundError.play();
         trackMovement.error = true;

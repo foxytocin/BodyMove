@@ -10,7 +10,10 @@ class ball {
   boolean wallL = false;
   boolean wallR = false;
   float mass = 2;
+  
   float volumeStone;
+  float panStone = 0.5;
+  
   int rainbowIndex = 0;
 
   ball() {
@@ -62,6 +65,9 @@ class ball {
       soundRollingStone.stop();
     }
 
+    panStone = map(x, r, video.width - r, -1, 1);
+    panStone = constrain(panStone, -1, 1);
+    soundRollingStone.pan(panStone);
     volumeStone = constrain(volumeStone, 0, 1);
     soundRollingStone.amp(volumeStone);
     if (!soundRollingStone.isPlaying() && (acc > 2 && !wallL || acc < -2 && !wallR)) {

@@ -33,7 +33,7 @@ SoundFile soundRollingStone;
 void setup() {
   // Load a soundfile from the /data folder of the sketch and play it back
   soundCollect = new SoundFile(this, "collect.wav");
-  soundError = new SoundFile(this, "error.mp3");
+  soundError = new SoundFile(this, "error.wav");
   soundRollingStone = new SoundFile(this, "rollingstone.wav");
 
   size(1280, 720);
