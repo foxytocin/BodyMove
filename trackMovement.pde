@@ -56,12 +56,12 @@ class trackMovement {
         //Pixel bei denen keine Veraenderung erkannt wurde
         pixelNotChanged++;
         //fill(75);
-        if (!error && !goal) {
-          fill(75);
-        } else if (error) {
+        if (error) {
           fill(color(252, 1, 31));
         } else if (goal) {
           fill(color(98, 252, 2));
+        } else {
+          fill(75);
         }
 
         noStroke();
