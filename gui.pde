@@ -2,45 +2,61 @@ class gui {
 
   float error = 0;
   float target = 0;
-  int qual = 0;
+  float qual = 0;
+  int note = 0;
+  int breite = detail * 7;
+  int hoehe = detail * 3;
+  boolean gameEnd = false;
 
   void show() {
-    pushMatrix();
-      translate(10, 10);
-  
-      noStroke();
-      fill(0, 0, 0, 125);
-      rect(0, 0, 140, 66, 10);
-  
-      if (target > 0 || error > 0) {
-        qual = floor(target / (target + error) * 100);
-        qual = (int)map(qual, 0, 100, 6, 1);
-      }
-  
+
+    if (gameEnd) {
       pushMatrix();
-        translate(10, 20);
-        textAlign(LEFT);
-        textSize(20);
-        fill(204, 0, 0);
-        text("Fehler:", 0, 0);
-        textSize(20);
-        fill(51, 153, 0);
-        text("Punkte:", 0, 20);
-        textSize(20);
-        fill(249, 166, 2);
-        text("Note:", 0, 40);
-    
-        textAlign(RIGHT);
-        textSize(20);
-        fill(204, 0, 0);
-        text((int)error, 120, 0);
-        textSize(20);
-        fill(51, 153, 0);
-        text((int)target, 120, 20);
-        textSize(20);
-        fill(249, 166, 2);
-        text(qual, 120, 40);
+      translate(video.width / 2, video.height / 2);
+
+      stroke(50);
+      fill(100);
+      rectMode(CENTER);
+      rect(0, 0, 255, 110, 10);
+      textAlign(CENTER);
+      textSize(32);
+      fill(rainbow.rainbow[b.rainbowIndex]);
+      text("Spielende", 0, -10);
+      text("Note: " +note+ " / " +(int)qual+ "%", 0, 30);
       popMatrix();
+    }
+
+    pushMatrix();
+    translate(detail, detail);
+
+    noStroke();
+    fill(100);
+    rectMode(CORNER);
+    rect(0, 0, breite, hoehe);
+
+    if (target > 0 || error > 0) {
+      qual = target / (target + error) * 100;
+      note = (int)map(qual, 0, 100, 6, 1);
+    }
+
+    pushMatrix();
+    translate(5, 18);
+    textAlign(LEFT);
+    textSize(20);
+    fill(252, 1, 31);
+    text("Fehler:", 0, 0);
+    textSize(20);
+    fill(98, 252, 2);
+    text("Punkte:", 0, 25);
+
+    textAlign(RIGHT);
+    textSize(20);
+    fill(252, 1, 31);
+    text((int)error, 105, 0);
+    textSize(20);
+    fill(98, 252, 2);
+    text((int)target, 105, 25);
+    popMatrix();
     popMatrix();
   }
 }

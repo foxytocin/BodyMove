@@ -9,8 +9,12 @@ class ball {
   boolean coll = true;
   boolean wallL = false;
   boolean wallR = false;
-  float mass = 4;
+  float mass = 2;
+  
   float volumeStone;
+  float panStone = 0.5;
+  
+  int rainbowIndex = 0;
 
   ball() {
   }
@@ -19,12 +23,13 @@ class ball {
     calcPos();
     collision();
     move();
+    rainbowIndex = (int)map(g.qual, 100, 0, 2000, 20000);
   }
 
   void show() {
-    stroke(255);
+    stroke(100);
     strokeWeight(3);
-    fill(0, 102, 204);
+    fill(rainbow.rainbow[rainbowIndex]);
     ellipseMode(CENTER);
     ellipse(x, y, r * 2, r * 2);
   }
@@ -53,14 +58,17 @@ class ball {
 
     //Sound des Balls
     if (acc > 2 && !wallL) {
-      volumeStone = map(acc, 0, 27, 0.01, 1);
+      volumeStone = map(acc, 0, 27, 0.01, 0.5);
     } else if (acc < -2 && !wallR) {
-      volumeStone = map(acc, -27, 0, 1, 0.01);
+      volumeStone = map(acc, -27, 0, 0.5, 0.01);
     } else {
       soundRollingStone.stop();
     }
 
-    volumeStone = constrain(volumeStone, 0, 1);
+    panStone = map(x, r, video.width - r, -1, 1);
+    panStone = constrain(panStone, -1, 1);
+    soundRollingStone.pan(panStone);
+    volumeStone = constrain(volumeStone, 0.1, 1);
     soundRollingStone.amp(volumeStone);
     if (!soundRollingStone.isPlaying() && (acc > 2 && !wallL || acc < -2 && !wallR)) {
       soundRollingStone.play();

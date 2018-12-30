@@ -7,7 +7,7 @@ class line {
 
   void show() {
     //stroke(colorChange);
-    stroke(0, 102, 204);
+    stroke(rainbow.rainbow[b.rainbowIndex]);
     strokeWeight(lheight);
     line(0, trackMovement.posLeft, video.width, trackMovement.posRight);
   }
