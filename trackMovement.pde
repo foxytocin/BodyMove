@@ -69,7 +69,7 @@ class trackMovement {
       }
       pixelIndex++;
     }
-    anteilAnGesamt = pixelNotChanged / ((float)video.width / (float)detail * (float)video.height / (float)detail);
+    anteilAnGesamt = pixelNotChanged / (float)raster.size();
     drawSize = map(anteilAnGesamt, 0.6, 1, 0, detail);
 
     avgLeft /= countLeft;

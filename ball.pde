@@ -58,9 +58,9 @@ class ball {
 
     //Sound des Balls
     if (acc > 2 && !wallL) {
-      volumeStone = map(acc, 0, 27, 0.01, 1);
+      volumeStone = map(acc, 0, 27, 0.01, 0.5);
     } else if (acc < -2 && !wallR) {
-      volumeStone = map(acc, -27, 0, 1, 0.01);
+      volumeStone = map(acc, -27, 0, 0.5, 0.01);
     } else {
       soundRollingStone.stop();
     }
@@ -68,7 +68,7 @@ class ball {
     panStone = map(x, r, video.width - r, -1, 1);
     panStone = constrain(panStone, -1, 1);
     soundRollingStone.pan(panStone);
-    volumeStone = constrain(volumeStone, 0, 1);
+    volumeStone = constrain(volumeStone, 0.1, 1);
     soundRollingStone.amp(volumeStone);
     if (!soundRollingStone.isPlaying() && (acc > 2 && !wallL || acc < -2 && !wallR)) {
       soundRollingStone.play();

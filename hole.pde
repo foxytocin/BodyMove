@@ -22,11 +22,13 @@ class hole {
 
   void update() {
     if (a) {
+      strokeWeight(5);
       strokeCol = color(252, 1, 31);
       fillCol = color(252, 1, 31, 150);
     } else if (target) {
       fillCol = color(98, 252, 2);
     } else if (!a) {
+      strokeWeight(5);
       strokeCol = color(50);
       fillCol = color(255, 255, 255);
     }

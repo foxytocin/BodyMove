@@ -1,6 +1,10 @@
 import processing.video.*;
 import processing.sound.*;
 
+//Spielvriablen
+int holeAmount = 10;
+
+
 rainbow rainbow;
 color colorChange = color(0, 0, 0);
 color backgroundCol = color(100);
@@ -8,18 +12,16 @@ int detail;
 ArrayList<pixel> raster;
 ArrayList<pixel> rasterFrozen;
 ArrayList<hole> holes;
-ArrayList<trackColor> trackedColors;
 ArrayList<circleAnimation> circleAnimations;
-trackMovement trackMovement;
 boolean hideInput;
 color trackCol;
 int closestX;
 int closestY;
 Capture video;
-//PImage video;
 float threshold;
 float thresholdFreze;
 boolean trackMov = false;
+trackMovement trackMovement;
 float adjustBrightness;
 ball b;
 line l;
@@ -50,7 +52,6 @@ void setup() {
   circleAnimations = new ArrayList<circleAnimation>();
   raster = new ArrayList<pixel>();
   rasterFrozen = new ArrayList<pixel>();
-  trackedColors = new ArrayList<trackColor>();
   holes = new ArrayList<hole>();
   initHoles();
   trackMovement = new trackMovement();
@@ -61,41 +62,18 @@ void setup() {
 
 void draw() {
   frameRate(60);
+
   calcRaster();
-
   showRaster(raster);
-
-  for (trackColor tc : trackedColors) {
-    tc.findColor();
-  }
-
+  
   if (!trackMov) {
     rasterFrozen.clear();
     rasterFrozen.addAll(raster);
-  }
-
-  if (trackMov) {
+  } else if (trackMov) {
     trackMovement.show();
     b.update();
     l.show(); 
     b.show();
-  }
-
-  boolean target = true;
-  for (hole h : holes) {
-    if (h.collected) {
-      holes.remove(h);
-      target = false;
-      break;
-    }
-  }
-
-  if (!target) {
-    if (holes.size() > 0) {
-      pickTarget();
-    } else {
-      initHoles();
-    }
   }
 
   //CircleAnimation abspielen / aus dem Array entfernen wenn die Animation beendet wurde
@@ -109,21 +87,23 @@ void draw() {
     }
   }
 
-  for (hole h : holes) {
-    h.update();
-    h.show();
+  //Ueberprüft ob ein Hole vom Ball beruerht wir, ob ein Target-Hole erfolgreich gesammelt wurde und ob ein neuen Target-Hole erzeugt werden muss.
+  for (int i = holes.size() - 1; i >= 0; i--) {
+    hole h = holes.get(i);
     String todo = h.ballMatchHole();
     if (todo != null) {
       circleAnimation a = new circleAnimation(h, todo);
       circleAnimations.add(a);
     }
+    if (h.collected) {
+      holes.remove(h);
+      pickTarget();
+    }
+    h.update();
+    h.show();
   }
 
   g.show();
-
-  if (!mousePressed) {
-    raster.clear();
-  }
 }
 
 void keyPressed() {
@@ -148,9 +128,6 @@ void keyPressed() {
         threshold -= 2;
     }
   }
-  if (key == ' ') {
-    trackedColors.clear();
-  }
   if (key == 't' && !trackMov) {
     trackMov = true;
   } else if (key == 'r' && trackMov) {
@@ -166,7 +143,7 @@ void keyPressed() {
   } else if (key == 'h' && hideInput) {
     hideInput = false;
   }
-  if (key=='z') {
+  if (key==' ') {
     initHoles();
   }
 }
@@ -176,6 +153,7 @@ void captureEvent(Capture video) {
 }
 
 void calcRaster() {
+  raster.clear();
   for (int i = 0; i < video.height; i += detail) {
     int xPosPixel = 0;
     for (int j = video.width - detail; j >= 0; j -= detail) {
@@ -203,14 +181,8 @@ float calcColorDifference(pixel p, color trackCol) {
   float r2 = trackCol >> 020 & 0xFF;
   float g2 = trackCol >> 010 & 0xFF;
   float b2 = trackCol        & 0xFF;
-
+  
   return dist(r1, g1, b1, r2, g2, b2);
-}
-
-void mouseClicked() {
-  int index = (int)(mouseX / detail) + (int)(mouseY / detail) * (int)(video.width / detail);
-  color trackCol = raster.get(index).col;
-  trackedColors.add(new trackColor(trackCol));
 }
 
 color extractColorFromImage(final PImage img) {
@@ -236,8 +208,9 @@ void initHoles() {
   g.target = 0;
   g.qual = 100;
   g.note = 1;
+  g.gameEnd = false;
   int noFreeSpaceCounter = 0;
-  while (holes.size() < 20 && noFreeSpaceCounter < 50) {
+  while (holes.size() < holeAmount && noFreeSpaceCounter < 50) {
     float x = random(75, width - 75);
     float y = random(75, height - 250);
 
@@ -257,8 +230,13 @@ void initHoles() {
 }
 
 void pickTarget() {
-  int r = (int)random(holes.size());
-  holes.get(r).target = true;
+
+  if (holes.size() > 0) {
+    int r = (int)random(holes.size());
+    holes.get(r).target = true;
+  } else {
+    g.gameEnd = true;
+  }
 }
 
 boolean noOverlap(float x, float y) {
