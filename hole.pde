@@ -4,7 +4,7 @@ class hole {
   float x = 0;
   float y = 0;
   color fillCol = color(255, 255, 255);
-  color strokeCol = color(50);
+  color strokeCol = color(100);
   boolean a = false;
   boolean target = false;
   boolean touched = false;
@@ -22,14 +22,14 @@ class hole {
 
   void update() {
     if (a) {
-      strokeWeight(5);
+      strokeWeight(3);
       strokeCol = color(252, 1, 31);
       fillCol = color(252, 1, 31, 150);
     } else if (target) {
       fillCol = color(98, 252, 2);
     } else if (!a) {
-      strokeWeight(5);
-      strokeCol = color(50);
+      strokeWeight(3);
+      strokeCol = color(100);
       fillCol = color(255, 255, 255);
     }
   }
@@ -41,7 +41,7 @@ class hole {
     ellipseMode(CENTER);
     ellipse(x, y, r * 2, r * 2);
   }
-  
+
   void calStereo(float x_) {
     panStone = map(x_, r, video.width - r, -1, 1);
     panStone = constrain(panStone, -1, 1);
