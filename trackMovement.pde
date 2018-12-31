@@ -30,7 +30,7 @@ class trackMovement {
     countLeft = 1;
     countRight = 1;
     
-    rainbowIndex += 100;
+    rainbowIndex += 50;
     rainbowIndex %= 60000;
 
     int pixelIndex = 0;
@@ -41,15 +41,15 @@ class trackMovement {
       float pixelWeight = d / detail;
 
       if (d > thresholdFreze) {
-        fill(rainbow.rainbow[(rainbowIndex + p.y * 10) % 60000]);
+        fill(rainbow.rainbow[(rainbowIndex + p.y * 5) % 60000]);
         if (p.x > 100 && p.x < video.width / 5) {
           countLeft++;
           avgLeft += p.y;
-          fill(rainbow.rainbow[(rainbowIndex + 30000) % 60000]);
+          fill(30);
         } else if ((p.x > (video.width / 5) * 4) && p.x < video.width - 100) {
           countRight++;
           avgRight += p.y;
-          fill(rainbow.rainbow[(rainbowIndex + 30000) % 60000]);
+          fill(30);
         }
         //Pixel die sich im Verhaeltniss zum rasterFreze geaendert haben
         noStroke();
