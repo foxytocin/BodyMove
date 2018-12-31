@@ -9,6 +9,22 @@ class gui {
   boolean gameEnd = false;
 
   void show() {
+    
+    if (trackMov && !gameEnd && thresholdFreze < 50) {
+      pushMatrix();
+      translate(video.width / 2, video.height / 2);
+
+      stroke(50);
+      fill(100);
+      rectMode(CENTER);
+      rect(0, 0, 500, 110, 10);
+      textAlign(CENTER);
+      textSize(32);
+      fill(252, 1, 31);
+      text("Spiel pausiert", 0, -10);
+      text("Schlechte Lichtverhältnisse", 0, 30);
+      popMatrix();
+    }
 
     if (gameEnd) {
       pushMatrix();

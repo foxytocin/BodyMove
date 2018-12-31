@@ -3,7 +3,7 @@ import processing.sound.*;
 
 //Spielvriablen
 int holeAmount = 10;
-
+float contrast = 0.85;
 
 rainbow rainbow;
 color colorChange = color(0, 0, 0);
@@ -56,22 +56,37 @@ void setup() {
   initHoles();
   trackMovement = new trackMovement();
   threshold = 20;
-  thresholdFreze = 60;
+  thresholdFreze = 40;
   rainbow = new rainbow();
 }
 
-void draw() {
-  frameRate(60);
+void calcThreshold() {
+  if (trackMovement.anteilAnGesamt < contrast) {
+    thresholdFreze += 2;
+  } else if (trackMovement.anteilAnGesamt > contrast) {
+    thresholdFreze -= 2;
+  }
+  println("Contrast: " +contrast+ " / NotTracked: " +trackMovement.anteilAnGesamt+ " / thresholdFreze: " +thresholdFreze);
+}
 
+void draw() {
+  //frameRate(60);
+  //println(frameRate);
   calcRaster();
   showRaster(raster);
-  
+
   if (!trackMov) {
     rasterFrozen.clear();
     rasterFrozen.addAll(raster);
   } else if (trackMov) {
+    if (trackMovement.anteilAnGesamt < contrast - 0.025 || trackMovement.anteilAnGesamt > contrast + 0.025) {
+      calcThreshold();
+    }
     trackMovement.show();
-    b.update();
+
+    if (thresholdFreze > 50) {
+      b.update();
+    }
     l.show(); 
     b.show();
   }
@@ -115,11 +130,11 @@ void keyPressed() {
       if (detail >= 10)
         detail -= 4;
     } else if (keyCode == RIGHT && trackMov) {
-      if (thresholdFreze < 100)
-        thresholdFreze += 2;
+      if (contrast < 0.95)
+        contrast += 0.05;
     } else if (keyCode == LEFT && trackMov) {
-      if (thresholdFreze >= 10)
-        thresholdFreze -= 2;
+      if (contrast >= 0.1)
+        contrast -= 0.05;
     } else if (keyCode == UP) {
       if (threshold <= 100)
         threshold += 2;
@@ -181,7 +196,7 @@ float calcColorDifference(pixel p, color trackCol) {
   float r2 = trackCol >> 020 & 0xFF;
   float g2 = trackCol >> 010 & 0xFF;
   float b2 = trackCol        & 0xFF;
-  
+
   return dist(r1, g1, b1, r2, g2, b2);
 }
 

@@ -40,10 +40,10 @@ class trackMovement {
       float pixelWeight = d / detail;
 
       if (d > thresholdFreze) {
-        if (p.x > 100 && p.x < video.width / 6) {
+        if (p.x > 100 && p.x < video.width / 5) {
           countLeft++;
           avgLeft += p.y;
-        } else if ((p.x > (video.width / 6) * 5) && p.x < video.width - 100) {
+        } else if ((p.x > (video.width / 5) * 4) && p.x < video.width - 100) {
           countRight++;
           avgRight += p.y;
         }
@@ -75,18 +75,20 @@ class trackMovement {
     avgLeft /= countLeft;
     avgRight /= countRight;
 
-    if (avgLeft != 1) {
-      posLeft = lerp(posLeft, avgLeft, 0.5);
-      fill(100);
-      noStroke();
-      ellipse(100, posLeft, countLeft, countLeft);
-    }
+    if (thresholdFreze > 50) {
+      if (avgLeft != 1) {
+        posLeft = lerp(posLeft, avgLeft, 0.5);
+        fill(100);
+        noStroke();
+        ellipse(100, posLeft, countLeft, countLeft);
+      }
 
-    if (avgRight != 1) {
-      posRight = lerp(posRight, avgRight, 0.5);
-      fill(100);
-      noStroke();
-      ellipse(video.width - 100, posRight, countRight, countRight);
+      if (avgRight != 1) {
+        posRight = lerp(posRight, avgRight, 0.5);
+        fill(100);
+        noStroke();
+        ellipse(video.width - 100, posRight, countRight, countRight);
+      }
     }
     error = false;
     goal = false;
