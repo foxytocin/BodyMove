@@ -3,7 +3,8 @@ import processing.sound.*;
 
 //Spielvriablen
 int holeAmount = 10;
-float contrast = 0.85;
+float contrast = 0.785;
+float thresholdFreze = 40;
 
 rainbow rainbow;
 color colorChange = color(0, 0, 0);
@@ -19,7 +20,6 @@ int closestX;
 int closestY;
 Capture video;
 float threshold;
-float thresholdFreze;
 boolean trackMov = false;
 trackMovement trackMovement;
 float adjustBrightness;
@@ -56,22 +56,22 @@ void setup() {
   initHoles();
   trackMovement = new trackMovement();
   threshold = 20;
-  thresholdFreze = 40;
   rainbow = new rainbow();
 }
 
 void calcThreshold() {
   if (trackMovement.anteilAnGesamt < contrast) {
-    thresholdFreze += 2;
+    thresholdFreze += 1;
   } else if (trackMovement.anteilAnGesamt > contrast) {
-    thresholdFreze -= 2;
+    thresholdFreze -= 1;
   }
-  println("Contrast: " +contrast+ " / NotTracked: " +trackMovement.anteilAnGesamt+ " / thresholdFreze: " +thresholdFreze);
+  println("AUTO: Contrast: " +contrast+ " / NotTracked: " +trackMovement.anteilAnGesamt+ " / thresholdFreze: " +thresholdFreze);
 }
 
 void draw() {
   //frameRate(60);
   //println(frameRate);
+  
   calcRaster();
   showRaster(raster);
 
@@ -79,12 +79,13 @@ void draw() {
     rasterFrozen.clear();
     rasterFrozen.addAll(raster);
   } else if (trackMov) {
-    if (trackMovement.anteilAnGesamt < contrast - 0.025 || trackMovement.anteilAnGesamt > contrast + 0.025) {
+    if (trackMovement.anteilAnGesamt < contrast - 0.02 || trackMovement.anteilAnGesamt > contrast + 0.02) {
       calcThreshold();
     }
+    //println("LEARNING: Contrast: " +contrast+ " / NotTracked: " +trackMovement.anteilAnGesamt+ " / thresholdFreze: " +thresholdFreze);
     trackMovement.show();
 
-    if (thresholdFreze > 50) {
+    if (trackMovement.movement) {
       b.update();
     }
     l.show(); 

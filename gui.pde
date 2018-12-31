@@ -10,7 +10,7 @@ class gui {
 
   void show() {
     
-    if (trackMov && !gameEnd && thresholdFreze < 50) {
+    if (trackMov && !gameEnd && !trackMovement.movement) {
       pushMatrix();
       translate(video.width / 2, video.height / 2);
 
