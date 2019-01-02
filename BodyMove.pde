@@ -202,7 +202,7 @@ float calcColorDifference(pixel p, color trackCol) {
 }
 
 color extractColorFromImage(final PImage img) {
-  video.loadPixels();
+  img.loadPixels();
   color r = 0, g = 0, b = 0;
 
   for (final color c : img.pixels) {
