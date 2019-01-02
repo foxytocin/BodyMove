@@ -1,4 +1,4 @@
-class trackMovement {
+class trackMovementALT {
 
   float avgLeft = 0;
   float avgRight = 0;
@@ -16,15 +16,16 @@ class trackMovement {
   boolean error = false;
   boolean goal = false;
 
-  trackMovement() {
+  trackMovementALT() {
   }
 
-  trackMovement(ArrayList<pixel> array) {
+  trackMovementALT(ArrayList<pixel> array) {
     rasterFrozen = array;
   }
 
   void show() {
 
+    int mstart = millis();
     avgLeft = 1;
     avgRight = 1;
     countLeft = 1;
@@ -100,5 +101,8 @@ class trackMovement {
     }
     error = false;
     goal = false;
+    int mend = millis();
+    int mdiff = mend - mstart;
+    println("Time for calculation: " +mdiff);
   }
 }

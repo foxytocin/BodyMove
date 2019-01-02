@@ -10,10 +10,9 @@ class hole {
   boolean touched = false;
   boolean collected = false;
   float panStone = 0.5;
-
-
+  
   hole() {
-  };
+  }
 
   hole(float x_, float y_) {
     x = x_;
@@ -37,7 +36,7 @@ class hole {
   void show() {
     stroke(strokeCol);
     fill(fillCol);
-    strokeWeight(5);
+    strokeWeight(3);
     ellipseMode(CENTER);
     ellipse(x, y, r * 2, r * 2);
   }
