@@ -1,11 +1,11 @@
-class trackMovementALT {
+class trackMovement {
 
-  float avgLeft = 0;
-  float avgRight = 0;
+  float avgLeft = video.height - detail;
+  float avgRight = video.height - detail;
   int countLeft = 0;
   int countRight = 0;
-  float posLeft;
-  float posRight;
+  float posLeft = video.height - detail;
+  float posRight = video.height - detail;
   pixel frozenPixel = new pixel();
   int rainbowIndex = 0;
 
@@ -16,21 +16,16 @@ class trackMovementALT {
   boolean error = false;
   boolean goal = false;
 
-  trackMovementALT() {
-  }
-
-  trackMovementALT(ArrayList<pixel> array) {
-    rasterFrozen = array;
+  trackMovement() {
   }
 
   void show() {
 
-    int mstart = millis();
     avgLeft = 1;
     avgRight = 1;
     countLeft = 1;
     countRight = 1;
-    
+
     rainbowIndex += 50;
     rainbowIndex %= 60000;
 
@@ -47,7 +42,7 @@ class trackMovementALT {
           countLeft++;
           avgLeft += p.y;
           fill(30);
-        } else if ((p.x > (video.width / 5) * 4) && p.x < video.width - 100) {
+        } else if ((p.x >= (video.width / 5) * 4) && p.x < video.width - 112) {
           countRight++;
           avgRight += p.y;
           fill(30);
@@ -77,14 +72,14 @@ class trackMovementALT {
 
     avgLeft /= countLeft;
     avgRight /= countRight;
-    
-    if(countLeft < 4 || countRight < 4) {
-      movement = false;
+
+    if (countLeft < 4 || countRight < 4) {
+      gh.paused();
     } else {
-      movement = true;
+      gh.unpause();
     }
 
-    if (movement) {
+    if (gh.playing) {
       if (avgLeft != 1) {
         posLeft = lerp(posLeft, avgLeft, 0.5);
         fill(100);
@@ -101,8 +96,5 @@ class trackMovementALT {
     }
     error = false;
     goal = false;
-    int mend = millis();
-    int mdiff = mend - mstart;
-    println("Time for calculation: " +mdiff);
   }
 }
