@@ -59,16 +59,6 @@ class gamehandler {
     
     status = "paused";
   }
-  
-  void unpause() {
-    loading = false;
-    startScreen = false;
-    playing = true;
-    paused = false;
-    endScreen = false;
-    restart = false;
-    status = "playing";
-  }
 
   void endScreen() {
     loading = false;
@@ -77,6 +67,9 @@ class gamehandler {
     paused = false;
     endScreen = true;
     restart = false;
+    
+    soundRollingStone.stop();
+    
     status = "endScreen";
   }
 

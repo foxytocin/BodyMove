@@ -2,8 +2,8 @@ import processing.video.*;
 import processing.sound.*;
 
 //Spielvriablen
-int holeAmount = 10;
-float contrast = 0.785;
+int holeAmount = 3;
+float contrast = 0.735;
 float thresholdFreze = 40;
 
 rainbow rainbow;
@@ -96,10 +96,12 @@ void draw() {
     trackMovement.show();
     l.show(); 
     b.show();
+    gameplay();
     println("PAUSED");
     break;
   case "endScreen":
     trackMovement.show();
+    b.update();
     l.show(); 
     b.show();
     println("ENDSCREEN");
@@ -157,16 +159,10 @@ void gameplay() {
 
 void keyPressed() {
   if (key == CODED) {
-    if (keyCode == RIGHT && !trackMov) {
-      if (detail < video.height / 2)
-        detail += 4;
-    } else if (keyCode == LEFT && !trackMov) {
-      if (detail >= 10)
-        detail -= 4;
-    } else if (keyCode == RIGHT && trackMov) {
+    if (keyCode == RIGHT) {
       if (contrast < 0.95)
         contrast += 0.05;
-    } else if (keyCode == LEFT && trackMov) {
+    } else if (keyCode == LEFT) {
       if (contrast >= 0.1)
         contrast -= 0.05;
     } else if (keyCode == UP) {

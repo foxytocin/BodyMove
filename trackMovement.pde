@@ -73,27 +73,24 @@ class trackMovement {
     avgLeft /= countLeft;
     avgRight /= countRight;
 
-    if (countLeft < 4 || countRight < 4) {
+    if (!gh.endScreen && (countLeft < 4 || countRight < 4)) {
       gh.paused();
-    } else {
-      gh.unpause();
+    } else if (!gh.endScreen) {
+      gh.playing();
     }
 
-    if (gh.playing) {
-      if (avgLeft != 1) {
-        posLeft = lerp(posLeft, avgLeft, 0.5);
-        fill(100);
-        noStroke();
-        ellipse(100, posLeft, countLeft, countLeft);
-      }
-
-      if (avgRight != 1) {
-        posRight = lerp(posRight, avgRight, 0.5);
-        fill(100);
-        noStroke();
-        ellipse(video.width - 100, posRight, countRight, countRight);
-      }
+    if (!gh.paused && avgLeft != 1) {
+      posLeft = lerp(posLeft, avgLeft, 0.5);
     }
+
+    if (!gh.paused && avgRight != 1) {
+      posRight = lerp(posRight, avgRight, 0.5);
+    }
+    fill(100);
+    noStroke();
+    ellipse(100, posLeft, countLeft, countLeft);
+    ellipse(video.width - 100, posRight, countRight, countRight);
+
     error = false;
     goal = false;
   }
