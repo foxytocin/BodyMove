@@ -2,30 +2,32 @@ import processing.video.*;
 import processing.sound.*;
 
 //Spielvriablen
-int holeAmount = 10;
-
+int holeAmount = 3;
+float contrast = 0.735;
+float thresholdFreze = 40;
 
 rainbow rainbow;
+Capture video;
 color colorChange = color(0, 0, 0);
 color backgroundCol = color(100);
 int detail;
-ArrayList<pixel> raster;
 ArrayList<pixel> rasterFrozen;
+ArrayList<pixel> raster;
 ArrayList<hole> holes;
 ArrayList<circleAnimation> circleAnimations;
 boolean hideInput;
 color trackCol;
 int closestX;
 int closestY;
-Capture video;
 float threshold;
-float thresholdFreze;
 boolean trackMov = false;
 trackMovement trackMovement;
 float adjustBrightness;
 ball b;
 line l;
 gui g;
+gamehandler gh = new gamehandler();
+gamestart gs = new gamestart();
 
 //Sound
 SoundFile soundCollect;
@@ -45,7 +47,7 @@ void setup() {
   detail = 16;
   trackCol = color(255, 0, 0);
   adjustBrightness = 1;
-  hideInput = false;
+  hideInput = true;
   b = new ball();
   l = new line();
   g = new gui();
@@ -56,26 +58,77 @@ void setup() {
   initHoles();
   trackMovement = new trackMovement();
   threshold = 20;
-  thresholdFreze = 60;
   rainbow = new rainbow();
 }
 
 void draw() {
-  frameRate(60);
+  //frameRate(30);
 
-  calcRaster();
-  showRaster(raster);
-  
-  if (!trackMov) {
-    rasterFrozen.clear();
-    rasterFrozen.addAll(raster);
-  } else if (trackMov) {
+  background(backgroundCol);
+  raster = calcRaster();
+
+  if (rasterFrozen.size() <= 0) {
+    rasterFrozen = generateFrozen();
+  }
+
+  switch(gh.status) {
+
+  case "loading":
+    showRaster();
+    println("LOADING ...");
+    gh.startScreen();
+    break;
+  case "startScreen":
+    showRaster();
+    gs.testingReady();
+    println("STARTSCREEN");
+    break;
+  case "playing":
+    trackMovement.show();
+    calcThreshold();
+    b.update();
+    l.show(); 
+    b.show();
+    gameplay();
+    println("PLAYING");
+    break;
+  case "paused":
+    trackMovement.show();
+    l.show(); 
+    b.show();
+    gameplay();
+    println("PAUSED");
+    break;
+  case "endScreen":
     trackMovement.show();
     b.update();
     l.show(); 
     b.show();
+    println("ENDSCREEN");
+    break;
   }
 
+  g.show();
+}
+
+ArrayList<pixel> generateFrozen() {
+  ArrayList<pixel> rasterFrozen = new ArrayList<pixel>();
+  rasterFrozen.addAll(raster);
+  println("Genrated frozenRaster: " +rasterFrozen.size());
+  return rasterFrozen;
+}
+
+void calcThreshold() {
+  if (trackMovement.anteilAnGesamt < contrast - 0.02 || trackMovement.anteilAnGesamt > contrast + 0.02) {
+  } else if (trackMovement.anteilAnGesamt < contrast) {
+    thresholdFreze += 1;
+  } else if (trackMovement.anteilAnGesamt > contrast) {
+    thresholdFreze -= 1;
+  }
+  println("AUTO: Contrast: " +contrast+ " / NotTracked: " +trackMovement.anteilAnGesamt+ " / thresholdFreze: " +thresholdFreze);
+}
+
+void gameplay() {
   //CircleAnimation abspielen / aus dem Array entfernen wenn die Animation beendet wurde
   for (int i = circleAnimations.size() - 1; i >= 0; i--) {
     circleAnimation ca = circleAnimations.get(i);
@@ -102,24 +155,16 @@ void draw() {
     h.update();
     h.show();
   }
-
-  g.show();
 }
 
 void keyPressed() {
   if (key == CODED) {
-    if (keyCode == RIGHT && !trackMov) {
-      if (detail < video.height / 2)
-        detail += 4;
-    } else if (keyCode == LEFT && !trackMov) {
-      if (detail >= 10)
-        detail -= 4;
-    } else if (keyCode == RIGHT && trackMov) {
-      if (thresholdFreze < 100)
-        thresholdFreze += 2;
-    } else if (keyCode == LEFT && trackMov) {
-      if (thresholdFreze >= 10)
-        thresholdFreze -= 2;
+    if (keyCode == RIGHT) {
+      if (contrast < 0.95)
+        contrast += 0.05;
+    } else if (keyCode == LEFT) {
+      if (contrast >= 0.1)
+        contrast -= 0.05;
     } else if (keyCode == UP) {
       if (threshold <= 100)
         threshold += 2;
@@ -144,7 +189,16 @@ void keyPressed() {
     hideInput = false;
   }
   if (key==' ') {
-    initHoles();
+    gh.restart();
+  }
+  if (key=='p') {
+    if (gh.startScreen) {
+      gh.playing();
+    } else if (gh.playing) {
+      gh.paused();
+    } else if (gh.paused) {
+      gh.playing();
+    }
   }
 }
 
@@ -152,8 +206,8 @@ void captureEvent(Capture video) {
   video.read();
 }
 
-void calcRaster() {
-  raster.clear();
+ArrayList<pixel> calcRaster() {
+  ArrayList<pixel> raster = new ArrayList<pixel>();
   for (int i = 0; i < video.height; i += detail) {
     int xPosPixel = 0;
     for (int j = video.width - detail; j >= 0; j -= detail) {
@@ -162,15 +216,12 @@ void calcRaster() {
       xPosPixel += detail;
     }
   }
+  return raster;
 }
 
-void showRaster(ArrayList<pixel> raster) {
-  if (!hideInput) {
-    for (pixel p : raster) {
-      p.show();
-    }
-  } else if (hideInput) {
-    background(backgroundCol);
+void showRaster() {
+  for (pixel p : raster) {
+    p.show();
   }
 }
 
@@ -181,12 +232,12 @@ float calcColorDifference(pixel p, color trackCol) {
   float r2 = trackCol >> 020 & 0xFF;
   float g2 = trackCol >> 010 & 0xFF;
   float b2 = trackCol        & 0xFF;
-  
+
   return dist(r1, g1, b1, r2, g2, b2);
 }
 
 color extractColorFromImage(final PImage img) {
-  video.loadPixels();
+  img.loadPixels();
   color r = 0, g = 0, b = 0;
 
   for (final color c : img.pixels) {
@@ -204,11 +255,6 @@ color extractColorFromImage(final PImage img) {
 
 void initHoles() {
   holes.clear();
-  g.error = 0;
-  g.target = 0;
-  g.qual = 100;
-  g.note = 1;
-  g.gameEnd = false;
   int noFreeSpaceCounter = 0;
   while (holes.size() < holeAmount && noFreeSpaceCounter < 50) {
     float x = random(75, width - 75);
@@ -230,12 +276,11 @@ void initHoles() {
 }
 
 void pickTarget() {
-
   if (holes.size() > 0) {
     int r = (int)random(holes.size());
     holes.get(r).target = true;
   } else {
-    g.gameEnd = true;
+    gh.endScreen();
   }
 }
 

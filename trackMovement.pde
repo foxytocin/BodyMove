@@ -1,25 +1,22 @@
 class trackMovement {
 
-  float avgLeft = 0;
-  float avgRight = 0;
+  float avgLeft = video.height - detail;
+  float avgRight = video.height - detail;
   int countLeft = 0;
   int countRight = 0;
-  float posLeft;
-  float posRight;
+  float posLeft = video.height - detail;
+  float posRight = video.height - detail;
   pixel frozenPixel = new pixel();
   int rainbowIndex = 0;
 
   float anteilAnGesamt = 0;
   float drawSize = 0;
 
+  boolean movement = false;
   boolean error = false;
   boolean goal = false;
 
   trackMovement() {
-  }
-
-  trackMovement(ArrayList<pixel> array) {
-    rasterFrozen = array;
   }
 
   void show() {
@@ -29,7 +26,7 @@ class trackMovement {
     countLeft = 1;
     countRight = 1;
 
-    rainbowIndex += 100;
+    rainbowIndex += 50;
     rainbowIndex %= 60000;
 
     int pixelIndex = 0;
@@ -40,22 +37,23 @@ class trackMovement {
       float pixelWeight = d / detail;
 
       if (d > thresholdFreze) {
-        if (p.x > 100 && p.x < video.width / 6) {
+        fill(rainbow.rainbow[(rainbowIndex + p.y * 5) % 60000]);
+        if (p.x > 100 && p.x < video.width / 5) {
           countLeft++;
           avgLeft += p.y;
-        } else if ((p.x > (video.width / 6) * 5) && p.x < video.width - 100) {
+          fill(30);
+        } else if ((p.x >= (video.width / 5) * 4) && p.x < video.width - 112) {
           countRight++;
           avgRight += p.y;
+          fill(30);
         }
         //Pixel die sich im Verhaeltniss zum rasterFreze geaendert haben
-        fill(rainbow.rainbow[rainbowIndex]);
         noStroke();
         ellipse(p.x + detail / 2, p.y + detail / 2, pixelWeight, pixelWeight);
       } else {
 
         //Pixel bei denen keine Veraenderung erkannt wurde
         pixelNotChanged++;
-        //fill(75);
         if (error) {
           fill(color(252, 1, 31));
         } else if (goal) {
@@ -75,19 +73,24 @@ class trackMovement {
     avgLeft /= countLeft;
     avgRight /= countRight;
 
-    if (avgLeft != 1) {
-      posLeft = lerp(posLeft, avgLeft, 0.5);
-      fill(100);
-      noStroke();
-      ellipse(100, posLeft, countLeft, countLeft);
+    if (!gh.endScreen && (countLeft < 4 || countRight < 4)) {
+      gh.paused();
+    } else if (!gh.endScreen) {
+      gh.playing();
     }
 
-    if (avgRight != 1) {
-      posRight = lerp(posRight, avgRight, 0.5);
-      fill(100);
-      noStroke();
-      ellipse(video.width - 100, posRight, countRight, countRight);
+    if (!gh.paused && avgLeft != 1) {
+      posLeft = lerp(posLeft, avgLeft, 0.5);
     }
+
+    if (!gh.paused && avgRight != 1) {
+      posRight = lerp(posRight, avgRight, 0.5);
+    }
+    fill(100);
+    noStroke();
+    ellipse(100, posLeft, countLeft, countLeft);
+    ellipse(video.width - 100, posRight, countRight, countRight);
+
     error = false;
     goal = false;
   }
