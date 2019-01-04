@@ -85,7 +85,7 @@ void draw() {
     break;
   case "playing":
     trackMovement.show();
-    calcThreshold();
+    //calcThreshold();
     b.update();
     l.show(); 
     b.show();
