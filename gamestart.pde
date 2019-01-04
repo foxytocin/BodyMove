@@ -41,14 +41,14 @@ class gamestart {
     }
 
     differenz /= count;
-    println("COUNT: " +count+ " / DIFFERENZ: " +differenz);
+    //println("COUNT: " +count+ " / DIFFERENZ: " +differenz);
 
     if (differenz < 5) {
       testsPassed++;
-      println("Bestandene Tests: " +testsPassed);
+      //println("Bestandene Tests: " +testsPassed);
     } else {
       testsPassed = 0;
-      println("RESET - Test nicht Bestanden: " +testsPassed);
+      //println("RESET - Test nicht Bestanden: " +testsPassed);
     }
 
     pushMatrix();
@@ -107,7 +107,7 @@ class gamestart {
 
       if (frameCount % 90 == 0) {
         rasterFrozen = generateFrozen();
-        println("!!! Neuen Freze erstelle !!!");
+        //println("!!! Neuen Freze erstelle !!!");
       }
       show();
       return false;

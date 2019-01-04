@@ -2,7 +2,7 @@ import processing.video.*;
 import processing.sound.*;
 
 //Spielvriablen
-int holeAmount = 3;
+int holeAmount = 10;
 float contrast = 0.735;
 float thresholdFreze = 40;
 
@@ -75,13 +75,13 @@ void draw() {
 
   case "loading":
     showRaster();
-    println("LOADING ...");
+    //println("LOADING ...");
     gh.startScreen();
     break;
   case "startScreen":
     showRaster();
     gs.testingReady();
-    println("STARTSCREEN");
+    //println("STARTSCREEN");
     break;
   case "playing":
     trackMovement.show();
@@ -90,21 +90,21 @@ void draw() {
     l.show(); 
     b.show();
     gameplay();
-    println("PLAYING");
+    //println("PLAYING");
     break;
   case "paused":
     trackMovement.show();
     l.show(); 
     b.show();
     gameplay();
-    println("PAUSED");
+    //println("PAUSED");
     break;
   case "endScreen":
     trackMovement.show();
     b.update();
     l.show(); 
     b.show();
-    println("ENDSCREEN");
+    //println("ENDSCREEN");
     break;
   }
 
