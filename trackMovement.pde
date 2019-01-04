@@ -1,11 +1,11 @@
 class trackMovement {
 
-  float avgLeft = video.height - detail;
-  float avgRight = video.height - detail;
+  float avgLeft = (video.height - detail);
+  float avgRight = (video.height - detail);
   int countLeft = 0;
   int countRight = 0;
-  float posLeft = video.height - detail;
-  float posRight = video.height - detail;
+  float posLeft = (video.height - detail);
+  float posRight = (video.height - detail);
   pixel frozenPixel = new pixel();
   int rainbowIndex = 0;
 

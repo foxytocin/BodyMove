@@ -35,6 +35,13 @@ class gamehandler {
     paused = false;
     endScreen = false;
     restart = false;
+    
+    trackMovement.avgLeft = (video.height - detail);
+    trackMovement.avgRight = (video.height - detail);
+    trackMovement.posLeft = (video.height - detail);
+    trackMovement.posRight = (video.height - detail);
+    b.x = (video.width / 2);
+    b.y = (video.height - detail - b.r);
   }
 
   void playing() {
@@ -44,6 +51,7 @@ class gamehandler {
     paused = false;
     endScreen = false;
     restart = false;
+
     status = "playing";
   }
 
@@ -54,9 +62,9 @@ class gamehandler {
     paused = true;
     endScreen = false;
     restart = false;
-    
+
     soundRollingStone.stop();
-    
+
     status = "paused";
   }
 
@@ -67,9 +75,9 @@ class gamehandler {
     paused = false;
     endScreen = true;
     restart = false;
-    
+
     soundRollingStone.stop();
-    
+
     status = "endScreen";
   }
 
@@ -80,10 +88,17 @@ class gamehandler {
     paused = false;
     endScreen = false;
     status = "loading";
-    
+
     gs.testsPassed = 0;
     rasterFrozen = generateFrozen();
-    
+
+    trackMovement.avgLeft = (video.height - detail);
+    trackMovement.avgRight = (video.height - detail);
+    trackMovement.posLeft = (video.height - detail);
+    trackMovement.posRight = (video.height - detail);
+    b.x = (video.width / 2);
+    b.y = (video.height - detail - b.r);
+
     g.error = 0;
     g.target = 0;
     g.qual = 100;

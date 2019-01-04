@@ -1,8 +1,8 @@
 class ball {
 
   float r = 30;
-  float x = video.width / 2;
-  float y;
+  float x = (video.width / 2);
+  float y = (video.height - detail - r);
   float acc = 0;
   float mx;
   float tar = x;
