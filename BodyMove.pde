@@ -2,11 +2,12 @@ import processing.video.*;
 import processing.sound.*;
 
 //Spielvriablen
-int holeAmount = 10;
+int holeAmount = 5;
 float contrast = 0.735;
 float thresholdFreze = 40;
 float scaleWidth = 2.25;
 float scaleHeight = 2.5;
+float circleSize = 60;
 int detail = 10;
 
 rainbow rainbow;
@@ -49,6 +50,7 @@ void setup() {
   soundButton = new SoundFile(this, "button.mp3");
   soundMusic = new SoundFile(this, "music.mp3");
   
+  soundButton.amp(0.5);
   soundMusic.amp(0.3);
   soundMusic.loop();
 
@@ -60,7 +62,7 @@ void setup() {
   trackCol = color(255, 0, 0);
   adjustBrightness = 1;
   hideInput = true;
-  b = new ball();
+  b = new ball(width / 2, height - 150, circleSize);
   l = new line();
   g = new gui();
   circleAnimations = new ArrayList<circleAnimation>();
@@ -97,7 +99,7 @@ void draw() {
     break;
   case "playing":
     trackMovement.show();
-    //calcThreshold();
+    calcThreshold();
     b.update();
     l.show(); 
     b.show();
@@ -276,11 +278,11 @@ void initHoles() {
     float y = random(75, height - 250);
 
     if (holes.size() == 0) {
-      hole h = new hole(x, y);
+      hole h = new hole(x, y, circleSize);
       holes.add(h);
     } else {
       if (noOverlap(x, y)) {
-        hole h = new hole(x, y);
+        hole h = new hole(x, y, circleSize);
         holes.add(h);
       } else {
         noFreeSpaceCounter++;
@@ -301,7 +303,7 @@ void pickTarget() {
 
 boolean noOverlap(float x, float y) {
   for (hole h : holes) {
-    if (dist(x, y, h.x, h.y) > 4 * h.r) {
+    if (dist(x, y, h.x, h.y) > 2 * circleSize) {
       continue;
     } else {
       return false;

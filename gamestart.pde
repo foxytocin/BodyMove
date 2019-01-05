@@ -15,7 +15,7 @@ class gamestart {
     count = 0;
 
     for (pixel p : raster) {
-      if ((p.x > 100 && p.x < width / 5) || (p.x >= (width / 5) * 4) && p.x < width - 112 ) {
+      if (p.x > 100 && p.x < width / 5 || (p.x > ((width / 5) * 4) - detail) && p.x < width - 120) {
         //Pixel die kontrolliert werden
         frozenPixel = rasterFrozen.get(pixelIndex);
         float diff = calcColorDifference(p, frozenPixel.col);

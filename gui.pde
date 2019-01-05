@@ -42,41 +42,77 @@ class gui {
       text("Spielende", 0, -10);
       text("Note: " +note+ " (" +(int)qual+ "%)", 0, 30);
       popMatrix();
-      
+
       //Auswahl Kreise RECHTS
       pushMatrix();
       translate(width - 184, 184);
       noStroke();
       fill(backgroundCol);
       ellipse(0, 0, 200, 200);
-      textSize(32);
+      textSize(36);
       textAlign(CENTER);
-      fill(textCol);
-      text("Nochmal?", 0, 11);
+      fill(green);
+      text("Nochmal", 0, 11);
       rotate(-PI/2);
       noFill();
       stroke(green);
-      strokeWeight(15);
-      float angel1 = map(trackMovement.timerRightButton, 0, 45, 0, TWO_PI);
+      strokeWeight(10);
+      float angel1 = map(trackMovement.timerRightButton, 0, 45, TWO_PI, 0);
       arc(0, 0, 200, 200, 0, angel1);
       popMatrix();
-      
+
       //Auswahl Kreise LINKS
       pushMatrix();
       translate(184, 184);
       noStroke();
       fill(backgroundCol);
       ellipse(0, 0, 200, 200);
-      textSize(32);
+      textSize(38);
       textAlign(CENTER);
-      fill(textCol);
-      text("Ende", 0, 11);
+      fill(red);
+      text("Ende", 0, 12);
       rotate(-PI/2);
       noFill();
       stroke(red);
-      strokeWeight(15);
-      float angel2 = map(trackMovement.timerLeftButton, 0, 45, 0, TWO_PI);
+      strokeWeight(10);
+      float angel2 = map(trackMovement.timerLeftButton, 0, 45, TWO_PI, 0);
       arc(0, 0, 200, 200, 0, angel2);
+      popMatrix();
+
+      //Schwierigkeitsauswahl Kreise RECHTS PLUS
+      pushMatrix();
+      translate(width - 184, height - 184);
+      noStroke();
+      fill(backgroundCol);
+      ellipse(0, 0, 200, 200);
+      textSize(72);
+      textAlign(CENTER);
+      fill(255, 178, 56);
+      text(holeAmount + trackMovement.setDiffwithButton, 0, 20);
+      rotate(-PI/2);
+      noFill();
+      stroke(255, 178, 56);
+      strokeWeight(10);
+      float angel3 = map(trackMovement.timerDiffButtonPlus, 0, 45, TWO_PI, 0);
+      arc(0, 0, 200, 200, 0, angel3);
+      popMatrix();
+      
+      //Schwierigkeitsauswahl Kreise LINKS MINUS
+      pushMatrix();
+      translate(184, height - 184);
+      noStroke();
+      fill(backgroundCol);
+      ellipse(0, 0, 200, 200);
+      textSize(72);
+      textAlign(CENTER);
+      fill(255, 178, 56);
+      text(holeAmount + trackMovement.setDiffwithButton, 0, 20);
+      rotate(-PI/2);
+      noFill();
+      stroke(255, 178, 56);
+      strokeWeight(10);
+      float angel4 = map(trackMovement.timerDiffButtonMinus, 1, 45, TWO_PI, 0);
+      arc(0, 0, 200, 200, 0, angel4);
       popMatrix();
     }
 
