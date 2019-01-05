@@ -5,11 +5,15 @@ import processing.sound.*;
 int holeAmount = 3;
 float contrast = 0.735;
 float thresholdFreze = 40;
+int scale = 1;
 
 rainbow rainbow;
 Capture video;
 color colorChange = color(0, 0, 0);
 color backgroundCol = color(100);
+color green = color(98, 252, 2);
+color red = color(252, 1, 31);
+color textCol = color(50);
 int detail;
 ArrayList<pixel> rasterFrozen;
 ArrayList<pixel> raster;
@@ -33,13 +37,21 @@ gamestart gs = new gamestart();
 SoundFile soundCollect;
 SoundFile soundError;
 SoundFile soundRollingStone;
+SoundFile soundButton;
+SoundFile soundMusic;
 
 void setup() {
   // Load a soundfile from the /data folder of the sketch and play it back
   soundCollect = new SoundFile(this, "collect.wav");
   soundError = new SoundFile(this, "error.wav");
   soundRollingStone = new SoundFile(this, "rollingstone.wav");
+  soundButton = new SoundFile(this, "button.mp3");
+  soundMusic = new SoundFile(this, "music.mp3");
+  
+  soundMusic.amp(0.3);
+  soundMusic.loop();
 
+  //fullScreen();
   size(1280, 720);
   //printArray(Capture.list());
   video = new Capture(this, Capture.list()[0]);
@@ -70,41 +82,41 @@ void draw() {
   if (rasterFrozen.size() <= 0) {
     rasterFrozen = generateFrozen();
   }
-
+  
   switch(gh.status) {
 
   case "loading":
     showRaster();
-    println("LOADING ...");
+    //println("LOADING ...");
     gh.startScreen();
     break;
   case "startScreen":
     showRaster();
     gs.testingReady();
-    println("STARTSCREEN");
+    //println("STARTSCREEN");
     break;
   case "playing":
     trackMovement.show();
-    calcThreshold();
+    //calcThreshold();
     b.update();
     l.show(); 
     b.show();
     gameplay();
-    println("PLAYING");
+    //println("PLAYING");
     break;
   case "paused":
     trackMovement.show();
     l.show(); 
     b.show();
     gameplay();
-    println("PAUSED");
+    //println("PAUSED");
     break;
   case "endScreen":
     trackMovement.show();
-    b.update();
     l.show(); 
     b.show();
-    println("ENDSCREEN");
+    gameplay();
+    //println("ENDSCREEN");
     break;
   }
 
@@ -191,6 +203,9 @@ void keyPressed() {
   if (key==' ') {
     gh.restart();
   }
+  if (key=='r') {
+    gh.startScreen();
+  }
   if (key=='p') {
     if (gh.startScreen) {
       gh.playing();
@@ -212,7 +227,7 @@ ArrayList<pixel> calcRaster() {
     int xPosPixel = 0;
     for (int j = video.width - detail; j >= 0; j -= detail) {
       PImage newImg = video.get(j, i, detail, detail);
-      raster.add(new pixel(xPosPixel, i, detail, extractColorFromImage(newImg)));
+      raster.add(new pixel(xPosPixel * scale, i * scale, detail, extractColorFromImage(newImg)));
       xPosPixel += detail;
     }
   }

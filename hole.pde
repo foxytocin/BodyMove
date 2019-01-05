@@ -52,6 +52,7 @@ class hole {
     if (dist(b.x, b.y, x, y) < 2 * b.r) {
       calStereo(x);
       if (!touched && !target) {
+        b.collisionHole();
         soundError.play();
         trackMovement.error = true;
         touched = true;
