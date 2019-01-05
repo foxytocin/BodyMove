@@ -16,30 +16,67 @@ class gui {
       noStroke();
       fill(100);
       rectMode(CENTER);
-      rect(0, 0, 680, 240, 15);
+      rect(0, 0, 672, 244, 10);
       textAlign(CENTER);
       textSize(32);
-      fill(252, 1, 31);
+      fill(red);
       text("Spiel pausiert", 0, -70);
       textSize(46);
+      fill(textCol);
       text("Breite deine Arme weiter aus", 0, 0);
       text("Sie bilden die Stange", 0, 50);
       popMatrix();
     }
 
     if (gh.endScreen) {
+      //Anzeige der Spielerpunkte
       pushMatrix();
       translate(video.width / 2, video.height / 2);
-
-      stroke(50);
+      noStroke();
       fill(100);
       rectMode(CENTER);
-      rect(0, 0, 255, 110, 10);
+      rect(0, 0, 287, 143, 10);
       textAlign(CENTER);
       textSize(32);
       fill(rainbow.rainbow[b.rainbowIndex]);
       text("Spielende", 0, -10);
-      text("Note: " +note+ " / " +(int)qual+ "%", 0, 30);
+      text("Note: " +note+ " (" +(int)qual+ "%)", 0, 30);
+      popMatrix();
+      
+      //Auswahl Kreise RECHTS
+      pushMatrix();
+      translate(width - 184, 184);
+      noStroke();
+      fill(backgroundCol);
+      ellipse(0, 0, 200, 200);
+      textSize(32);
+      textAlign(CENTER);
+      fill(textCol);
+      text("Nochmal?", 0, 11);
+      rotate(-PI/2);
+      noFill();
+      stroke(green);
+      strokeWeight(15);
+      float angel1 = map(trackMovement.timerRightButton, 0, 45, 0, TWO_PI);
+      arc(0, 0, 200, 200, 0, angel1);
+      popMatrix();
+      
+      //Auswahl Kreise LINKS
+      pushMatrix();
+      translate(184, 184);
+      noStroke();
+      fill(backgroundCol);
+      ellipse(0, 0, 200, 200);
+      textSize(32);
+      textAlign(CENTER);
+      fill(textCol);
+      text("Ende", 0, 11);
+      rotate(-PI/2);
+      noFill();
+      stroke(red);
+      strokeWeight(15);
+      float angel2 = map(trackMovement.timerLeftButton, 0, 45, 0, TWO_PI);
+      arc(0, 0, 200, 200, 0, angel2);
       popMatrix();
     }
 
@@ -61,18 +98,18 @@ class gui {
       translate(5, 18);
       textAlign(LEFT);
       textSize(20);
-      fill(252, 1, 31);
+      fill(textCol);
       text("Fehler:", 0, 0);
       textSize(20);
-      fill(98, 252, 2);
+      fill(textCol);
       text("Punkte:", 0, 25);
 
       textAlign(RIGHT);
       textSize(20);
-      fill(252, 1, 31);
+      fill(textCol);
       text((int)error, 105, 0);
       textSize(20);
-      fill(98, 252, 2);
+      fill(textCol);
       text((int)target, 105, 25);
       popMatrix();
       popMatrix();

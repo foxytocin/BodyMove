@@ -2,7 +2,7 @@ import processing.video.*;
 import processing.sound.*;
 
 //Spielvriablen
-int holeAmount = 10;
+int holeAmount = 3;
 float contrast = 0.735;
 float thresholdFreze = 40;
 
@@ -10,6 +10,9 @@ rainbow rainbow;
 Capture video;
 color colorChange = color(0, 0, 0);
 color backgroundCol = color(100);
+color green = color(98, 252, 2);
+color red = color(252, 1, 31);
+color textCol = color(50);
 int detail;
 ArrayList<pixel> rasterFrozen;
 ArrayList<pixel> raster;
@@ -33,12 +36,14 @@ gamestart gs = new gamestart();
 SoundFile soundCollect;
 SoundFile soundError;
 SoundFile soundRollingStone;
+SoundFile soundButton;
 
 void setup() {
   // Load a soundfile from the /data folder of the sketch and play it back
   soundCollect = new SoundFile(this, "collect.wav");
   soundError = new SoundFile(this, "error.wav");
   soundRollingStone = new SoundFile(this, "rollingstone.wav");
+  soundButton = new SoundFile(this, "button.mp3");
 
   size(1280, 720);
   //printArray(Capture.list());
@@ -70,7 +75,7 @@ void draw() {
   if (rasterFrozen.size() <= 0) {
     rasterFrozen = generateFrozen();
   }
-
+  
   switch(gh.status) {
 
   case "loading":
@@ -101,9 +106,9 @@ void draw() {
     break;
   case "endScreen":
     trackMovement.show();
-    b.update();
     l.show(); 
     b.show();
+    gameplay();
     //println("ENDSCREEN");
     break;
   }
@@ -190,6 +195,9 @@ void keyPressed() {
   }
   if (key==' ') {
     gh.restart();
+  }
+  if (key=='r') {
+    gh.startScreen();
   }
   if (key=='p') {
     if (gh.startScreen) {

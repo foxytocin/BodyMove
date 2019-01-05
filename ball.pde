@@ -60,7 +60,7 @@ class ball {
 
   void sound() {
     float sound = abs(acceleration * velocity);
-    println("SOUND: " +sound);
+    //println("SOUND: " +sound);
     
     //Sound des Balls
     if (sound > 0.005) {

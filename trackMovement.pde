@@ -16,6 +16,12 @@ class trackMovement {
   boolean error = false;
   boolean goal = false;
 
+  int countRightButton = 0;
+  int timerRightButton = 0;
+  int countLeftButton = 0;
+  int timerLeftButton = 0;
+  boolean activButtons = false;
+
   trackMovement() {
   }
 
@@ -25,6 +31,8 @@ class trackMovement {
     avgRight = 1;
     countLeft = 1;
     countRight = 1;
+    countRightButton = 0;
+    countLeftButton = 0;
 
     rainbowIndex += 50;
     rainbowIndex %= 60000;
@@ -38,15 +46,28 @@ class trackMovement {
 
       if (d > thresholdFreze) {
         fill(rainbow.rainbow[(rainbowIndex + p.y * 5) % 60000]);
+
+        //Berechnung im Spiel. Linker und Rechner Streifen zu berechnung der Handposition
         if (p.x > 100 && p.x < video.width / 5) {
           countLeft++;
           avgLeft += p.y;
-          fill(30);
+          //fill(30);
         } else if ((p.x >= (video.width / 5) * 4) && p.x < video.width - 112) {
           countRight++;
           avgRight += p.y;
-          fill(30);
+          //fill(30);
         }
+
+        //Berechnung der Steuerelemente RESTART
+        if (gh.endScreen) {
+          if ((p.x >= (video.width / 5) * 4) && p.x < video.width - 112 && p.y > 84 && p.y < (84 + 200)) {
+            countRightButton++;
+          }
+          if ((p.x > 100 && p.x < video.width / 5) && p.y > 84 && p.y < (84 + 200)) {
+            countLeftButton++;
+          }
+        }
+
         //Pixel die sich im Verhaeltniss zum rasterFreze geaendert haben
         noStroke();
         ellipse(p.x + detail / 2, p.y + detail / 2, pixelWeight, pixelWeight);
@@ -55,9 +76,9 @@ class trackMovement {
         //Pixel bei denen keine Veraenderung erkannt wurde
         pixelNotChanged++;
         if (error) {
-          fill(color(252, 1, 31));
+          fill(color(red));
         } else if (goal) {
-          fill(color(98, 252, 2));
+          fill(color(green));
         } else {
           fill(75);
         }
@@ -67,29 +88,82 @@ class trackMovement {
       }
       pixelIndex++;
     }
+
+    //Berechnungen nachdem alle Pixel gezaehlt wurden
+
+    //Aktiviert die Buttons erst, wenn keinerlei Bewegung mehr erkannt wurde. Verhindert ungewollte Eingaben
+    if (gh.endScreen && countLeft < 4 && countRight < 4) {
+      activButtons = true;
+    }
+
+    //Timer Circle-Menu Right-Button
+    if (activButtons) {
+      if (countRightButton > 10 && countLeftButton < 5) {
+
+        if (timerRightButton < 50) {
+          timerRightButton++;
+        } else {
+          activButtons = false;
+          timerRightButton = 0;
+          gh.restart();
+          //println("BUTTON-CALL: restart");
+        }
+      } else {
+        timerRightButton = 0;
+      }
+      
+      //Timer Circle-Menu Left-Button
+      if (countLeftButton > 10 && countRightButton < 5) {
+
+        if (timerLeftButton < 50) {
+          timerLeftButton++;
+        } else {
+          activButtons = false;
+          timerLeftButton = 0;
+          gh.startScreen();
+          //println("BUTTON-CALL: startScreen");
+        }
+      } else {
+        timerLeftButton = 0;
+      }
+
+      if (timerLeftButton > 0 || timerRightButton > 0) {
+        if (!soundButton.isPlaying())
+          soundButton.play();
+      } else if(gh.endScreen) {
+        soundButton.stop();
+      }
+    }
+
+
+    //Anzeige und Steuerung
     anteilAnGesamt = pixelNotChanged / (float)raster.size();
     drawSize = map(anteilAnGesamt, 0.6, 1, 0, detail);
 
     avgLeft /= countLeft;
     avgRight /= countRight;
 
-    if (!gh.endScreen && (countLeft < 4 || countRight < 4)) {
-      gh.paused();
-    } else if (!gh.endScreen) {
-      gh.playing();
+    if (!gh.startScreen) {
+      if (!gh.endScreen && (countLeft < 4 || countRight < 4)) {
+        gh.paused();
+      } else if (!gh.endScreen) {
+        gh.playing();
+      }
     }
 
-    if (!gh.paused && avgLeft != 1) {
+    if (!gh.paused && !gh.endScreen && avgLeft != 1) {
       posLeft = lerp(posLeft, avgLeft, 0.5);
     }
 
-    if (!gh.paused && avgRight != 1) {
+    if (!gh.paused  && !gh.endScreen && avgRight != 1) {
       posRight = lerp(posRight, avgRight, 0.5);
     }
-    fill(100);
-    noStroke();
-    ellipse(100, posLeft, countLeft, countLeft);
-    ellipse(video.width - 100, posRight, countRight, countRight);
+
+    //Indikator gut jeder Arm erkannt wird
+    //fill(100);
+    //noStroke();
+    //ellipse(100, posLeft, countLeft, countLeft);
+    //ellipse(video.width - 100, posRight, countRight, countRight);
 
     error = false;
     goal = false;
