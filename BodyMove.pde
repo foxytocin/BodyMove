@@ -5,6 +5,7 @@ import processing.sound.*;
 int holeAmount = 3;
 float contrast = 0.735;
 float thresholdFreze = 40;
+int scale = 1;
 
 rainbow rainbow;
 Capture video;
@@ -37,6 +38,7 @@ SoundFile soundCollect;
 SoundFile soundError;
 SoundFile soundRollingStone;
 SoundFile soundButton;
+SoundFile soundMusic;
 
 void setup() {
   // Load a soundfile from the /data folder of the sketch and play it back
@@ -44,7 +46,12 @@ void setup() {
   soundError = new SoundFile(this, "error.wav");
   soundRollingStone = new SoundFile(this, "rollingstone.wav");
   soundButton = new SoundFile(this, "button.mp3");
+  soundMusic = new SoundFile(this, "music.mp3");
+  
+  soundMusic.amp(0.3);
+  soundMusic.loop();
 
+  //fullScreen();
   size(1280, 720);
   //printArray(Capture.list());
   video = new Capture(this, Capture.list()[0]);
@@ -220,7 +227,7 @@ ArrayList<pixel> calcRaster() {
     int xPosPixel = 0;
     for (int j = video.width - detail; j >= 0; j -= detail) {
       PImage newImg = video.get(j, i, detail, detail);
-      raster.add(new pixel(xPosPixel, i, detail, extractColorFromImage(newImg)));
+      raster.add(new pixel(xPosPixel * scale, i * scale, detail, extractColorFromImage(newImg)));
       xPosPixel += detail;
     }
   }
