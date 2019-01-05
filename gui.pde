@@ -11,7 +11,7 @@ class gui {
 
     if (gh.paused) {
       pushMatrix();
-      translate(video.width / 2, video.height / 2);
+      translate(width / 2, height / 2);
 
       noStroke();
       fill(100);
@@ -31,7 +31,7 @@ class gui {
     if (gh.endScreen) {
       //Anzeige der Spielerpunkte
       pushMatrix();
-      translate(video.width / 2, video.height / 2);
+      translate(width / 2, height / 2);
       noStroke();
       fill(100);
       rectMode(CENTER);

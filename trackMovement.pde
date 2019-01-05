@@ -1,11 +1,11 @@
 class trackMovement {
 
-  float avgLeft = (video.height - detail);
-  float avgRight = (video.height - detail);
+  float avgLeft = (height - detail);
+  float avgRight = (height - detail);
   int countLeft = 0;
   int countRight = 0;
-  float posLeft = (video.height - detail);
-  float posRight = (video.height - detail);
+  float posLeft = (height - detail);
+  float posRight = (height - detail);
   pixel frozenPixel = new pixel();
   int rainbowIndex = 0;
 
@@ -42,17 +42,17 @@ class trackMovement {
     for (pixel p : raster) {
       frozenPixel = rasterFrozen.get(pixelIndex);
       float d = calcColorDifference(p, frozenPixel.col);
-      float pixelWeight = d / detail;
+      float pixelWeight = (d / detail) * scaleWidth;
 
       if (d > thresholdFreze) {
-        fill(rainbow.rainbow[(rainbowIndex + p.y * 5) % 60000]);
+        fill(rainbow.rainbow[(rainbowIndex + floor(p.y * 5)) % 60000]);
 
         //Berechnung im Spiel. Linker und Rechner Streifen zu berechnung der Handposition
-        if (p.x > 100 && p.x < video.width / 5) {
+        if (p.x > 100 && p.x < width / 5) {
           countLeft++;
           avgLeft += p.y;
           //fill(30);
-        } else if ((p.x >= (video.width / 5) * 4) && p.x < video.width - 112) {
+        } else if ((p.x >= (width / 5) * 4) && p.x < width - 112) {
           countRight++;
           avgRight += p.y;
           //fill(30);
@@ -60,17 +60,17 @@ class trackMovement {
 
         //Berechnung der Steuerelemente RESTART
         if (gh.endScreen) {
-          if ((p.x >= (video.width / 5) * 4) && p.x < video.width - 112 && p.y > 84 && p.y < (84 + 200)) {
+          if ((p.x >= (width / 5) * 4) && p.x < width - 112 && p.y > 84 && p.y < (84 + 200)) {
             countRightButton++;
           }
-          if ((p.x > 100 && p.x < video.width / 5) && p.y > 84 && p.y < (84 + 200)) {
+          if ((p.x > 100 && p.x < width / 5) && p.y > 84 && p.y < (84 + 200)) {
             countLeftButton++;
           }
         }
 
         //Pixel die sich im Verhaeltniss zum rasterFreze geaendert haben
         noStroke();
-        ellipse(p.x + detail / 2, p.y + detail / 2, pixelWeight, pixelWeight);
+        ellipse(p.x + p.size / 2, p.y + p.size / 2, pixelWeight, pixelWeight);
       } else {
 
         //Pixel bei denen keine Veraenderung erkannt wurde
@@ -84,7 +84,7 @@ class trackMovement {
         }
 
         noStroke();
-        ellipse(p.x + detail / 2, p.y + detail / 2, drawSize, drawSize);
+        ellipse(p.x + p.size / 2, p.y + p.size / 2, drawSize, drawSize);
       }
       pixelIndex++;
     }
@@ -138,7 +138,7 @@ class trackMovement {
 
     //Anzeige und Steuerung
     anteilAnGesamt = pixelNotChanged / (float)raster.size();
-    drawSize = map(anteilAnGesamt, 0.6, 1, 0, detail);
+    drawSize = map(anteilAnGesamt, 0.6, 1, 0, detail * scaleWidth);
 
     avgLeft /= countLeft;
     avgRight /= countRight;

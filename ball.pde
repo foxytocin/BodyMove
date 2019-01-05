@@ -2,7 +2,7 @@ class ball {
 
   float r = 30;
   float x = 640;  //(video.width / 2);
-  float y = (video.height - detail - r);
+  float y = (height - detail - r);
   float mx;
 
   float speed = 1.5;
@@ -26,7 +26,7 @@ class ball {
     if (wallL && mx > 0 && abs(velocity) < 0.5) {
       x = r;
     } else if (wallR && mx < 0 && abs(velocity) < 0.5) {
-      x = video.width - r;
+      x = width - r;
     } else {
       acceleration = (-mx * speed);
       velocity += acceleration;
@@ -53,7 +53,7 @@ class ball {
   }
 
   void calcPos() {
-    mx = (trackMovement.posLeft - trackMovement.posRight) / video.width;
+    mx = (trackMovement.posLeft - trackMovement.posRight) / width;
     y = trackMovement.posLeft - (x * mx) - r;
   }
 
@@ -70,7 +70,7 @@ class ball {
       soundRollingStone.stop();
     }
 
-    panStone = map(x, r, video.width - r, -1, 1);
+    panStone = map(x, r, width - r, -1, 1);
     panStone = constrain(panStone, -1, 1);
     soundRollingStone.pan(panStone);
     volumeStone = constrain(volumeStone, 0.1, 1);
@@ -85,11 +85,11 @@ class ball {
       wallL = true;
       velocity *= -1;
       velocity *= damping;
-    } else if (!wallR && x > video.width - r) {
+    } else if (!wallR && x > width - r) {
       wallR = true;
       velocity *= -1;
       velocity *= damping;
-    } else if (x > 1.5*r && x < video.width - 1.5*r) {
+    } else if (x > 1.5*r && x < width - 1.5*r) {
       wallR = false;
       wallL = false;
     }

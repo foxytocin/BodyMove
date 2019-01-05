@@ -1,18 +1,18 @@
 class pixel {
 
-  int x;
-  int y;
+  float x;
+  float y;
   int col;
-  int detail;
+  float size;
 
   pixel() {
   };
 
-  pixel(int x_, int y_, int detail_, int col_) {
+  pixel(float x_, float y_, float size_, int col_) {
     x = x_;
     y = y_;
     col = col_;
-    detail = detail_;
+    size = size_;
   }
 
   void show() {
@@ -35,6 +35,6 @@ class pixel {
 
     fill(col);
     noStroke();
-    rect(x, y, detail, detail);
+    rect(x, y, size, size);
   }
 }

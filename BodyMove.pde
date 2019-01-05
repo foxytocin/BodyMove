@@ -2,10 +2,12 @@ import processing.video.*;
 import processing.sound.*;
 
 //Spielvriablen
-int holeAmount = 3;
+int holeAmount = 10;
 float contrast = 0.735;
 float thresholdFreze = 40;
-int scale = 1;
+float scaleWidth = 2.25;
+float scaleHeight = 2.5;
+int detail = 10;
 
 rainbow rainbow;
 Capture video;
@@ -14,7 +16,6 @@ color backgroundCol = color(100);
 color green = color(98, 252, 2);
 color red = color(252, 1, 31);
 color textCol = color(50);
-int detail;
 ArrayList<pixel> rasterFrozen;
 ArrayList<pixel> raster;
 ArrayList<hole> holes;
@@ -51,12 +52,11 @@ void setup() {
   soundMusic.amp(0.3);
   soundMusic.loop();
 
-  //fullScreen();
-  size(1280, 720);
+  fullScreen();
+  //size(1280, 720);
   //printArray(Capture.list());
-  video = new Capture(this, Capture.list()[0]);
+  video = new Capture(this, Capture.list()[3]);
   video.start();
-  detail = 16;
   trackCol = color(255, 0, 0);
   adjustBrightness = 1;
   hideInput = true;
@@ -69,7 +69,7 @@ void setup() {
   holes = new ArrayList<hole>();
   initHoles();
   trackMovement = new trackMovement();
-  threshold = 20;
+  threshold = 30;
   rainbow = new rainbow();
 }
 
@@ -86,12 +86,12 @@ void draw() {
   switch(gh.status) {
 
   case "loading":
-    showRaster();
+    //showRaster();
     //println("LOADING ...");
     gh.startScreen();
     break;
   case "startScreen":
-    showRaster();
+    //showRaster();
     gs.testingReady();
     //println("STARTSCREEN");
     break;
@@ -227,7 +227,7 @@ ArrayList<pixel> calcRaster() {
     int xPosPixel = 0;
     for (int j = video.width - detail; j >= 0; j -= detail) {
       PImage newImg = video.get(j, i, detail, detail);
-      raster.add(new pixel(xPosPixel * scale, i * scale, detail, extractColorFromImage(newImg)));
+      raster.add(new pixel(xPosPixel * scaleWidth, i * scaleHeight, (detail * scaleWidth), extractColorFromImage(newImg)));
       xPosPixel += detail;
     }
   }

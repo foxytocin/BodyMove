@@ -42,7 +42,7 @@ class hole {
   }
 
   void calStereo(float x_) {
-    panStone = map(x_, r, video.width - r, -1, 1);
+    panStone = map(x_, r, width - r, -1, 1);
     panStone = constrain(panStone, -1, 1);
     soundError.pan(panStone);
     soundCollect.pan(panStone);
