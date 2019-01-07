@@ -5,8 +5,8 @@ import processing.sound.*;
 int holeAmount = 2;
 float contrast = 0.735;
 float thresholdFreze = 40;
-float scaleWidth = 2; ///;2.25;
-float scaleHeight = 2 ; //2.5;
+float scaleWidth; // = 2; ///;2.25;
+float scaleHeight; // = 2 ; //2.5;
 float circleSize = 60;
 int detail = 10;
 
@@ -36,7 +36,7 @@ gamehandler gh = new gamehandler();
 gamestart gs = new gamestart();
 
 //Gui Elemente
-guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner;
+guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner, guiForceExit;
 float nwX, nwY, noX, noY, soX, soY, swX, swY, centerX, centerY, border, radiusM;
 
 //Sound
@@ -60,13 +60,14 @@ void setup() {
   soundMusic.amp(0.3);
   soundMusic.loop();
 
-  //fullScreen();
-  size(1280, 720);
+  fullScreen();
+  //size(1280, 720);
   //printArray(Capture.list());
   video = new Capture(this, Capture.list()[3]);
   video.start();
   trackCol = color(255, 0, 0);
   hideInput = true;
+  
   b = new ball(width / 2, height - 150, circleSize);
   l = new line();
   g = new gui();
@@ -93,7 +94,8 @@ void setup() {
   centerX = width / 2;
   centerY = height / 2;
   guiPause = new guiCircle(centerX, centerY, 200, "PAUSE\n\nNach Ablauf der Zeit\nverlierst Du\n\nBreite deine\nArme aus!", 9, 32, textCol, color(100), red, 10, 15, true);
-  guiWinner = new guiCircle(centerX, centerY, 200, ("WINNER TEXT"), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, true);
+  guiWinner = new guiCircle(centerX, centerY, 200, ("WINNER TEXT"), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, false);
+  guiForceExit = new guiCircle(nwX, nwY, radiusM, "LEAVING", 1, 32, red, color(100), red, 6, 15, true);
   guiExit = new guiCircle(nwX, nwY, radiusM, "EXIT", 1, 32, red, color(100), red, 6, 1, false);
   guiAgain = new guiCircle(noX, noY, radiusM, "AGAIN", 1, 32, green, color(100), green, 6, 1, false);
   guiMore = new guiCircle(soX, soY, radiusM, "MORE", 1, 32, orange, color(100), orange, 6, 1, false);
@@ -101,6 +103,10 @@ void setup() {
 }
 
 void draw() {
+  
+  scaleWidth = width / (float)video.width;
+  scaleHeight = height / (float)video.height;
+  
   frameRate(60);
 
   background(backgroundCol);

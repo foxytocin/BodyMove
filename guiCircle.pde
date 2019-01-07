@@ -47,7 +47,6 @@ class guiCircle {
     angel = TWO_PI;
     timer = 0;
     steps = 0;
-    colRing = colRing_Backup;
   }
 
   boolean running() {
@@ -63,6 +62,7 @@ class guiCircle {
       } else {
         
         colRing = rainbow.rainbow[floor(map(timer, 0, (sec * 60), 2000, 20000))];
+        colText = colRing;
         if (timer % 60 == 0) {
           if (!soundClock.isPlaying()) {
             soundClock.amp(0.5);

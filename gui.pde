@@ -26,23 +26,26 @@ class gui {
     if (gh.endScreen) {
 
       //WINNER LABEL
-      guiWinner.colText = rainbow.rainbow[b.rainbowIndex];
+      color qualCol = rainbow.rainbow[b.rainbowIndex];
+      guiWinner.colRing = qualCol;
+      guiWinner.colText = qualCol;
       guiWinner.label = "WINNER\n\nYou reached " +(int)qual+ "%\nin quality\n\nGrade: " +note;
+
+      //MENU FORCE EXIT
       if ((guiExit.pixelCount < pixelMax) && (guiAgain.pixelCount < pixelMax) && (guiMore.pixelCount < pixelMax) && (guiLess.pixelCount < pixelMax)) {
 
-        if ((frameCount % 180 == 0) && !countDown) {
+        if ((frameCount % 300 == 0) && !countDown) {
           countDown = true;
           println("COUNTDOWN: " +countDown);
         }
 
-        if (countDown && guiWinner.done()) {
+        if (countDown && guiForceExit.done()) {
           gh.startScreen();
         }
-        
-      } else if(guiWinner.running()) {
+      } else if (guiForceExit.running()) {
         countDown = false;
-        guiWinner.reset();
-        println("guiWinner RESET. timer: " +guiWinner.timer);
+        guiForceExit.reset();
+        println("guiWinner RESET. timer: " +guiForceExit.timer);
       }
 
       //MENU EXIT
@@ -135,8 +138,13 @@ class gui {
         guiLess.reset();
       }
 
+      if (countDown) {
+        guiForceExit.show();
+      } else {
+        guiExit.show();
+      }
+
       guiWinner.show();
-      guiExit.show();
       guiAgain.show();
       guiMore.show();
       guiLess.show();
