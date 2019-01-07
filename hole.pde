@@ -1,8 +1,8 @@
 class hole {
 
-  float r = 25;
   float x = 0;
   float y = 0;
+  float circleSize = 0;
   color fillCol = color(255, 255, 255);
   color strokeCol = color(100);
   boolean a = false;
@@ -11,21 +11,19 @@ class hole {
   boolean collected = false;
   float panStone = 0.5;
   
-  hole() {
-  }
-
-  hole(float x_, float y_) {
+  hole(float x_, float y_, float circleSize_) {
     x = x_;
     y = y_;
+    circleSize = circleSize_;
   }
 
   void update() {
     if (a) {
       strokeWeight(3);
-      strokeCol = color(252, 1, 31);
-      fillCol = color(252, 1, 31, 150);
+      strokeCol = color(red);
+      fillCol = color(red, 150);
     } else if (target) {
-      fillCol = color(98, 252, 2);
+      fillCol = color(green);
     } else if (!a) {
       strokeWeight(3);
       strokeCol = color(100);
@@ -38,20 +36,21 @@ class hole {
     fill(fillCol);
     strokeWeight(3);
     ellipseMode(CENTER);
-    ellipse(x, y, r * 2, r * 2);
+    ellipse(x, y, circleSize, circleSize);
   }
 
   void calStereo(float x_) {
-    panStone = map(x_, r, video.width - r, -1, 1);
+    panStone = map(x_, 0, width, -1, 1);
     panStone = constrain(panStone, -1, 1);
     soundError.pan(panStone);
     soundCollect.pan(panStone);
   }
 
   String ballMatchHole() {
-    if (dist(b.x, b.y, x, y) < 2 * b.r) {
+    if (dist(b.x, b.y, x, y) < circleSize) {
       calStereo(x);
       if (!touched && !target) {
+        b.collisionHole();
         soundError.play();
         trackMovement.error = true;
         touched = true;

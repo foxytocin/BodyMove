@@ -1,28 +1,49 @@
 class ball {
-
-  float r = 30;
-  float x = video.width / 2;
-  float y;
-  float acc = 0;
-  float mx;
-  float tar = x;
-  boolean coll = true;
-  boolean wallL = false;
-  boolean wallR = false;
-  float mass = 2;
   
+  float circleSize = 10;
+  float x = width / 2;
+  float y = (height - detail - circleSize / 2);
+  float mx;
+
+  float speed = 1.5;
+  float velocity = 0.0;
+  float acceleration = 0.0;
+  float damping = 0.8;
+  boolean wallR = false;
+  boolean wallL = false;
+
   float volumeStone;
   float panStone = 0.5;
-  
   int rainbowIndex = 0;
 
-  ball() {
+  ball(float x_, float y_, float circleSize_) {
+    x = x_;
+    y = y_;
+    circleSize = circleSize_;
+  }
+
+
+  void motion() {
+    float newX;
+    acceleration = 0;
+    if (wallL && mx > 0 && abs(velocity) < 0.5) {
+      x = circleSize / 2;
+    } else if (wallR && mx < 0 && abs(velocity) < 0.5) {
+      x = width - circleSize / 2;
+    } else {
+      acceleration = (-mx * speed);
+      velocity += acceleration;
+
+      newX = x += velocity;
+      x = lerp(x, newX, 0.8);
+    }
   }
 
   void update() {
     calcPos();
-    collision();
-    move();
+    bounceWall();
+    motion();
+    sound();
     rainbowIndex = (int)map(g.qual, 100, 0, 2000, 20000);
   }
 
@@ -31,62 +52,54 @@ class ball {
     strokeWeight(3);
     fill(rainbow.rainbow[rainbowIndex]);
     ellipseMode(CENTER);
-    ellipse(x, y, r * 2, r * 2);
+    ellipse(x, y, circleSize, circleSize);
   }
 
   void calcPos() {
-    mx = (trackMovement.posLeft - trackMovement.posRight) / video.width;
-    y = trackMovement.posLeft - (x * mx) - r;
+    mx = (trackMovement.posLeft - trackMovement.posRight) / width;
+    y = trackMovement.posLeft - (x * mx) - (circleSize / 2);
   }
 
-  void move() {
-    if (mx > -0.005 && mx < 0.005) {
-      if (acc > 0) {
-        acc -= 0.08;
-        x = lerp(x, x += acc, 0.8);
-      } else if (acc < 0) {
-        acc += 0.08;
-        x = lerp(x, x += acc, 0.8);
-      }
-    } else if (mx > 0 && !wallL) {
-      acc -= (mx * mass);
-      x = lerp(x, x += acc, 0.8);
-    } else if (mx < 0 && !wallR) {
-      acc -= (mx * mass);
-      x = lerp(x, x += acc, 0.8);
-    }
+
+  void sound() {
+    float sound = abs(acceleration * velocity);
+    //println("SOUND: " +sound);
 
     //Sound des Balls
-    if (acc > 2 && !wallL) {
-      volumeStone = map(acc, 0, 27, 0.01, 0.5);
-    } else if (acc < -2 && !wallR) {
-      volumeStone = map(acc, -27, 0, 0.5, 0.01);
+    if (sound > 0.005) {
+      volumeStone = map(sound, 0.005, 30, 0.0001, 0.5);
     } else {
+      volumeStone = 0;
       soundRollingStone.stop();
     }
 
-    panStone = map(x, r, video.width - r, -1, 1);
+    panStone = map(x, (circleSize / 2), width - circleSize / 2, -1, 1);
     panStone = constrain(panStone, -1, 1);
     soundRollingStone.pan(panStone);
     volumeStone = constrain(volumeStone, 0.1, 1);
     soundRollingStone.amp(volumeStone);
-    if (!soundRollingStone.isPlaying() && (acc > 2 && !wallL || acc < -2 && !wallR)) {
+    if (!soundRollingStone.isPlaying() && sound > 0.005) {
       soundRollingStone.play();
     }
   }
 
-  void collision() {
-    if (!wallL && x - r <= 0) {
+  void bounceWall() {
+    if (!wallL && x - circleSize / 2 < 0) {
       wallL = true;
-      acc = 0;
-      tar = r;
-    } else if (!wallR && x >= video.width - r) {
+      velocity *= -1;
+      velocity *= damping;
+    } else if (!wallR && x > width - circleSize / 2) {
       wallR = true;
-      acc = 0;
-      tar = video.width - r;
-    } else if (x > 1.5*r && x < video.width - 1.5*r) {
+      velocity *= -1;
+      velocity *= damping;
+    } else if (x > 1.5 * circleSize / 2 && x < width - 1.5 * circleSize / 2) {
       wallR = false;
       wallL = false;
     }
+  }
+
+  void collisionHole() {
+    velocity *= -1;
+    velocity *= damping;
   }
 }

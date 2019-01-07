@@ -1,22 +1,27 @@
 class trackMovement {
 
-  float avgLeft = video.height - detail;
-  float avgRight = video.height - detail;
+  float avgLeft = (height - detail);
+  float avgRight = (height - detail);
   int countLeft = 0;
   int countRight = 0;
-  float posLeft = video.height - detail;
-  float posRight = video.height - detail;
-  pixel frozenPixel = new pixel();
+  float posLeft = (height - detail);
+  float posRight = (height - detail);
+  pixel frozenPixel;
   int rainbowIndex = 0;
 
   float anteilAnGesamt = 0;
   float drawSize = 0;
-
   boolean movement = false;
   boolean error = false;
   boolean goal = false;
 
   trackMovement() {
+  }
+
+  void pixelTouched(pixel p, guiCircle button) {
+    if (p.x > (button.x - button.r) &&  p.x < (button.x + button.r) && p.y > (button.y - button.r) && p.y < (button.y + button.r)) {
+      button.pixelCount++;
+    }
   }
 
   void show() {
@@ -25,71 +30,92 @@ class trackMovement {
     avgRight = 1;
     countLeft = 1;
     countRight = 1;
+    
+    guiAgain.pixelCount = 0;
+    guiExit.pixelCount = 0;
+    guiMore.pixelCount = 0;
+    guiLess.pixelCount = 0;
 
     rainbowIndex += 50;
     rainbowIndex %= 60000;
 
     int pixelIndex = 0;
     int pixelNotChanged = 0;
+
     for (pixel p : raster) {
       frozenPixel = rasterFrozen.get(pixelIndex);
       float d = calcColorDifference(p, frozenPixel.col);
-      float pixelWeight = d / detail;
+      float pixelWeight = (d / detail) * scaleWidth;
+      pixelWeight = constrain(pixelWeight, 0, detail * scaleWidth);
 
       if (d > thresholdFreze) {
-        fill(rainbow.rainbow[(rainbowIndex + p.y * 5) % 60000]);
-        if (p.x > 100 && p.x < video.width / 5) {
+        fill(rainbow.rainbow[(rainbowIndex + floor(p.y * 5)) % 60000]);
+
+        //Berechnung im Spiel. Linker und Rechner Streifen zu berechnung der Handposition
+        if (p.x > 100 && p.x < width / 5) {
           countLeft++;
           avgLeft += p.y;
           fill(30);
-        } else if ((p.x >= (video.width / 5) * 4) && p.x < video.width - 112) {
+        } else if ((p.x > ((width / 5) * 4) - detail) && p.x < width - 120) {
           countRight++;
           avgRight += p.y;
           fill(30);
         }
+
+        //Berechnung der Touchfelder für EXIT, AGAIN, MORE and LESS
+        pixelTouched(p, guiAgain);
+        pixelTouched(p, guiExit);
+        pixelTouched(p, guiMore);
+        pixelTouched(p, guiLess);
+
         //Pixel die sich im Verhaeltniss zum rasterFreze geaendert haben
         noStroke();
-        ellipse(p.x + detail / 2, p.y + detail / 2, pixelWeight, pixelWeight);
+        ellipse(p.x + p.size / 2, p.y + p.size / 2, pixelWeight, pixelWeight);
       } else {
 
         //Pixel bei denen keine Veraenderung erkannt wurde
         pixelNotChanged++;
         if (error) {
-          fill(color(252, 1, 31));
+          fill(color(red));
         } else if (goal) {
-          fill(color(98, 252, 2));
+          fill(color(green));
         } else {
           fill(75);
         }
-
         noStroke();
-        ellipse(p.x + detail / 2, p.y + detail / 2, drawSize, drawSize);
+        ellipse(p.x + p.size / 2, p.y + p.size / 2, drawSize, drawSize);
       }
       pixelIndex++;
     }
+
+    //Anzeige und Steuerung
     anteilAnGesamt = pixelNotChanged / (float)raster.size();
-    drawSize = map(anteilAnGesamt, 0.6, 1, 0, detail);
+    drawSize = map(anteilAnGesamt, 0.6, 1, 0, detail * scaleWidth);
 
     avgLeft /= countLeft;
     avgRight /= countRight;
 
-    if (!gh.endScreen && (countLeft < 4 || countRight < 4)) {
-      gh.paused();
-    } else if (!gh.endScreen) {
-      gh.playing();
+    if (!gh.startScreen) {
+      if (!gh.endScreen && (countLeft < 4 || countRight < 4)) {
+        gh.paused();
+      } else if (!gh.endScreen) {
+        gh.playing();
+      }
     }
 
-    if (!gh.paused && avgLeft != 1) {
+    if (!gh.paused && !gh.endScreen && avgLeft != 1) {
       posLeft = lerp(posLeft, avgLeft, 0.5);
     }
 
-    if (!gh.paused && avgRight != 1) {
+    if (!gh.paused && !gh.endScreen && avgRight != 1) {
       posRight = lerp(posRight, avgRight, 0.5);
     }
-    fill(100);
-    noStroke();
-    ellipse(100, posLeft, countLeft, countLeft);
-    ellipse(video.width - 100, posRight, countRight, countRight);
+
+    //Indikator gut jeder Arm erkannt wird
+    //fill(100);
+    //noStroke();
+    //ellipse(100, posLeft, countLeft, countLeft);
+    //ellipse(video.width - 100, posRight, countRight, countRight);
 
     error = false;
     goal = false;

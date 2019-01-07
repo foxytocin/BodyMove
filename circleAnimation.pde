@@ -15,7 +15,7 @@ class circleAnimation {
   circleAnimation(hole h_, String reason) {
     x = h_.x;
     y = h_.y;
-    r = h_.r;
+    r = h_.circleSize;
 
     if (reason == "error")
       col = errorCol;

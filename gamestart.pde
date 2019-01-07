@@ -2,7 +2,7 @@ class gamestart {
 
   float count = 0;
   int testsPassed = 0;
-  pixel frozenPixel = new pixel();
+  pixel frozenPixel;
 
   gamestart() {
   }
@@ -15,44 +15,47 @@ class gamestart {
     count = 0;
 
     for (pixel p : raster) {
-      if ((p.x > 100 && p.x < video.width / 5) || (p.x >= (video.width / 5) * 4) && p.x < video.width - 112 ) {
+      if (p.x > 100 && p.x < width / 5 || (p.x > ((width / 5) * 4) - detail) && p.x < width - 120) {
         //Pixel die kontrolliert werden
         frozenPixel = rasterFrozen.get(pixelIndex);
-        float diff = calcColorDifference(p, frozenPixel.col);
+        float d = calcColorDifference(p, frozenPixel.col);
+        float pixelWeight = (d / detail) * scaleWidth;
+        pixelWeight = constrain(pixelWeight, 0, detail * scaleWidth);
 
-        if (diff > 15) {
-          fill(255, 0, 0);
+        if (d > 15) {
+          fill(red);
         } else {
-          fill(98, 252, 2);
+          fill(green);
         }
         noStroke();
-        ellipse(p.x + detail / 2, p.y + detail / 2, detail * 0.8, detail * 0.8);
+        ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
 
-        differenz += diff;
+        differenz += d;
         count++;
       } else {
+
         //Pixel bei denen eine Veraenderung erkannt wurde
         //fill(30, 100);
         fill(p.col);
         noStroke();
-        ellipse(p.x + detail / 2, p.y + detail / 2, detail * 0.8, detail * 0.8);
+        ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
       }
       pixelIndex++;
     }
 
     differenz /= count;
-    println("COUNT: " +count+ " / DIFFERENZ: " +differenz);
+    //println("COUNT: " +count+ " / DIFFERENZ: " +differenz);
 
     if (differenz < 5) {
       testsPassed++;
-      println("Bestandene Tests: " +testsPassed);
+      //println("Bestandene Tests: " +testsPassed);
     } else {
       testsPassed = 0;
-      println("RESET - Test nicht Bestanden: " +testsPassed);
+      //println("RESET - Test nicht Bestanden: " +testsPassed);
     }
 
     pushMatrix();
-    translate(video.width/2, 150);
+    translate(width/2, 150);
     noStroke();
     fill(100);
     rectMode(CENTER);
@@ -60,7 +63,7 @@ class gamestart {
 
     textAlign(CENTER);
     textSize(32);
-    fill(98, 252, 2);
+    fill(textCol);
     textSize(46);
     text("In den grünen Bereichen,", 0, 0);
     text("steuerst Du mit deinen", 0, 50);
@@ -68,7 +71,7 @@ class gamestart {
     popMatrix();
 
     if (testsPassed < 30) {
-      translate(video.width/2, 405);
+      translate(width/2, 405);
       pushMatrix();
       fill(100);
       rectMode(CENTER);
@@ -76,7 +79,7 @@ class gamestart {
 
       textAlign(CENTER);
       textSize(32);
-      fill(252, 1, 31);
+      fill(red);
       textSize(46);
       text("Nimm die Hände runter.", 0, 0);
       text("Halte sie so, dass keine", 0, 50);
@@ -85,14 +88,14 @@ class gamestart {
     } else {
       int timer = floor(map(testsPassed, 0, 90, 3, 0)) + 1;
       pushMatrix();
-      translate(video.width/2, 405);
+      translate(width/2, 405);
       fill(100);
       rectMode(CENTER);
       rect(0, 34, 736, 176, 10); 
 
       textAlign(CENTER);
       textSize(32);
-      fill(98, 252, 2);
+      fill(green);
       textSize(46);
       text("Perfekt", 0, 0);
       text("Bleib genau so stehen.", 0, 50);
@@ -107,7 +110,7 @@ class gamestart {
 
       if (frameCount % 90 == 0) {
         rasterFrozen = generateFrozen();
-        println("!!! Neuen Freze erstelle !!!");
+        //println("!!! Neuen Freze erstelle !!!");
       }
       show();
       return false;
