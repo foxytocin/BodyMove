@@ -1,17 +1,15 @@
 class ball {
-  
+
   float circleSize = 10;
   float x = width / 2;
   float y = (height - detail - circleSize / 2);
   float mx;
-
   float speed = 1.5;
   float velocity = 0.0;
   float acceleration = 0.0;
   float damping = 0.8;
   boolean wallR = false;
   boolean wallL = false;
-
   float volumeStone;
   float panStone = 0.5;
   int rainbowIndex = 0;
@@ -21,7 +19,6 @@ class ball {
     y = y_;
     circleSize = circleSize_;
   }
-
 
   void motion() {
     float newX;
@@ -33,7 +30,6 @@ class ball {
     } else {
       acceleration = (-mx * speed);
       velocity += acceleration;
-
       newX = x += velocity;
       x = lerp(x, newX, 0.8);
     }
@@ -63,8 +59,6 @@ class ball {
 
   void sound() {
     float sound = abs(acceleration * velocity);
-    //println("SOUND: " +sound);
-
     //Sound des Balls
     if (sound > 0.005) {
       volumeStone = map(sound, 0.005, 30, 0.0001, 0.5);
@@ -72,7 +66,6 @@ class ball {
       volumeStone = 0;
       soundRollingStone.stop();
     }
-
     panStone = map(x, (circleSize / 2), width - circleSize / 2, -1, 1);
     panStone = constrain(panStone, -1, 1);
     soundRollingStone.pan(panStone);

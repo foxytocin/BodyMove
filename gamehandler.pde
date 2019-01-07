@@ -34,16 +34,13 @@ class gamehandler {
     paused = false;
     endScreen = false;
     restart = false;
-    
     gs.calibrated = false;
-
     trackMovement.avgLeft = (height - detail);
     trackMovement.avgRight = (height - detail);
     trackMovement.posLeft = (height - detail);
     trackMovement.posRight = (height - detail);
     b.x = (width / 2);
-    b.y = (height - detail - b.circleSize / 2);
-    
+    b.y = (height - detail - b.circleSize / 2);    
     g.error = 0;
     g.target = 0;
     g.qual = 100;
@@ -51,8 +48,7 @@ class gamehandler {
     g.countDown = false;
     b.acceleration = 0;
     b.velocity = 0;
-    initHoles();
-    
+    initHoles();    
     status = "startScreen";
   }
 
@@ -74,7 +70,6 @@ class gamehandler {
     paused = true;
     endScreen = false;
     restart = false;
-
     soundRollingStone.stop();
   }
 
@@ -86,7 +81,6 @@ class gamehandler {
     paused = false;
     endScreen = true;
     restart = false;
-
     soundRollingStone.stop();
   }
 
@@ -97,22 +91,19 @@ class gamehandler {
     playing = true;
     paused = false;
     endScreen = false;
-
     trackMovement.avgLeft = (height - detail);
     trackMovement.avgRight = (height - detail);
     trackMovement.posLeft = (height - detail);
     trackMovement.posRight = (height - detail);
     b.x = (width / 2);
     b.y = (height - detail - b.circleSize / 2);
-
     g.error = 0;
     g.target = 0;
     g.qual = 100;
     g.note = 1;
     g.countDown = false;
     b.acceleration = 0;
-    b.velocity = 0;
-    
+    b.velocity = 0;   
     initHoles();
   }
 }

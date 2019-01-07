@@ -1,26 +1,19 @@
 class guiCircle {
 
   String label;
-  float x;
-  float y;
-  float r;
-  float rows;
-  float size;
-  color colText;
-  color colText_Backup;
-  color colRing;
-  color colRing_Backup;
-  color colFill;
+  float x, y, r, rows, size;
+  color colText, colText_Backup, colRing, colRing_Backup, colFill;
+
   int stroke;
   float angel = TWO_PI;
   int timer = 0;
-  int sec;
+  float sec;
   float offset;
   boolean ticks;
   int steps = 0;
   int pixelCount = 0;
 
-  guiCircle(float x_, float y_, float r_, String label_, float rows_, float size_, color colText_, color colFill_, color colRing_, int stroke_, int sec_, boolean ticks_) {
+  guiCircle(float x_, float y_, float r_, String label_, float rows_, float size_, color colText_, color colFill_, color colRing_, int stroke_, float sec_, boolean ticks_) {
     x = x_;
     y = y_;
     r = r_;
@@ -35,7 +28,6 @@ class guiCircle {
     stroke = stroke_;
     sec = sec_;
     ticks = ticks_;
-
     if (rows > 1) {
       offset = -((size * rows) / 2);
     } else {
@@ -56,11 +48,9 @@ class guiCircle {
   boolean done() {
     if (timer < (sec * 60)) {
       timer++;
-      
       if (!ticks) {
         angel = map(timer, 0, (sec * 60), TWO_PI, 0);
-      } else {
-        
+      } else {  
         colRing = rainbow.rainbow[floor(map(timer, 0, (sec * 60), 2000, 20000))];
         colText = colRing;
         if (timer % 60 == 0) {
@@ -73,7 +63,6 @@ class guiCircle {
         angel = map(steps, 0, (sec * 60), TWO_PI, 0);
       }
       return false;
-      
     } else {
       reset();
       return true;

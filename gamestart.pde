@@ -1,6 +1,6 @@
 class gamestart {
 
-  float count = 0;
+  int count = 0;
   int testsPassed = 0;
   pixel frozenPixel;
   boolean calibrated = false;
@@ -20,38 +20,27 @@ class gamestart {
   }
 
   void show() {
-
     guiStartLeft.pixelCount = 0;
     guiStartRight.pixelCount = 0;
-
     background(backgroundCol);
-    float differenz = 0;
     int pixelIndex = 0;
     count = 0;
 
     for (pixel p : raster) {
-
       //Pixel die kontrolliert werden
       frozenPixel = rasterFrozen.get(pixelIndex);
       d = calcColorDifference(p, frozenPixel.col);
 
       if (!calibrated && (p.x > 100 && p.x < width / 5 || (p.x > ((width / 5) * 4) - detail) && p.x < width - 120)) {
-
-        float pixelWeight = (d / detail) * scaleWidth;
-        pixelWeight = constrain(pixelWeight, 0, detail * scaleWidth);
-
         if (d > 15) {
+          count++;
           fill(red);
         } else {
           fill(green);
         }
         noStroke();
         ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
-
-        differenz += d;
-        count++;
       } else {
-
         //Pixel bei denen eine Veraenderung erkannt wurde
         //fill(30, 100);
         fill(p.col);
@@ -60,21 +49,16 @@ class gamestart {
       }
 
       if (calibrated && (d > thresholdFreze)) {
-
         //Berechnung der Touchfelder für EXIT, AGAIN, MORE and LESS
         pixelTouched(p, guiStartLeft);
         pixelTouched(p, guiStartRight);
-      }
+      }    
       pixelIndex++;
     }
 
-    differenz /= count;
-
-    if (!calibrated && (differenz < 5)) {
+    if (!calibrated && (count < 5)) {
       if (guiCalibration.done()) {
         calibrated = true;
-      } else {
-        rasterFrozen = generateFrozen();
       }
     } else if (!calibrated && guiCalibration.running()) {
       guiCalibration.reset();
@@ -82,8 +66,7 @@ class gamestart {
 
     if (!calibrated) {
       guiCalibration.show();
-
-      if (frameCount % 45 == 0) {
+      if (frameCount % 60 == 0) {
         rasterFrozen = generateFrozen();
       }
     } else if (guiStart.done()) {
@@ -95,9 +78,9 @@ class gamestart {
     }
 
     if (calibrated && (guiStartLeft.pixelCount > pixelMin) && (guiStartRight.pixelCount > pixelMin)) {
-      
-      if(guiStart.running()) guiStart.reset();
-      
+      if (guiStart.running()) {
+        guiStart.reset();
+      }
       if (!soundButton.isPlaying()) {
         soundButton.play();
       }
@@ -108,14 +91,19 @@ class gamestart {
         readyRight = true;
       }
       if (readyRight && readyLeft) {
+        resetCalibrationProcess();
         gh.playing();
       }
     } else if (guiStartLeft.running() || guiStartRight.running()) {
-      guiStartLeft.reset();
-      guiStartRight.reset();
-      readyLeft = false;
-      readyRight = false;
+      resetCalibrationProcess();
       soundButton.stop();
     }
+  }
+
+  void resetCalibrationProcess() {
+    guiStartLeft.reset();
+    guiStartRight.reset();
+    readyLeft = false;
+    readyRight = false;
   }
 }

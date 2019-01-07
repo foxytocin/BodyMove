@@ -8,9 +8,11 @@ class gui {
   boolean countDown = false;
   int pixelMin = 10;
   int pixelMax = 3;
+  
+  int max = 30;
+  int min = 5;
 
   void show() {
-
     //Pause
     if (gh.paused) {
 
@@ -24,28 +26,33 @@ class gui {
 
     //Ende Screen WINNER
     if (gh.endScreen) {
-
-      //WINNER LABEL
+      //WINNER LABEL  
+      String grade = "";
+      switch(note) {
+      case 1: grade = "A"; break;
+      case 2: grade = "B"; break;
+      case 3: grade = "C"; break;
+      case 4: grade = "D"; break;
+      case 5: grade = "E"; break;
+      case 6: grade = "F"; break;
+      }
+      
       color qualCol = rainbow.rainbow[b.rainbowIndex];
       guiWinner.colRing = qualCol;
       guiWinner.colText = qualCol;
-      guiWinner.label = "WINNER\n\nYou reached " +(int)qual+ "%\nin quality\n\nGrade: " +note;
+      guiWinner.label = "WINNER\n\nYou reached " +(int)qual+ "%\nin quality\n\nGrade: " +grade;
 
       //MENU FORCE EXIT
       if ((guiExit.pixelCount < pixelMax) && (guiAgain.pixelCount < pixelMax) && (guiMore.pixelCount < pixelMax) && (guiLess.pixelCount < pixelMax)) {
-
         if ((frameCount % 300 == 0) && !countDown) {
           countDown = true;
-          println("COUNTDOWN: " +countDown);
         }
-
         if (countDown && guiForceExit.done()) {
           gh.startScreen();
         }
       } else if (guiForceExit.running()) {
         countDown = false;
         guiForceExit.reset();
-        println("guiWinner RESET. timer: " +guiForceExit.timer);
       }
 
       //MENU EXIT
@@ -75,7 +82,6 @@ class gui {
       }
 
       //MENU MORE
-      int max = 10;
       if ((guiMore.pixelCount > pixelMin) && (guiAgain.pixelCount < pixelMax) && (guiExit.pixelCount < pixelMax) && (guiLess.pixelCount < pixelMax)) {
         guiMore.label = String.valueOf(holeAmount + moreOrLessHoles);
         if ((holeAmount + moreOrLessHoles) < max && guiMore.done()) {
@@ -107,7 +113,6 @@ class gui {
       }
 
       //MENU LESS
-      int min = 1;
       if ((guiLess.pixelCount > pixelMin) && (guiAgain.pixelCount < pixelMax) && (guiMore.pixelCount < pixelMax) && (guiExit.pixelCount < pixelMax)) {
         guiLess.label = String.valueOf(holeAmount + moreOrLessHoles);
         if ((holeAmount + moreOrLessHoles) > min && guiLess.done()) {
@@ -143,7 +148,6 @@ class gui {
       } else {
         guiExit.show();
       }
-
       guiWinner.show();
       guiAgain.show();
       guiMore.show();
@@ -151,37 +155,31 @@ class gui {
     }
 
     if (gh.playing) {
-      pushMatrix();
-      translate(detail, detail);
-
       noStroke();
       fill(100);
       rectMode(CORNER);
-      rect(0, 0, detail * scaleWidth * 5, detail * scaleHeight * 2);
-
+      rect(0, 0, detail * scaleWidth * 6, detail * scaleHeight * 3, 10);
       if (target > 0 || error > 0) {
         qual = target / (target + error) * 100;
         note = (int)map(qual, 0, 100, 6, 1);
       }
-
+      
       pushMatrix();
-      translate(5, 18);
+      translate(20, 30);
       textAlign(LEFT);
-      textSize(20);
+      textSize(22);
       fill(textCol);
-      text("Fehler:", 0, 0);
-      textSize(20);
+      text("Errors:", 0, 0);
+      textSize(22);
       fill(textCol);
-      text("Punkte:", 0, 25);
-
+      text("Points:", 0, 31);
       textAlign(RIGHT);
-      textSize(20);
+      textSize(22);
       fill(textCol);
       text((int)error, 105, 0);
-      textSize(20);
+      textSize(22);
       fill(textCol);
-      text((int)target, 105, 25);
-      popMatrix();
+      text((int)target, 105, 31);
       popMatrix();
     }
   }
