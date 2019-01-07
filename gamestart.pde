@@ -2,7 +2,7 @@ class gamestart {
 
   float count = 0;
   int testsPassed = 0;
-  pixel frozenPixel = new pixel();
+  pixel frozenPixel;
 
   gamestart() {
   }
