@@ -36,16 +36,11 @@ gamehandler gh = new gamehandler();
 gamestart gs = new gamestart();
 
 //Gui Elemente
-guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner, guiForceExit;
+guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner, guiForceExit, guiCalibration, guiStart, guiStartLeft, guiStartRight;
 float nwX, nwY, noX, noY, soX, soY, swX, swY, centerX, centerY, border, radiusM;
 
 //Sound
-SoundFile soundCollect;
-SoundFile soundError;
-SoundFile soundRollingStone;
-SoundFile soundButton;
-SoundFile soundMusic;
-SoundFile soundClock;
+SoundFile soundCollect, soundError, soundRollingStone, soundButton, soundMusic, soundClock;
 
 void setup() {
   // Load a soundfile from the /data folder of the sketch and play it back
@@ -67,7 +62,7 @@ void setup() {
   video.start();
   trackCol = color(255, 0, 0);
   hideInput = true;
-  
+
   b = new ball(width / 2, height - 150, circleSize);
   l = new line();
   g = new gui();
@@ -95,19 +90,21 @@ void setup() {
   centerY = height / 2;
   guiPause = new guiCircle(centerX, centerY, 200, "PAUSE\n\nNach Ablauf der Zeit\nverlierst Du\n\nBreite deine\nArme aus!", 9, 32, textCol, color(100), red, 10, 15, true);
   guiWinner = new guiCircle(centerX, centerY, 200, ("WINNER TEXT"), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, false);
+  guiCalibration = new guiCircle(centerX, centerY, 200, "CALIBRATING\nDon't move\nPlace yourself in the\nmiddle of the Screen", 5, 32, orange, color(100), orange, 10, 3, false);
+  guiStart = new guiCircle(centerX, centerY, 200, ("READY\n to start, hover\neach handover the\nleft and right\ncircle"), 5, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, true);
   guiForceExit = new guiCircle(nwX, nwY, radiusM, "LEAVING", 1, 32, red, color(100), red, 6, 15, true);
   guiExit = new guiCircle(nwX, nwY, radiusM, "EXIT", 1, 32, red, color(100), red, 6, 1, false);
   guiAgain = new guiCircle(noX, noY, radiusM, "AGAIN", 1, 32, green, color(100), green, 6, 1, false);
   guiMore = new guiCircle(soX, soY, radiusM, "MORE", 1, 32, orange, color(100), orange, 6, 1, false);
   guiLess = new guiCircle(swX, swY, radiusM, "LESS", 1, 32, orange, color(100), orange, 6, 1, false);
+  guiStartRight = new guiCircle(soX, soY, radiusM, "RIGHT", 1, 32, green, color(100), green, 6, 1, false);
+  guiStartLeft = new guiCircle(swX, swY, radiusM, "LEFT", 1, 32, green, color(100), green, 6, 1, false);
 }
 
 void draw() {
-  
+  frameRate(60);
   scaleWidth = width / (float)video.width;
   scaleHeight = height / (float)video.height;
-  
-  frameRate(60);
 
   background(backgroundCol);
   raster = calcRaster();
@@ -125,7 +122,7 @@ void draw() {
     break;
   case "startScreen":
     //showRaster();
-    gs.testingReady();
+    gs.show();
     //println("STARTSCREEN");
     break;
   case "playing":
@@ -274,24 +271,20 @@ float calcColorDifference(pixel p, color trackCol) {
   float r2 = trackCol >> 020 & 0xFF;
   float g2 = trackCol >> 010 & 0xFF;
   float b2 = trackCol        & 0xFF;
-
   return dist(r1, g1, b1, r2, g2, b2);
 }
 
 color extractColorFromImage(final PImage img) {
   img.loadPixels();
   color r = 0, g = 0, b = 0;
-
   for (final color c : img.pixels) {
     r += c >> 020 & 0xFF;
     g += c >> 010 & 0xFF;
     b += c        & 0xFF;
   }
-
   r /= img.pixels.length;
   g /= img.pixels.length;
   b /= img.pixels.length;
-
   return color(r, g, b);
 }
 

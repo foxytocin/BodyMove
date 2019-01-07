@@ -47,7 +47,7 @@ class hole {
   }
 
   String ballMatchHole() {
-    if (dist(b.x, b.y, x, y) < circleSize) {
+    if (gh.playing && dist(b.x, b.y, x, y) < circleSize) {
       calStereo(x);
       if (!touched && !target) {
         b.collisionHole();

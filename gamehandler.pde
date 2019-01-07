@@ -35,7 +35,7 @@ class gamehandler {
     endScreen = false;
     restart = false;
     
-    gs.testsPassed = 0;
+    gs.calibrated = false;
 
     trackMovement.avgLeft = (height - detail);
     trackMovement.avgRight = (height - detail);
@@ -48,6 +48,7 @@ class gamehandler {
     g.target = 0;
     g.qual = 100;
     g.note = 1;
+    g.countDown = false;
     b.acceleration = 0;
     b.velocity = 0;
     initHoles();
@@ -108,8 +109,10 @@ class gamehandler {
     g.target = 0;
     g.qual = 100;
     g.note = 1;
+    g.countDown = false;
     b.acceleration = 0;
     b.velocity = 0;
+    
     initHoles();
   }
 }
