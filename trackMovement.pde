@@ -55,11 +55,11 @@ class trackMovement {
         if (p.x > 100 && p.x < width / 5) {
           countLeft++;
           avgLeft += p.y;
-          fill(30);
+          //fill(30);
         } else if ((p.x > ((width / 5) * 4) - detail) && p.x < width - 120) {
           countRight++;
           avgRight += p.y;
-          fill(30);
+          //fill(30);
         }
 
         //Berechnung der Touchfelder für EXIT, AGAIN, MORE and LESS
