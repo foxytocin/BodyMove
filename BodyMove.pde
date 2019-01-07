@@ -5,8 +5,8 @@ import processing.sound.*;
 int holeAmount = 2;
 float contrast = 0.735;
 float thresholdFreze = 40;
-float scaleWidth = 2.25;
-float scaleHeight = 2.5;
+float scaleWidth = 2; ///;2.25;
+float scaleHeight = 2 ; //2.5;
 float circleSize = 60;
 int detail = 10;
 
@@ -36,7 +36,7 @@ gamehandler gh = new gamehandler();
 gamestart gs = new gamestart();
 
 //Gui Elemente
-guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess;
+guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner;
 float nwX, nwY, noX, noY, soX, soY, swX, swY, centerX, centerY, border, radiusM;
 
 //Sound
@@ -60,8 +60,8 @@ void setup() {
   soundMusic.amp(0.3);
   soundMusic.loop();
 
-  fullScreen();
-  //size(1280, 720);
+  //fullScreen();
+  size(1280, 720);
   //printArray(Capture.list());
   video = new Capture(this, Capture.list()[3]);
   video.start();
@@ -92,15 +92,16 @@ void setup() {
   swY = height - border;
   centerX = width / 2;
   centerY = height / 2;
-  guiPause = new guiCircle(centerX, centerY, 250, "PAUSE\n\nNach Ablauf der Zeit\nverlierst Du\n\nBreite deine\nArme aus!", 9, 36, red, color(100), red, 15, true);
-  guiExit = new guiCircle(nwX, nwY, radiusM, "EXIT", 1, 32, red, color(100), red, 1, false);
-  guiAgain = new guiCircle(noX, noY, radiusM, "AGAIN", 1, 32, green, color(100), green, 1, false);
-  guiMore = new guiCircle(soX, soY, radiusM, "MORE", 1, 32, orange, color(100), orange, 1, false);
-  guiLess = new guiCircle(swX, swY, radiusM, "LESS", 1, 32, orange, color(100), orange, 1, false);
+  guiPause = new guiCircle(centerX, centerY, 200, "PAUSE\n\nNach Ablauf der Zeit\nverlierst Du\n\nBreite deine\nArme aus!", 9, 32, textCol, color(100), red, 10, 15, true);
+  guiWinner = new guiCircle(centerX, centerY, 200, ("WINNER TEXT"), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, true);
+  guiExit = new guiCircle(nwX, nwY, radiusM, "EXIT", 1, 32, red, color(100), red, 6, 1, false);
+  guiAgain = new guiCircle(noX, noY, radiusM, "AGAIN", 1, 32, green, color(100), green, 6, 1, false);
+  guiMore = new guiCircle(soX, soY, radiusM, "MORE", 1, 32, orange, color(100), orange, 6, 1, false);
+  guiLess = new guiCircle(swX, swY, radiusM, "LESS", 1, 32, orange, color(100), orange, 6, 1, false);
 }
 
 void draw() {
-  //frameRate(30);
+  frameRate(60);
 
   background(backgroundCol);
   raster = calcRaster();
@@ -152,7 +153,6 @@ void draw() {
 ArrayList<pixel> generateFrozen() {
   ArrayList<pixel> rasterFrozen = new ArrayList<pixel>();
   rasterFrozen.addAll(raster);
-  println("Genrated frozenRaster: " +rasterFrozen.size());
   return rasterFrozen;
 }
 

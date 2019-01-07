@@ -5,7 +5,7 @@ class gui {
   float qual = 100;
   int note = 1;
   int moreOrLessHoles = 0;
-  
+  boolean countDown = false;
   int pixelMin = 10;
   int pixelMax = 3;
 
@@ -17,7 +17,7 @@ class gui {
       if (guiPause.done()) {
         gh.startScreen();
       }
-      guiPause.show();   
+      guiPause.show();
     } else if (guiPause.running()) {
       guiPause.reset();
     }
@@ -25,9 +25,27 @@ class gui {
     //Ende Screen WINNER
     if (gh.endScreen) {
 
-      guiCircle guiWinner = new guiCircle(centerX, centerY, 200, ("WINNER\n\nYou reached " +(int)qual+ "%\nin quality\n\nGrade: " +note), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 5, false);
-      guiWinner.show();
+      //WINNER LABEL
+      guiWinner.colText = rainbow.rainbow[b.rainbowIndex];
+      guiWinner.label = "WINNER\n\nYou reached " +(int)qual+ "%\nin quality\n\nGrade: " +note;
+      if ((guiExit.pixelCount < pixelMax) && (guiAgain.pixelCount < pixelMax) && (guiMore.pixelCount < pixelMax) && (guiLess.pixelCount < pixelMax)) {
 
+        if ((frameCount % 180 == 0) && !countDown) {
+          countDown = true;
+          println("COUNTDOWN: " +countDown);
+        }
+
+        if (countDown && guiWinner.done()) {
+          gh.startScreen();
+        }
+        
+      } else if(guiWinner.running()) {
+        countDown = false;
+        guiWinner.reset();
+        println("guiWinner RESET. timer: " +guiWinner.timer);
+      }
+
+      //MENU EXIT
       if ((guiExit.pixelCount > pixelMin) && (guiAgain.pixelCount < pixelMax) && (guiMore.pixelCount < pixelMax) && (guiLess.pixelCount < pixelMax)) {
         if (!soundButton.isPlaying()) {
           soundButton.play();
@@ -40,6 +58,7 @@ class gui {
         soundButton.stop();
       }
 
+      //MENU AGAIN
       if ((guiAgain.pixelCount > pixelMin) && (guiExit.pixelCount < pixelMax) && (guiMore.pixelCount < pixelMax) && (guiLess.pixelCount < pixelMax)) {
         if (!soundButton.isPlaying()) {
           soundButton.play();
@@ -52,7 +71,8 @@ class gui {
         soundButton.stop();
       }
 
-      int max = 5;
+      //MENU MORE
+      int max = 10;
       if ((guiMore.pixelCount > pixelMin) && (guiAgain.pixelCount < pixelMax) && (guiExit.pixelCount < pixelMax) && (guiLess.pixelCount < pixelMax)) {
         guiMore.label = String.valueOf(holeAmount + moreOrLessHoles);
         if ((holeAmount + moreOrLessHoles) < max && guiMore.done()) {
@@ -65,18 +85,25 @@ class gui {
           }
         }
       } else if (moreOrLessHoles != 0) {
+        guiMore.colRing = guiMore.colRing_Backup;
+        guiMore.colText = guiMore.colText_Backup;
         guiMore.label = "MORE";
         holeAmount += moreOrLessHoles;
         moreOrLessHoles = 0;
         guiMore.reset();
       } else if ((holeAmount + moreOrLessHoles) == max) {
+        guiMore.colRing = color(75);
+        guiMore.colText = color(75);
         guiMore.label = "MAX";
         guiMore.reset();
       } else {
+        guiMore.colRing = guiMore.colRing_Backup;
+        guiMore.colText = guiMore.colText_Backup;
         guiMore.label = "MORE";
         guiMore.reset();
       }
 
+      //MENU LESS
       int min = 1;
       if ((guiLess.pixelCount > pixelMin) && (guiAgain.pixelCount < pixelMax) && (guiMore.pixelCount < pixelMax) && (guiExit.pixelCount < pixelMax)) {
         guiLess.label = String.valueOf(holeAmount + moreOrLessHoles);
@@ -90,18 +117,25 @@ class gui {
           }
         }
       } else if ( moreOrLessHoles != 0) {
+        guiLess.colRing = guiLess.colRing_Backup;
+        guiLess.colText = guiLess.colText_Backup;
         guiLess.label = "LESS";
         holeAmount += moreOrLessHoles;
         moreOrLessHoles = 0;
         guiLess.reset();
       } else if ((holeAmount + moreOrLessHoles) == min) {
+        guiLess.colRing = color(75);
+        guiLess.colText = color(75);
         guiLess.label = "MIN";
         guiLess.reset();
       } else {
+        guiLess.colRing = guiLess.colRing_Backup;
+        guiLess.colText = guiLess.colText_Backup;
         guiLess.label = "LESS";
         guiLess.reset();
       }
-      
+
+      guiWinner.show();
       guiExit.show();
       guiAgain.show();
       guiMore.show();
