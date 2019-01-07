@@ -2,10 +2,8 @@ class circleAnimation {
 
   float circleSize = 0;
   float circleAcc = 0;
-  float x, y;
-  float r;
+  float x, y, r, alpha;
   color col;
-  float alpha;
   color errorCol = color(252, 1, 31);
   color goalCol = color(98, 252, 2);
   boolean finished = false;
@@ -16,10 +14,8 @@ class circleAnimation {
     x = h_.x;
     y = h_.y;
     r = h_.circleSize;
-
     if (reason == "error")
       col = errorCol;
-
     if (reason == "goal")
       col = goalCol;
   }
@@ -27,8 +23,7 @@ class circleAnimation {
   void update() {
     circleAcc += 4;
     circleSize += circleAcc;
-    alpha = map(circleSize, r, 600, 250, 0);
-    
+    alpha = map(circleSize, r, 600, 250, 0);  
     if(circleSize > 600)
       finished = true;
   }

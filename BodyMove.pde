@@ -2,11 +2,11 @@ import processing.video.*;
 import processing.sound.*;
 
 //Spielvriablen
-int holeAmount = 2;
+int holeAmount = 10;
 float contrast = 0.735;
 float thresholdFreze = 40;
-float scaleWidth; // = 2; ///;2.25;
-float scaleHeight; // = 2 ; //2.5;
+float scaleWidth;
+float scaleHeight;
 float circleSize = 60;
 int detail = 10;
 
@@ -36,16 +36,11 @@ gamehandler gh = new gamehandler();
 gamestart gs = new gamestart();
 
 //Gui Elemente
-guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner, guiForceExit;
+guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner, guiForceExit, guiCalibration, guiStart, guiStartLeft, guiStartRight, guiLoading;
 float nwX, nwY, noX, noY, soX, soY, swX, swY, centerX, centerY, border, radiusM;
 
 //Sound
-SoundFile soundCollect;
-SoundFile soundError;
-SoundFile soundRollingStone;
-SoundFile soundButton;
-SoundFile soundMusic;
-SoundFile soundClock;
+SoundFile soundCollect, soundError, soundRollingStone, soundButton, soundMusic, soundClock;
 
 void setup() {
   // Load a soundfile from the /data folder of the sketch and play it back
@@ -55,7 +50,6 @@ void setup() {
   soundButton = new SoundFile(this, "button.mp3");
   soundClock = new SoundFile(this, "clock.mp3");
   soundMusic = new SoundFile(this, "music.mp3");
-
   soundButton.amp(0.5);
   soundMusic.amp(0.3);
   soundMusic.loop();
@@ -67,7 +61,7 @@ void setup() {
   video.start();
   trackCol = color(255, 0, 0);
   hideInput = true;
-  
+
   b = new ball(width / 2, height - 150, circleSize);
   l = new line();
   g = new gui();
@@ -93,23 +87,25 @@ void setup() {
   swY = height - border;
   centerX = width / 2;
   centerY = height / 2;
-  guiPause = new guiCircle(centerX, centerY, 200, "PAUSE\n\nNach Ablauf der Zeit\nverlierst Du\n\nBreite deine\nArme aus!", 9, 32, textCol, color(100), red, 10, 15, true);
+  guiLoading = new guiCircle(centerX, centerY, 200, ("LOADING"), 1, 52, orange, color(100), orange, 10, 2, false);
+  guiPause = new guiCircle(centerX, centerY, 200, "PAUSED\n\nIf time's up, you're\nout. To continue\nspread your arms", 7, 32, textCol, color(100), red, 10, 15, true);
   guiWinner = new guiCircle(centerX, centerY, 200, ("WINNER TEXT"), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, false);
+  guiCalibration = new guiCircle(centerX, centerY, 200, "CALIBRATING\n\nPlace yourself in the\nmiddle of the screen\nDon't move", 6, 32, orange, color(100), orange, 10, 1.5, false);
+  guiStart = new guiCircle(centerX, centerY, 200, ("READY\n\nTo start, hover\neach hand over the\nleft and right\ncircle"), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, true);
   guiForceExit = new guiCircle(nwX, nwY, radiusM, "LEAVING", 1, 32, red, color(100), red, 6, 15, true);
   guiExit = new guiCircle(nwX, nwY, radiusM, "EXIT", 1, 32, red, color(100), red, 6, 1, false);
   guiAgain = new guiCircle(noX, noY, radiusM, "AGAIN", 1, 32, green, color(100), green, 6, 1, false);
-  guiMore = new guiCircle(soX, soY, radiusM, "MORE", 1, 32, orange, color(100), orange, 6, 1, false);
-  guiLess = new guiCircle(swX, swY, radiusM, "LESS", 1, 32, orange, color(100), orange, 6, 1, false);
+  guiMore = new guiCircle(soX, soY, radiusM, "MORE", 1, 32, orange, color(100), orange, 6, 0.5, false);
+  guiLess = new guiCircle(swX, swY, radiusM, "LESS", 1, 32, orange, color(100), orange, 6, 0.5, false);
+  guiStartRight = new guiCircle(soX, soY, radiusM, "RIGHT", 1, 32, green, color(100), green, 6, 0.5, false);
+  guiStartLeft = new guiCircle(swX, swY, radiusM, "LEFT", 1, 32, green, color(100), green, 6, 0.5, false);
 }
 
 void draw() {
-  
+  frameRate(60);
+  background(backgroundCol);
   scaleWidth = width / (float)video.width;
   scaleHeight = height / (float)video.height;
-  
-  frameRate(60);
-
-  background(backgroundCol);
   raster = calcRaster();
 
   if (rasterFrozen.size() <= 0) {
@@ -117,42 +113,35 @@ void draw() {
   }
 
   switch(gh.status) {
-
   case "loading":
-    //showRaster();
-    //println("LOADING ...");
-    gh.startScreen();
+    if (guiLoading.done()) {
+      gh.startScreen();
+    };
+    guiLoading.show();
     break;
   case "startScreen":
-    //showRaster();
-    gs.testingReady();
-    //println("STARTSCREEN");
+    gs.show();
     break;
   case "playing":
     trackMovement.show();
-    //calcThreshold();
     b.update();
     l.show(); 
     b.show();
     gameplay();
-    //println("PLAYING");
     break;
   case "paused":
     trackMovement.show();
     l.show(); 
     b.show();
     gameplay();
-    //println("PAUSED");
     break;
   case "endScreen":
     trackMovement.show();
     l.show(); 
     b.show();
     gameplay();
-    //println("ENDSCREEN");
     break;
   }
-
   g.show();
 }
 
@@ -205,16 +194,16 @@ void keyPressed() {
   if (key == CODED) {
     if (keyCode == RIGHT) {
       if (contrast < 0.95)
-        contrast += 0.05;
+      contrast += 0.05;
     } else if (keyCode == LEFT) {
       if (contrast >= 0.1)
-        contrast -= 0.05;
+      contrast -= 0.05;
     } else if (keyCode == UP) {
       if (threshold <= 100)
-        threshold += 2;
+      threshold += 2;
     } else if (keyCode == DOWN) {
       if (threshold >= 3)
-        threshold -= 2;
+      threshold -= 2;
     }
   }
   if (key == 't' && !trackMov) {
@@ -274,24 +263,20 @@ float calcColorDifference(pixel p, color trackCol) {
   float r2 = trackCol >> 020 & 0xFF;
   float g2 = trackCol >> 010 & 0xFF;
   float b2 = trackCol        & 0xFF;
-
   return dist(r1, g1, b1, r2, g2, b2);
 }
 
 color extractColorFromImage(final PImage img) {
   img.loadPixels();
   color r = 0, g = 0, b = 0;
-
   for (final color c : img.pixels) {
     r += c >> 020 & 0xFF;
     g += c >> 010 & 0xFF;
     b += c        & 0xFF;
   }
-
   r /= img.pixels.length;
   g /= img.pixels.length;
   b /= img.pixels.length;
-
   return color(r, g, b);
 }
 
