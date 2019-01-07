@@ -2,36 +2,42 @@ import processing.video.*;
 import processing.sound.*;
 
 //Spielvriablen
-int holeAmount = 3;
+int holeAmount = 2;
 float contrast = 0.735;
 float thresholdFreze = 40;
-int scale = 1;
+float scaleWidth = 2.25;
+float scaleHeight = 2.5;
+float circleSize = 60;
+int detail = 10;
 
-rainbow rainbow;
-Capture video;
 color colorChange = color(0, 0, 0);
 color backgroundCol = color(100);
 color green = color(98, 252, 2);
 color red = color(252, 1, 31);
+color orange = color(255, 178, 56);
 color textCol = color(50);
-int detail;
+
 ArrayList<pixel> rasterFrozen;
 ArrayList<pixel> raster;
 ArrayList<hole> holes;
 ArrayList<circleAnimation> circleAnimations;
 boolean hideInput;
 color trackCol;
-int closestX;
-int closestY;
+int closestX, closestY;
 float threshold;
 boolean trackMov = false;
+rainbow rainbow;
+Capture video;
 trackMovement trackMovement;
-float adjustBrightness;
 ball b;
 line l;
 gui g;
 gamehandler gh = new gamehandler();
 gamestart gs = new gamestart();
+
+//Gui Elemente
+guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess;
+float nwX, nwY, noX, noY, soX, soY, swX, swY, centerX, centerY, border, radiusM;
 
 //Sound
 SoundFile soundCollect;
@@ -39,6 +45,7 @@ SoundFile soundError;
 SoundFile soundRollingStone;
 SoundFile soundButton;
 SoundFile soundMusic;
+SoundFile soundClock;
 
 void setup() {
   // Load a soundfile from the /data folder of the sketch and play it back
@@ -46,21 +53,21 @@ void setup() {
   soundError = new SoundFile(this, "error.wav");
   soundRollingStone = new SoundFile(this, "rollingstone.wav");
   soundButton = new SoundFile(this, "button.mp3");
+  soundClock = new SoundFile(this, "clock.mp3");
   soundMusic = new SoundFile(this, "music.mp3");
-  
+
+  soundButton.amp(0.5);
   soundMusic.amp(0.3);
   soundMusic.loop();
 
-  //fullScreen();
-  size(1280, 720);
+  fullScreen();
+  //size(1280, 720);
   //printArray(Capture.list());
-  video = new Capture(this, Capture.list()[0]);
+  video = new Capture(this, Capture.list()[3]);
   video.start();
-  detail = 16;
   trackCol = color(255, 0, 0);
-  adjustBrightness = 1;
   hideInput = true;
-  b = new ball();
+  b = new ball(width / 2, height - 150, circleSize);
   l = new line();
   g = new gui();
   circleAnimations = new ArrayList<circleAnimation>();
@@ -69,8 +76,27 @@ void setup() {
   holes = new ArrayList<hole>();
   initHoles();
   trackMovement = new trackMovement();
-  threshold = 20;
+  threshold = 30;
   rainbow = new rainbow();
+
+  //Gui Elemente
+  border = 150;
+  radiusM = 80;
+  nwX = border;
+  nwY = border;
+  noX = width - border;
+  noY = border;
+  soX = width - border;
+  soY = height - border;
+  swX = border;
+  swY = height - border;
+  centerX = width / 2;
+  centerY = height / 2;
+  guiPause = new guiCircle(centerX, centerY, 250, "PAUSE\n\nNach Ablauf der Zeit\nverlierst Du\n\nBreite deine\nArme aus!", 9, 36, red, color(100), red, 15, true);
+  guiExit = new guiCircle(nwX, nwY, radiusM, "EXIT", 1, 32, red, color(100), red, 1, false);
+  guiAgain = new guiCircle(noX, noY, radiusM, "AGAIN", 1, 32, green, color(100), green, 1, false);
+  guiMore = new guiCircle(soX, soY, radiusM, "MORE", 1, 32, orange, color(100), orange, 1, false);
+  guiLess = new guiCircle(swX, swY, radiusM, "LESS", 1, 32, orange, color(100), orange, 1, false);
 }
 
 void draw() {
@@ -82,16 +108,16 @@ void draw() {
   if (rasterFrozen.size() <= 0) {
     rasterFrozen = generateFrozen();
   }
-  
+
   switch(gh.status) {
 
   case "loading":
-    showRaster();
+    //showRaster();
     //println("LOADING ...");
     gh.startScreen();
     break;
   case "startScreen":
-    showRaster();
+    //showRaster();
     gs.testingReady();
     //println("STARTSCREEN");
     break;
@@ -190,11 +216,6 @@ void keyPressed() {
   } else if (key == 'r' && trackMov) {
     trackMov = false;
   }
-  if (key == 'q') {
-    adjustBrightness += 0.1;
-  } else if (key == 'a') {
-    adjustBrightness -= 0.1;
-  }
   if (key == 'h' && !hideInput) {
     hideInput = true;
   } else if (key == 'h' && hideInput) {
@@ -227,7 +248,7 @@ ArrayList<pixel> calcRaster() {
     int xPosPixel = 0;
     for (int j = video.width - detail; j >= 0; j -= detail) {
       PImage newImg = video.get(j, i, detail, detail);
-      raster.add(new pixel(xPosPixel * scale, i * scale, detail, extractColorFromImage(newImg)));
+      raster.add(new pixel(xPosPixel * scaleWidth, i * scaleHeight, (detail * scaleWidth), extractColorFromImage(newImg)));
       xPosPixel += detail;
     }
   }
@@ -276,11 +297,11 @@ void initHoles() {
     float y = random(75, height - 250);
 
     if (holes.size() == 0) {
-      hole h = new hole(x, y);
+      hole h = new hole(x, y, circleSize);
       holes.add(h);
     } else {
       if (noOverlap(x, y)) {
-        hole h = new hole(x, y);
+        hole h = new hole(x, y, circleSize);
         holes.add(h);
       } else {
         noFreeSpaceCounter++;
@@ -301,7 +322,7 @@ void pickTarget() {
 
 boolean noOverlap(float x, float y) {
   for (hole h : holes) {
-    if (dist(x, y, h.x, h.y) > 4 * h.r) {
+    if (dist(x, y, h.x, h.y) > 2 * circleSize) {
       continue;
     } else {
       return false;

@@ -2,7 +2,7 @@ class gamestart {
 
   float count = 0;
   int testsPassed = 0;
-  pixel frozenPixel = new pixel();
+  pixel frozenPixel;
 
   gamestart() {
   }
@@ -15,7 +15,7 @@ class gamestart {
     count = 0;
 
     for (pixel p : raster) {
-      if ((p.x > 100 && p.x < video.width / 5) || (p.x >= (video.width / 5) * 4) && p.x < video.width - 112 ) {
+      if (p.x > 100 && p.x < width / 5 || (p.x > ((width / 5) * 4) - detail) && p.x < width - 120) {
         //Pixel die kontrolliert werden
         frozenPixel = rasterFrozen.get(pixelIndex);
         float diff = calcColorDifference(p, frozenPixel.col);
@@ -26,7 +26,7 @@ class gamestart {
           fill(green);
         }
         noStroke();
-        ellipse(p.x + detail / 2, p.y + detail / 2, detail * 0.8, detail * 0.8);
+        ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
 
         differenz += diff;
         count++;
@@ -35,7 +35,7 @@ class gamestart {
         //fill(30, 100);
         fill(p.col);
         noStroke();
-        ellipse(p.x + detail / 2, p.y + detail / 2, detail * 0.8, detail * 0.8);
+        ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
       }
       pixelIndex++;
     }
@@ -52,7 +52,7 @@ class gamestart {
     }
 
     pushMatrix();
-    translate(video.width/2, 150);
+    translate(width/2, 150);
     noStroke();
     fill(100);
     rectMode(CENTER);
@@ -68,7 +68,7 @@ class gamestart {
     popMatrix();
 
     if (testsPassed < 30) {
-      translate(video.width/2, 405);
+      translate(width/2, 405);
       pushMatrix();
       fill(100);
       rectMode(CENTER);
@@ -85,7 +85,7 @@ class gamestart {
     } else {
       int timer = floor(map(testsPassed, 0, 90, 3, 0)) + 1;
       pushMatrix();
-      translate(video.width/2, 405);
+      translate(width/2, 405);
       fill(100);
       rectMode(CENTER);
       rect(0, 34, 736, 176, 10); 

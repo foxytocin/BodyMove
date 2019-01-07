@@ -1,8 +1,8 @@
 class ball {
-
-  float r = 30;
-  float x = 640;  //(video.width / 2);
-  float y = (video.height - detail - r);
+  
+  float circleSize = 10;
+  float x = width / 2;
+  float y = (height - detail - circleSize / 2);
   float mx;
 
   float speed = 1.5;
@@ -16,7 +16,10 @@ class ball {
   float panStone = 0.5;
   int rainbowIndex = 0;
 
-  ball() {
+  ball(float x_, float y_, float circleSize_) {
+    x = x_;
+    y = y_;
+    circleSize = circleSize_;
   }
 
 
@@ -24,9 +27,9 @@ class ball {
     float newX;
     acceleration = 0;
     if (wallL && mx > 0 && abs(velocity) < 0.5) {
-      x = r;
+      x = circleSize / 2;
     } else if (wallR && mx < 0 && abs(velocity) < 0.5) {
-      x = video.width - r;
+      x = width - circleSize / 2;
     } else {
       acceleration = (-mx * speed);
       velocity += acceleration;
@@ -49,19 +52,19 @@ class ball {
     strokeWeight(3);
     fill(rainbow.rainbow[rainbowIndex]);
     ellipseMode(CENTER);
-    ellipse(x, y, r * 2, r * 2);
+    ellipse(x, y, circleSize, circleSize);
   }
 
   void calcPos() {
-    mx = (trackMovement.posLeft - trackMovement.posRight) / video.width;
-    y = trackMovement.posLeft - (x * mx) - r;
+    mx = (trackMovement.posLeft - trackMovement.posRight) / width;
+    y = trackMovement.posLeft - (x * mx) - (circleSize / 2);
   }
 
 
   void sound() {
     float sound = abs(acceleration * velocity);
     //println("SOUND: " +sound);
-    
+
     //Sound des Balls
     if (sound > 0.005) {
       volumeStone = map(sound, 0.005, 30, 0.0001, 0.5);
@@ -70,7 +73,7 @@ class ball {
       soundRollingStone.stop();
     }
 
-    panStone = map(x, r, video.width - r, -1, 1);
+    panStone = map(x, (circleSize / 2), width - circleSize / 2, -1, 1);
     panStone = constrain(panStone, -1, 1);
     soundRollingStone.pan(panStone);
     volumeStone = constrain(volumeStone, 0.1, 1);
@@ -81,15 +84,15 @@ class ball {
   }
 
   void bounceWall() {
-    if (!wallL && x - r < 0) {
+    if (!wallL && x - circleSize / 2 < 0) {
       wallL = true;
       velocity *= -1;
       velocity *= damping;
-    } else if (!wallR && x > video.width - r) {
+    } else if (!wallR && x > width - circleSize / 2) {
       wallR = true;
       velocity *= -1;
       velocity *= damping;
-    } else if (x > 1.5*r && x < video.width - 1.5*r) {
+    } else if (x > 1.5 * circleSize / 2 && x < width - 1.5 * circleSize / 2) {
       wallR = false;
       wallL = false;
     }

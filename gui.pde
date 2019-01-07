@@ -4,80 +4,108 @@ class gui {
   float target = 0;
   float qual = 100;
   int note = 1;
-  int breite = detail * 7;
-  int hoehe = detail * 3;
+  int moreOrLessHoles = 0;
+  
+  int pixelMin = 10;
+  int pixelMax = 3;
 
   void show() {
 
+    //Pause
     if (gh.paused) {
-      pushMatrix();
-      translate(video.width / 2, video.height / 2);
 
-      noStroke();
-      fill(100);
-      rectMode(CENTER);
-      rect(0, 0, 672, 244, 10);
-      textAlign(CENTER);
-      textSize(32);
-      fill(red);
-      text("Spiel pausiert", 0, -70);
-      textSize(46);
-      fill(textCol);
-      text("Breite deine Arme weiter aus", 0, 0);
-      text("Sie bilden die Stange", 0, 50);
-      popMatrix();
+      if (guiPause.done()) {
+        gh.startScreen();
+      }
+      guiPause.show();   
+    } else if (guiPause.running()) {
+      guiPause.reset();
     }
 
+    //Ende Screen WINNER
     if (gh.endScreen) {
-      //Anzeige der Spielerpunkte
-      pushMatrix();
-      translate(video.width / 2, video.height / 2);
-      noStroke();
-      fill(100);
-      rectMode(CENTER);
-      rect(0, 0, 287, 143, 10);
-      textAlign(CENTER);
-      textSize(32);
-      fill(rainbow.rainbow[b.rainbowIndex]);
-      text("Spielende", 0, -10);
-      text("Note: " +note+ " (" +(int)qual+ "%)", 0, 30);
-      popMatrix();
+
+      guiCircle guiWinner = new guiCircle(centerX, centerY, 200, ("WINNER\n\nYou reached " +(int)qual+ "%\nin quality\n\nGrade: " +note), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 5, false);
+      guiWinner.show();
+
+      if ((guiExit.pixelCount > pixelMin) && (guiAgain.pixelCount < pixelMax) && (guiMore.pixelCount < pixelMax) && (guiLess.pixelCount < pixelMax)) {
+        if (!soundButton.isPlaying()) {
+          soundButton.play();
+        }
+        if (guiExit.done()) {
+          gh.startScreen();
+        }
+      } else if (guiExit.running()) {
+        guiExit.reset();
+        soundButton.stop();
+      }
+
+      if ((guiAgain.pixelCount > pixelMin) && (guiExit.pixelCount < pixelMax) && (guiMore.pixelCount < pixelMax) && (guiLess.pixelCount < pixelMax)) {
+        if (!soundButton.isPlaying()) {
+          soundButton.play();
+        }
+        if (guiAgain.done()) {
+          gh.restart();
+        }
+      } else if (guiAgain.running()) {
+        guiAgain.reset();
+        soundButton.stop();
+      }
+
+      int max = 5;
+      if ((guiMore.pixelCount > pixelMin) && (guiAgain.pixelCount < pixelMax) && (guiExit.pixelCount < pixelMax) && (guiLess.pixelCount < pixelMax)) {
+        guiMore.label = String.valueOf(holeAmount + moreOrLessHoles);
+        if ((holeAmount + moreOrLessHoles) < max && guiMore.done()) {
+          moreOrLessHoles++;
+          soundCollect.play();
+        } else if ((holeAmount + moreOrLessHoles) == max) {
+          guiMore.label = String.valueOf(holeAmount + moreOrLessHoles);
+          if (!soundError.isPlaying()) {
+            soundError.play();
+          }
+        }
+      } else if (moreOrLessHoles != 0) {
+        guiMore.label = "MORE";
+        holeAmount += moreOrLessHoles;
+        moreOrLessHoles = 0;
+        guiMore.reset();
+      } else if ((holeAmount + moreOrLessHoles) == max) {
+        guiMore.label = "MAX";
+        guiMore.reset();
+      } else {
+        guiMore.label = "MORE";
+        guiMore.reset();
+      }
+
+      int min = 1;
+      if ((guiLess.pixelCount > pixelMin) && (guiAgain.pixelCount < pixelMax) && (guiMore.pixelCount < pixelMax) && (guiExit.pixelCount < pixelMax)) {
+        guiLess.label = String.valueOf(holeAmount + moreOrLessHoles);
+        if ((holeAmount + moreOrLessHoles) > min && guiLess.done()) {
+          moreOrLessHoles--;
+          soundCollect.play();
+        } else if ((holeAmount + moreOrLessHoles) == min) {
+          guiLess.label = String.valueOf(holeAmount + moreOrLessHoles);
+          if (!soundError.isPlaying()) {
+            soundError.play();
+          }
+        }
+      } else if ( moreOrLessHoles != 0) {
+        guiLess.label = "LESS";
+        holeAmount += moreOrLessHoles;
+        moreOrLessHoles = 0;
+        guiLess.reset();
+      } else if ((holeAmount + moreOrLessHoles) == min) {
+        guiLess.label = "MIN";
+        guiLess.reset();
+      } else {
+        guiLess.label = "LESS";
+        guiLess.reset();
+      }
       
-      //Auswahl Kreise RECHTS
-      pushMatrix();
-      translate(width - 184, 184);
-      noStroke();
-      fill(backgroundCol);
-      ellipse(0, 0, 200, 200);
-      textSize(32);
-      textAlign(CENTER);
-      fill(textCol);
-      text("Nochmal?", 0, 11);
-      rotate(-PI/2);
-      noFill();
-      stroke(green);
-      strokeWeight(15);
-      float angel1 = map(trackMovement.timerRightButton, 0, 45, 0, TWO_PI);
-      arc(0, 0, 200, 200, 0, angel1);
-      popMatrix();
-      
-      //Auswahl Kreise LINKS
-      pushMatrix();
-      translate(184, 184);
-      noStroke();
-      fill(backgroundCol);
-      ellipse(0, 0, 200, 200);
-      textSize(32);
-      textAlign(CENTER);
-      fill(textCol);
-      text("Ende", 0, 11);
-      rotate(-PI/2);
-      noFill();
-      stroke(red);
-      strokeWeight(15);
-      float angel2 = map(trackMovement.timerLeftButton, 0, 45, 0, TWO_PI);
-      arc(0, 0, 200, 200, 0, angel2);
-      popMatrix();
+      guiExit.show();
+      guiAgain.show();
+      guiMore.show();
+      guiLess.show();
     }
 
     if (gh.playing) {
@@ -87,7 +115,7 @@ class gui {
       noStroke();
       fill(100);
       rectMode(CORNER);
-      rect(0, 0, breite, hoehe);
+      rect(0, 0, detail * scaleWidth * 5, detail * scaleHeight * 2);
 
       if (target > 0 || error > 0) {
         qual = target / (target + error) * 100;

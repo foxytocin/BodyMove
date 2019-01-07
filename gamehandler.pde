@@ -37,12 +37,12 @@ class gamehandler {
     
     gs.testsPassed = 0;
 
-    trackMovement.avgLeft = (video.height - detail);
-    trackMovement.avgRight = (video.height - detail);
-    trackMovement.posLeft = (video.height - detail);
-    trackMovement.posRight = (video.height - detail);
-    b.x = (video.width / 2);
-    b.y = (video.height - detail - b.r);
+    trackMovement.avgLeft = (height - detail);
+    trackMovement.avgRight = (height - detail);
+    trackMovement.posLeft = (height - detail);
+    trackMovement.posRight = (height - detail);
+    b.x = (width / 2);
+    b.y = (height - detail - b.circleSize / 2);
     
     g.error = 0;
     g.target = 0;
@@ -97,12 +97,12 @@ class gamehandler {
     paused = false;
     endScreen = false;
 
-    trackMovement.avgLeft = (video.height - detail);
-    trackMovement.avgRight = (video.height - detail);
-    trackMovement.posLeft = (video.height - detail);
-    trackMovement.posRight = (video.height - detail);
-    b.x = (video.width / 2);
-    b.y = (video.height - detail - b.r);
+    trackMovement.avgLeft = (height - detail);
+    trackMovement.avgRight = (height - detail);
+    trackMovement.posLeft = (height - detail);
+    trackMovement.posRight = (height - detail);
+    b.x = (width / 2);
+    b.y = (height - detail - b.circleSize / 2);
 
     g.error = 0;
     g.target = 0;
