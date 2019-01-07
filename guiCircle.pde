@@ -7,17 +7,20 @@ class guiCircle {
   float rows;
   float size;
   color colText;
+  color colText_Backup;
   color colRing;
+  color colRing_Backup;
   color colFill;
-  float angel = 0;
-  int timer;
+  int stroke;
+  float angel = TWO_PI;
+  int timer = 0;
   int sec;
   float offset;
   boolean ticks;
   int steps = 0;
   int pixelCount = 0;
 
-  guiCircle(float x_, float y_, float r_, String label_, float rows_, float size_, color colText_, color colFill_, color colRing_, int sec_, boolean ticks_) {
+  guiCircle(float x_, float y_, float r_, String label_, float rows_, float size_, color colText_, color colFill_, color colRing_, int stroke_, int sec_, boolean ticks_) {
     x = x_;
     y = y_;
     r = r_;
@@ -25,8 +28,11 @@ class guiCircle {
     rows = rows_;
     label = label_;
     colText = colText_;
+    colText_Backup = colText_;
     colRing = colRing_;
+    colRing_Backup = colRing_;
     colFill = colFill_;
+    stroke = stroke_;
     sec = sec_;
     ticks = ticks_;
 
@@ -38,7 +44,7 @@ class guiCircle {
   }
 
   void reset() {
-    angel = 0;
+    angel = TWO_PI;
     timer = 0;
     steps = 0;
   }
@@ -50,7 +56,24 @@ class guiCircle {
   boolean done() {
     if (timer < (sec * 60)) {
       timer++;
+      
+      if (!ticks) {
+        angel = map(timer, 0, (sec * 60), TWO_PI, 0);
+      } else {
+        
+        colRing = rainbow.rainbow[floor(map(timer, 0, (sec * 60), 2000, 20000))];
+        colText = colRing;
+        if (timer % 60 == 0) {
+          if (!soundClock.isPlaying()) {
+            soundClock.amp(0.5);
+            soundClock.play();
+          }
+          steps += 60;
+        }
+        angel = map(steps, 0, (sec * 60), TWO_PI, 0);
+      }
       return false;
+      
     } else {
       reset();
       return true;
@@ -70,21 +93,7 @@ class guiCircle {
     rotate(-PI/2);
     noFill();
     stroke(colRing);
-    strokeWeight(8);
-
-    if (!ticks) {
-      angel = map(timer, 0, (sec * 60), TWO_PI, 0);
-    } else {
-
-      if (timer % 60 == 0) {
-        if (!soundClock.isPlaying()) {
-          soundClock.amp(0.5);
-          soundClock.play();
-          steps += 60;
-        }
-      }
-      angel = map(steps, 0, (sec * 60), TWO_PI, 0);
-    }
+    strokeWeight(stroke);
     arc(0, 0, 2 * r, 2 * r, 0, angel);
     popMatrix();
   }

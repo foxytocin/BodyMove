@@ -18,9 +18,11 @@ class gamestart {
       if (p.x > 100 && p.x < width / 5 || (p.x > ((width / 5) * 4) - detail) && p.x < width - 120) {
         //Pixel die kontrolliert werden
         frozenPixel = rasterFrozen.get(pixelIndex);
-        float diff = calcColorDifference(p, frozenPixel.col);
+        float d = calcColorDifference(p, frozenPixel.col);
+        float pixelWeight = (d / detail) * scaleWidth;
+        pixelWeight = constrain(pixelWeight, 0, detail * scaleWidth);
 
-        if (diff > 15) {
+        if (d > 15) {
           fill(red);
         } else {
           fill(green);
@@ -28,9 +30,10 @@ class gamestart {
         noStroke();
         ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
 
-        differenz += diff;
+        differenz += d;
         count++;
       } else {
+
         //Pixel bei denen eine Veraenderung erkannt wurde
         //fill(30, 100);
         fill(p.col);
