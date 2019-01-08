@@ -4,7 +4,7 @@ import processing.sound.*;
 //Spielvriablen
 int holeAmount = 10;
 float contrast = 0.735;
-float thresholdFreze = 40;
+float threshold = 20;
 float scaleWidth;
 float scaleHeight;
 float circleSize = 60;
@@ -24,7 +24,6 @@ ArrayList<circleAnimation> circleAnimations;
 boolean hideInput;
 color trackCol;
 int closestX, closestY;
-float threshold;
 boolean trackMov = false;
 rainbow rainbow;
 Capture video;
@@ -69,9 +68,7 @@ void setup() {
   raster = new ArrayList<pixel>();
   rasterFrozen = new ArrayList<pixel>();
   holes = new ArrayList<hole>();
-  initHoles();
   trackMovement = new trackMovement();
-  threshold = 30;
   rainbow = new rainbow();
 
   //Gui Elemente
@@ -99,6 +96,8 @@ void setup() {
   guiLess = new guiCircle(swX, swY, radiusM, "LESS", 1, 32, orange, color(100), orange, 6, 0.5, false);
   guiStartRight = new guiCircle(soX, soY, radiusM, "RIGHT", 1, 32, green, color(100), green, 6, 0.5, false);
   guiStartLeft = new guiCircle(swX, swY, radiusM, "LEFT", 1, 32, green, color(100), green, 6, 0.5, false);
+
+  initHoles();
 }
 
 void draw() {
@@ -154,11 +153,11 @@ ArrayList<pixel> generateFrozen() {
 void calcThreshold() {
   if (trackMovement.anteilAnGesamt < contrast - 0.02 || trackMovement.anteilAnGesamt > contrast + 0.02) {
   } else if (trackMovement.anteilAnGesamt < contrast) {
-    thresholdFreze += 1;
+    threshold += 1;
   } else if (trackMovement.anteilAnGesamt > contrast) {
-    thresholdFreze -= 1;
+    threshold -= 1;
   }
-  println("AUTO: Contrast: " +contrast+ " / NotTracked: " +trackMovement.anteilAnGesamt+ " / thresholdFreze: " +thresholdFreze);
+  println("AUTO: Contrast: " +contrast+ " / NotTracked: " +trackMovement.anteilAnGesamt+ " / thresholdFreze: " +threshold);
 }
 
 void gameplay() {
@@ -194,16 +193,10 @@ void keyPressed() {
   if (key == CODED) {
     if (keyCode == RIGHT) {
       if (contrast < 0.95)
-      contrast += 0.05;
+        contrast += 0.05;
     } else if (keyCode == LEFT) {
       if (contrast >= 0.1)
-      contrast -= 0.05;
-    } else if (keyCode == UP) {
-      if (threshold <= 100)
-      threshold += 2;
-    } else if (keyCode == DOWN) {
-      if (threshold >= 3)
-      threshold -= 2;
+        contrast -= 0.05;
     }
   }
   if (key == 't' && !trackMov) {
@@ -312,12 +305,12 @@ void pickTarget() {
 }
 
 boolean noOverlap(float x, float y) {
-  for (hole h : holes) {
-    if (dist(x, y, h.x, h.y) > 2 * circleSize) {
-      continue;
-    } else {
-      return false;
+    for (hole h: holes) {
+      if (dist(x, y, h.x, h.y) > 2 * circleSize) {
+        continue;
+      } else {
+        return false;
+      }
     }
-  }
   return true;
 }

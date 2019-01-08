@@ -48,15 +48,15 @@ class trackMovement {
       float pixelWeight = (d / detail) * scaleWidth;
       pixelWeight = constrain(pixelWeight, 0, detail * scaleWidth);
 
-      if (d > thresholdFreze) {
+      if (d > threshold) {
         fill(rainbow.rainbow[(rainbowIndex + floor(p.y * 5)) % 60000]);
 
         //Berechnung im Spiel. Linker und Rechner Streifen zu berechnung der Handposition
-        if (p.x > 100 && p.x < width / 5) {
+        if (p.x > 50 && p.x < width / 5) {
           countLeft++;
           avgLeft += p.y;
           //fill(30);
-        } else if ((p.x > ((width / 5) * 4) - detail) && p.x < width - 120) {
+        } else if ((p.x > ((width / 5) * 4) - detail) && p.x < width - 70) {
           countRight++;
           avgRight += p.y;
           //fill(30);
