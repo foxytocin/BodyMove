@@ -35,7 +35,7 @@ gamehandler gh = new gamehandler();
 gamestart gs = new gamestart();
 
 //Gui Elemente
-guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner, guiForceExit, guiCalibration, guiStart, guiStartLeft, guiStartRight, guiLoading;
+guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner, guiForceExit, guiCalibration, guiStart, guiStartLeft, guiStartRight, guiLoading, guiNoHuman;
 float nwX, nwY, noX, noY, soX, soY, swX, swY, centerX, centerY, border, radiusM;
 
 //Sound
@@ -87,15 +87,16 @@ void setup() {
   guiLoading = new guiCircle(centerX, centerY, 200, ("LOADING"), 1, 52, orange, color(100), orange, 10, 2, false);
   guiPause = new guiCircle(centerX, centerY, 200, "PAUSED\n\nIf time's up, you're\nout. To continue\nspread your arms", 7, 32, textCol, color(100), red, 10, 15, true);
   guiWinner = new guiCircle(centerX, centerY, 200, ("WINNER TEXT"), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, false);
-  guiCalibration = new guiCircle(centerX, centerY, 200, "CALIBRATING\n\nPlace yourself in the\nmiddle of the screen\nDon't move", 6, 32, orange, color(100), orange, 10, 1.5, false);
+  guiCalibration = new guiCircle(centerX, centerY, 200, "CALIBRATING\n\nPlace yourself in the\nmiddle of the screen\n Lower your arms\nDon't move", 7, 32, orange, color(100), orange, 10, 1.5, false);
+  guiNoHuman = new guiCircle(centerX, centerY, 200, "MISSING PLAYER\n\nCan't detect any motion\nStep in the middle of\nthe screen and\nwave your arms", 7, 32, red, color(100), red, 10, 1, false);
   guiStart = new guiCircle(centerX, centerY, 200, ("READY\n\nTo start, hover\neach hand over the\nleft and right\ncircle"), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, true);
   guiForceExit = new guiCircle(nwX, nwY, radiusM, "LEAVING", 1, 32, red, color(100), red, 6, 15, true);
   guiExit = new guiCircle(nwX, nwY, radiusM, "EXIT", 1, 32, red, color(100), red, 6, 1, false);
   guiAgain = new guiCircle(noX, noY, radiusM, "AGAIN", 1, 32, green, color(100), green, 6, 1, false);
   guiMore = new guiCircle(soX, soY, radiusM, "MORE", 1, 32, orange, color(100), orange, 6, 0.5, false);
   guiLess = new guiCircle(swX, swY, radiusM, "LESS", 1, 32, orange, color(100), orange, 6, 0.5, false);
-  guiStartRight = new guiCircle(soX, soY, radiusM, "RIGHT", 1, 32, green, color(100), green, 6, 0.5, false);
-  guiStartLeft = new guiCircle(swX, swY, radiusM, "LEFT", 1, 32, green, color(100), green, 6, 0.5, false);
+  guiStartRight = new guiCircle(soX - 30, soY, radiusM, "RIGHT", 1, 32, green, color(100), green, 6, 0.5, false);
+  guiStartLeft = new guiCircle(swX + 30, swY, radiusM, "LEFT", 1, 32, green, color(100), green, 6, 0.5, false);
 
   initHoles();
 }
