@@ -35,12 +35,19 @@ class gamestart {
 
       if (!calibrated && (p.x > 50 && p.x < width / 5 || (p.x > ((width / 5) * 4) - detail) && p.x < width - 70)) {
 
+        if (!humanDetected && d > 2 * threshold) {
+          humanDetected = true;
+        }
+
         if (d > threshold && (p.y < timerAnimation)) {
           count++;
           fill(red);
-          humanDetected = true;
         } else if (p.y < timerAnimation) {
-          fill(green);
+          if (humanDetected) {
+            fill(green);
+          } else {
+            fill(red);
+          }
         }
         noStroke();
         ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
@@ -85,7 +92,7 @@ class gamestart {
       guiCalibration.show();
       humanDetected = false;
       guiCalibration.reset();
-    } else if(!humanDetected) {
+    } else if (!humanDetected) {
       guiNoHuman.show();
     }
 
@@ -97,7 +104,7 @@ class gamestart {
     } else if (humanDetected && guiStart.done()) {
       calibrated = false;
       humanDetected = false;
-    } else if (humanDetected){
+    } else if (humanDetected) {
       guiStart.show();
       guiStartLeft.show();
       guiStartRight.show();
