@@ -31,8 +31,8 @@ class gamestart {
       frozenPixel = rasterFrozen.get(pixelIndex);
       d = calcColorDifference(p, frozenPixel.col);
 
-      if (!calibrated && (p.x > 100 && p.x < width / 5 || (p.x > ((width / 5) * 4) - detail) && p.x < width - 120)) {
-        if (d > 15) {
+      if (!calibrated && (p.x > 50 && p.x < width / 5 || (p.x > ((width / 5) * 4) - detail) && p.x < width - 70)) {
+        if (d > threshold) {
           count++;
           fill(red);
         } else {
@@ -48,8 +48,8 @@ class gamestart {
         ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
       }
 
-      if (calibrated && (d > thresholdFreze)) {
-        //Berechnung der Touchfelder für EXIT, AGAIN, MORE and LESS
+      if (calibrated && (d > threshold)) {
+        //Berechnung der Touchfelder für StartLeft und startRight
         pixelTouched(p, guiStartLeft);
         pixelTouched(p, guiStartRight);
       }    
@@ -58,6 +58,7 @@ class gamestart {
 
     if (!calibrated && (count < 5)) {
       if (guiCalibration.done()) {
+        soundCollect.play();
         calibrated = true;
       }
     } else if (!calibrated && guiCalibration.running()) {

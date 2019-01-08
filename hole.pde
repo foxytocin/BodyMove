@@ -1,8 +1,6 @@
 class hole {
 
-  float x = 0;
-  float y = 0;
-  float circleSize = 0;
+  float x, y, circleSize;
   color fillCol = color(255, 255, 255);
   color strokeCol = color(100);
   boolean a = false;
