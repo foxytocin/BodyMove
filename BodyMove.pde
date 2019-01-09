@@ -2,7 +2,7 @@ import processing.video.*;
 import processing.sound.*;
 
 //Spielvriablen
-int holeAmount = 5;
+int holeAmount = 40;
 float contrast = 0.735;
 float threshold = 38;
 float scaleWidth;
@@ -127,14 +127,14 @@ void draw() {
   case "playing":
     trackMovement.show();
     b.update();
-    b.show();
     l.show();
+    b.show();
     gameplay();
     break;
   case "paused":
     trackMovement.show();
-    b.show();
     l.show();
+    b.show();
     gameplay();
     break;
   case "endScreen":
@@ -290,7 +290,7 @@ color extractColorFromImage(final PImage img) {
 void initHoles() {
   holes.clear();
   int noFreeSpaceCounter = 0;
-  while (holes.size() < holeAmount && noFreeSpaceCounter < 50) {
+  while (holes.size() < holeAmount && noFreeSpaceCounter < 1000) {
     float x = random(75, width - 75);
     float y = random(75, height - 250);
 
@@ -320,7 +320,7 @@ void pickTarget() {
 
 boolean noOverlap(float x, float y) {
   for (hole h : holes) {
-    if (dist(x, y, h.x, h.y) > 2 * circleSize) {
+    if (dist(x, y, h.x, h.y) > circleSize) {
       continue;
     } else {
       return false;

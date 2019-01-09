@@ -72,6 +72,12 @@ class guiCircle {
   void show() {
     pushMatrix();
     translate(x, y);
+
+    //Schatten
+    //noStroke();
+    //fill(50);
+    //ellipse(8, 8, (2 * r), (2 * r));
+
     noStroke();
     fill(colFill);
     ellipse(0, 0, 2 * r, 2 * r);
@@ -83,7 +89,7 @@ class guiCircle {
     noFill();
     stroke(colRing);
     strokeWeight(stroke);
-    arc(0, 0, 2 * r, 2 * r, 0, angel);
+    arc(0, 0, 2 * (r + stroke / 2), 2 * (r + stroke / 2), 0, angel);
     popMatrix();
   }
 }
