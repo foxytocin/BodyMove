@@ -46,21 +46,21 @@ class guiCircle {
   }
 
   boolean done() {
-    if (timer < (sec * 60)) {
+    if (timer < (sec * frames)) {
       timer++;
       if (!ticks) {
-        angel = map(timer, 0, (sec * 60), TWO_PI, 0);
+        angel = map(timer, 0, (sec * frames), TWO_PI, 0);
       } else {  
-        colRing = rainbow.rainbow[floor(map(timer, 0, (sec * 60), 2000, 20000))];
+        colRing = rainbow.rainbow[floor(map(timer, 0, (sec * frames), 2000, 20000))];
         colText = colRing;
-        if (timer % 60 == 0) {
+        if (timer % frames == 0) {
           if (!soundClock.isPlaying()) {
             soundClock.amp(0.5);
             soundClock.play();
           }
-          steps += 60;
+          steps += frames;
         }
-        angel = map(steps, 0, (sec * 60), TWO_PI, 0);
+        angel = map(steps, 0, (sec * frames), TWO_PI, 0);
       }
       return false;
     } else {
