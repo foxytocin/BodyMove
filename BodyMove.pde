@@ -2,13 +2,13 @@ import processing.video.*;
 import processing.sound.*;
 
 //Spielvriablen
-int holeAmount = 10;
+int holeAmount = 5;
 float contrast = 0.735;
-float threshold = 20;
+float threshold = 38;
 float scaleWidth;
 float scaleHeight;
 float circleSize = 60;
-int detail = 10;
+int detail = 8;
 
 color colorChange = color(0, 0, 0);
 color backgroundCol = color(100);
@@ -35,7 +35,7 @@ gamehandler gh = new gamehandler();
 gamestart gs = new gamestart();
 
 //Gui Elemente
-guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner, guiForceExit, guiCalibration, guiStart, guiStartLeft, guiStartRight, guiLoading;
+guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner, guiForceExit, guiCalibration, guiStart, guiStartLeft, guiStartRight, guiLoading, guiNoHuman;
 float nwX, nwY, noX, noY, soX, soY, swX, swY, centerX, centerY, border, radiusM;
 
 //Sound
@@ -74,21 +74,22 @@ void setup() {
   //Gui Elemente
   border = 150;
   radiusM = 80;
-  nwX = border;
+  nwX = border + 30;
   nwY = border;
-  noX = width - border;
+  noX = width - border - 30;
   noY = border;
-  soX = width - border;
+  soX = width - border - 30;
   soY = height - border;
-  swX = border;
+  swX = border + 30;
   swY = height - border;
   centerX = width / 2;
   centerY = height / 2;
   guiLoading = new guiCircle(centerX, centerY, 200, ("LOADING"), 1, 52, orange, color(100), orange, 10, 2, false);
   guiPause = new guiCircle(centerX, centerY, 200, "PAUSED\n\nIf time's up, you're\nout. To continue\nspread your arms", 7, 32, textCol, color(100), red, 10, 15, true);
   guiWinner = new guiCircle(centerX, centerY, 200, ("WINNER TEXT"), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, false);
-  guiCalibration = new guiCircle(centerX, centerY, 200, "CALIBRATING\n\nPlace yourself in the\nmiddle of the screen\nDon't move", 6, 32, orange, color(100), orange, 10, 1.5, false);
-  guiStart = new guiCircle(centerX, centerY, 200, ("READY\n\nTo start, hover\neach hand over the\nleft and right\ncircle"), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, true);
+  guiCalibration = new guiCircle(centerX, centerY, 200, "CALIBRATING\n\nPlace yourself in the\nmiddle of the screen\n Lower your arms\nDon't move", 7, 32, orange, color(100), orange, 10, 1.5, false);
+  guiNoHuman = new guiCircle(centerX, centerY, 200, "MISSING PLAYER\n\nCan't detect any motion\nStep in the middle of\nthe screen and\nwave your arms", 7, 32, red, color(100), red, 10, 1, false);
+  guiStart = new guiCircle(centerX, centerY, 200, ("READY\n\nTo start, hover\neach hand over the\nleft and right\ncircle"), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 10, true);
   guiForceExit = new guiCircle(nwX, nwY, radiusM, "LEAVING", 1, 32, red, color(100), red, 6, 15, true);
   guiExit = new guiCircle(nwX, nwY, radiusM, "EXIT", 1, 32, red, color(100), red, 6, 1, false);
   guiAgain = new guiCircle(noX, noY, radiusM, "AGAIN", 1, 32, green, color(100), green, 6, 1, false);
@@ -101,7 +102,8 @@ void setup() {
 }
 
 void draw() {
-  frameRate(60);
+  frameRate(30);
+  println(frameRate);
   background(backgroundCol);
   scaleWidth = width / (float)video.width;
   scaleHeight = height / (float)video.height;
@@ -191,12 +193,20 @@ void gameplay() {
 
 void keyPressed() {
   if (key == CODED) {
-    if (keyCode == RIGHT) {
+    if (keyCode == UP) {
       if (contrast < 0.95)
         contrast += 0.05;
-    } else if (keyCode == LEFT) {
+    } else if (keyCode == DOWN) {
       if (contrast >= 0.1)
         contrast -= 0.05;
+    } else if (keyCode == RIGHT) {
+      if (threshold < 100)
+        threshold += 1;
+        println(threshold);
+    } else if (keyCode == LEFT) {
+      if (threshold >= 0)
+        threshold -= 1;
+        println(threshold);
     }
   }
   if (key == 't' && !trackMov) {
@@ -305,12 +315,12 @@ void pickTarget() {
 }
 
 boolean noOverlap(float x, float y) {
-    for (hole h: holes) {
-      if (dist(x, y, h.x, h.y) > 2 * circleSize) {
-        continue;
-      } else {
-        return false;
-      }
+  for (hole h : holes) {
+    if (dist(x, y, h.x, h.y) > 2 * circleSize) {
+      continue;
+    } else {
+      return false;
     }
+  }
   return true;
 }

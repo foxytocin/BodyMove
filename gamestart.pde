@@ -6,9 +6,11 @@ class gamestart {
   boolean calibrated = false;
   boolean readyLeft = false;
   boolean readyRight = false;
+  boolean humanDetected = false;
   float d;
   int pixelMin = 10;
   int pixelMax = 3;
+  float timerAnimation = 0;
 
   gamestart() {
   }
@@ -32,14 +34,29 @@ class gamestart {
       d = calcColorDifference(p, frozenPixel.col);
 
       if (!calibrated && (p.x > 50 && p.x < width / 5 || (p.x > ((width / 5) * 4) - detail) && p.x < width - 70)) {
-        if (d > threshold) {
+
+        if (!humanDetected && d > 2 * threshold) {
+          humanDetected = true;
+        }
+
+        if (d > threshold && (p.y < timerAnimation)) {
           count++;
           fill(red);
+        } else if (p.y < timerAnimation) {
+          if (humanDetected) {
+            fill(green);
+          } else {
+            fill(red);
+          }
         } else {
-          fill(green);
+          fill(p.col);
         }
         noStroke();
         ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
+
+        if (timerAnimation < height) {
+          timerAnimation += 0.025;
+        }
       } else {
         //Pixel bei denen eine Veraenderung erkannt wurde
         //fill(30, 100);
@@ -52,27 +69,44 @@ class gamestart {
         //Berechnung der Touchfelder für StartLeft und startRight
         pixelTouched(p, guiStartLeft);
         pixelTouched(p, guiStartRight);
-      }    
+      }
+
+      if (calibrated && (p.x > 50 && p.x < width / 5 || (p.x > ((width / 5) * 4) - detail) && p.x < width - 70)) {
+
+        if ((p.y < timerAnimation)) {
+          fill(green);
+          ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
+        }
+
+        if (timerAnimation >= 0) {
+          timerAnimation -= 0.025;
+        }
+      }
       pixelIndex++;
     }
 
-    if (!calibrated && (count < 5)) {
+    if (humanDetected && !calibrated && (count < 5)) {
       if (guiCalibration.done()) {
         soundCollect.play();
         calibrated = true;
       }
     } else if (!calibrated && guiCalibration.running()) {
+      guiCalibration.show();
+      humanDetected = false;
       guiCalibration.reset();
+    } else if (!humanDetected) {
+      guiNoHuman.show();
     }
 
-    if (!calibrated) {
+    if (!calibrated && humanDetected) {
       guiCalibration.show();
       if (frameCount % 60 == 0) {
         rasterFrozen = generateFrozen();
       }
-    } else if (guiStart.done()) {
+    } else if (humanDetected && guiStart.done()) {
       calibrated = false;
-    } else {
+      humanDetected = false;
+    } else if (humanDetected) {
       guiStart.show();
       guiStartLeft.show();
       guiStartRight.show();
