@@ -1,16 +1,14 @@
 class ball {
 
-  float circleSize = 10;
-  float x = width / 2;
-  float y = (height - detail - circleSize / 2);
-  float mx;
+  float x, y, circleSize;
+  float mx = 0;
   float speed = 1.5;
   float velocity = 0.0;
   float acceleration = 0.0;
   float damping = 0.8;
   boolean wallR = false;
   boolean wallL = false;
-  float volumeStone;
+  float volumeStone = 0;
   float panStone = 0.5;
   int rainbowIndex = 0;
 

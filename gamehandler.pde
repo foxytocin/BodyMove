@@ -35,6 +35,8 @@ class gamehandler {
     endScreen = false;
     restart = false;
     gs.calibrated = false;
+    gs.timerAnimation = 0;
+    gs.humanDetected = false;
     trackMovement.avgLeft = (height - detail);
     trackMovement.avgRight = (height - detail);
     trackMovement.posLeft = (height - detail);

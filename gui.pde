@@ -11,6 +11,19 @@ class gui {
   
   int max = 30;
   int min = 5;
+  
+String convertNoteToGrade(int note_) {
+      String note = String.valueOf(note_);
+      switch(note) {
+      case "1": return "A";
+      case "2": return "B";
+      case "3": return "C";
+      case "4": return "D";
+      case "5": return "E";
+      case "6": return "F";
+      default: return "ERROR";
+      }
+  }
 
   void show() {
     //Pause
@@ -27,16 +40,7 @@ class gui {
     //Ende Screen WINNER
     if (gh.endScreen) {
       //WINNER LABEL  
-      String grade = "";
-      switch(note) {
-      case 1: grade = "A"; break;
-      case 2: grade = "B"; break;
-      case 3: grade = "C"; break;
-      case 4: grade = "D"; break;
-      case 5: grade = "E"; break;
-      case 6: grade = "F"; break;
-      }
-      
+      String grade = convertNoteToGrade(note);
       color qualCol = rainbow.rainbow[b.rainbowIndex];
       guiWinner.colRing = qualCol;
       guiWinner.colText = qualCol;
