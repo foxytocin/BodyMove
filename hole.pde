@@ -28,8 +28,8 @@ class hole {
       fillCol = color(255, 255, 255);
     }
   }
-
-  void show() {
+  
+   void show() {
     stroke(strokeCol);
     fill(fillCol);
     strokeWeight(3);

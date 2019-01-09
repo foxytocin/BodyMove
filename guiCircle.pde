@@ -46,21 +46,21 @@ class guiCircle {
   }
 
   boolean done() {
-    if (timer < (sec * 60)) {
+    if (timer < (sec * frames)) {
       timer++;
       if (!ticks) {
-        angel = map(timer, 0, (sec * 60), TWO_PI, 0);
+        angel = map(timer, 0, (sec * frames), TWO_PI, 0);
       } else {  
-        colRing = rainbow.rainbow[floor(map(timer, 0, (sec * 60), 2000, 20000))];
+        colRing = rainbow.rainbow[floor(map(timer, 0, (sec * frames), 2000, 20000))];
         colText = colRing;
-        if (timer % 60 == 0) {
+        if (timer % frames == 0) {
           if (!soundClock.isPlaying()) {
             soundClock.amp(0.5);
             soundClock.play();
           }
-          steps += 60;
+          steps += frames;
         }
-        angel = map(steps, 0, (sec * 60), TWO_PI, 0);
+        angel = map(steps, 0, (sec * frames), TWO_PI, 0);
       }
       return false;
     } else {
@@ -72,6 +72,12 @@ class guiCircle {
   void show() {
     pushMatrix();
     translate(x, y);
+
+    //Schatten
+    //noStroke();
+    //fill(50);
+    //ellipse(8, 8, (2 * r), (2 * r));
+
     noStroke();
     fill(colFill);
     ellipse(0, 0, 2 * r, 2 * r);
@@ -83,7 +89,7 @@ class guiCircle {
     noFill();
     stroke(colRing);
     strokeWeight(stroke);
-    arc(0, 0, 2 * r, 2 * r, 0, angel);
+    arc(0, 0, 2 * (r + stroke / 2), 2 * (r + stroke / 2), 0, angel);
     popMatrix();
   }
 }

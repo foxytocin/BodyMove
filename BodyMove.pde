@@ -2,13 +2,14 @@ import processing.video.*;
 import processing.sound.*;
 
 //Spielvriablen
-int holeAmount = 5;
+int holeAmount = 40;
 float contrast = 0.735;
 float threshold = 38;
 float scaleWidth;
 float scaleHeight;
 float circleSize = 60;
-int detail = 8;
+int detail = 10;
+  int frames = 60;
 
 color colorChange = color(0, 0, 0);
 color backgroundCol = color(100);
@@ -102,8 +103,8 @@ void setup() {
 }
 
 void draw() {
-  frameRate(30);
-  println(frameRate);
+  frameRate(frames);
+  //println(frameRate);
   background(backgroundCol);
   scaleWidth = width / (float)video.width;
   scaleHeight = height / (float)video.height;
@@ -126,13 +127,13 @@ void draw() {
   case "playing":
     trackMovement.show();
     b.update();
-    l.show(); 
+    l.show();
     b.show();
     gameplay();
     break;
   case "paused":
     trackMovement.show();
-    l.show(); 
+    l.show();
     b.show();
     gameplay();
     break;
@@ -144,6 +145,9 @@ void draw() {
     break;
   }
   g.show();
+
+  if (frameCount % 30 == 0)
+    getContrast();
 }
 
 ArrayList<pixel> generateFrozen() {
@@ -202,11 +206,11 @@ void keyPressed() {
     } else if (keyCode == RIGHT) {
       if (threshold < 100)
         threshold += 1;
-        println(threshold);
+      println(threshold);
     } else if (keyCode == LEFT) {
       if (threshold >= 0)
         threshold -= 1;
-        println(threshold);
+      println(threshold);
     }
   }
   if (key == 't' && !trackMov) {
@@ -219,10 +223,10 @@ void keyPressed() {
   } else if (key == 'h' && hideInput) {
     hideInput = false;
   }
-  if (key==' ') {
+  if (key=='r') {
     gh.restart();
   }
-  if (key=='r') {
+  if (key=='s') {
     gh.startScreen();
   }
   if (key=='p') {
@@ -286,7 +290,7 @@ color extractColorFromImage(final PImage img) {
 void initHoles() {
   holes.clear();
   int noFreeSpaceCounter = 0;
-  while (holes.size() < holeAmount && noFreeSpaceCounter < 50) {
+  while (holes.size() < holeAmount && noFreeSpaceCounter < 1000) {
     float x = random(75, width - 75);
     float y = random(75, height - 250);
 
@@ -316,11 +320,38 @@ void pickTarget() {
 
 boolean noOverlap(float x, float y) {
   for (hole h : holes) {
-    if (dist(x, y, h.x, h.y) > 2 * circleSize) {
+    if (dist(x, y, h.x, h.y) > circleSize) {
       continue;
     } else {
       return false;
     }
   }
   return true;
+}
+
+float con = 0;
+float calls = 0;
+float sum = 0;
+void getContrast() {
+  calls++;
+  float brightness = 0;
+  float contrast = 0;
+  video.loadPixels();
+  for (int i=0; i < video.pixels.length; i++) {
+    brightness += brightness(video.pixels[i]);
+  }
+
+  float avgBrightness = brightness / video.pixels.length;
+  float diffBrightness = 0;
+  for (int i=0; i < video.pixels.length; i++) {
+    brightness = brightness(video.pixels[i]);
+    diffBrightness = brightness - avgBrightness;
+    diffBrightness = diffBrightness * diffBrightness;
+    contrast += diffBrightness;
+  }
+  contrast = contrast / video.pixels.length;
+
+  con += contrast;
+  sum = con / calls;
+  println("KONTRAST: " +(int)sum);
 }
