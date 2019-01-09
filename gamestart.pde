@@ -48,6 +48,8 @@ class gamestart {
           } else {
             fill(red);
           }
+        } else {
+          fill(p.col);
         }
         noStroke();
         ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
