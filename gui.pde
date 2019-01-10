@@ -8,6 +8,7 @@ class gui {
   boolean countDown = false;
   int pixelMin = 10;
   int pixelMax = 3;
+  String endReason = "";
   
   int max = 30;
   int min = 5;
@@ -44,7 +45,7 @@ String convertNoteToGrade(int note_) {
       color qualCol = rainbow.rainbow[b.rainbowIndex];
       guiWinner.colRing = qualCol;
       guiWinner.colText = qualCol;
-      guiWinner.label = "WINNER\n\nYou reached " +(int)qual+ "%\nin quality\n\nGrade: " +grade;
+      guiWinner.label = endReason+ "\n\nYou reached " +(int)qual+ "%\nin quality\n\nGrade: " +grade;
 
       //MENU FORCE EXIT
       if ((guiExit.pixelCount < pixelMax) && (guiAgain.pixelCount < pixelMax) && (guiMore.pixelCount < pixelMax) && (guiLess.pixelCount < pixelMax)) {

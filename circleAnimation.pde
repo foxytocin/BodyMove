@@ -6,7 +6,8 @@ class circleAnimation {
   color col;
   boolean finished = false;
 
-  circleAnimation() {}
+  circleAnimation() {
+  }
 
   circleAnimation(hole h_, String reason) {
     x = h_.x;
@@ -16,13 +17,15 @@ class circleAnimation {
       col = red;
     if (reason == "goal")
       col = green;
+    if (reason == "dead")
+      col = color(0);
   }
 
   void update() {
     circleAcc += 4;
     circleSize += circleAcc;
     alpha = map(circleSize, r, width / 2, 255, 0);  
-    if(circleSize > (width / 2))
+    if (circleSize > (width / 2))
       finished = true;
   }
 
