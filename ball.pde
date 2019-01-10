@@ -10,10 +10,11 @@ class ball {
   boolean wallL = false;
   float volumeStone = 0;
   float panStone = 0.5;
-  int rainbowIndex = 0;
+  int rainbowIndex = 20000;
   int timer = 1;
   float sec = 0.5;
   boolean shrinks = false;
+  float value = 0;
 
   ball(float x_, float y_, float circleSize_) {
     x = x_;
@@ -43,8 +44,14 @@ class ball {
       bounceWall();
       motion();
       sound();
-      rainbowIndex = (int)map(g.qual, 100, 0, 2000, 20000);
+      colorFade();
     }
+  }
+
+  void colorFade() {
+    value = lerp(value, g.qual, 0.01);
+    rainbowIndex = (int)map(value, 100, 0, 2000, 20000);
+    //println("RainbowIndex: " +rainbowIndex);
   }
 
   void show() {
@@ -114,6 +121,7 @@ class ball {
   }
 
   void reset() {
+    value = 0;
     shrinks = false;
     acceleration = 0;
     velocity = 0;

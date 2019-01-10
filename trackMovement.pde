@@ -102,7 +102,7 @@ class trackMovement {
     avgLeft /= countLeft;
     avgRight /= countRight;
 
-    if (!gh.startScreen) {
+    if (!gh.startScreen && !b.shrinks) {
       if (!gh.endScreen && (countLeft < 4 || countRight < 4)) {
         gh.paused();
       } else if (!gh.endScreen) {

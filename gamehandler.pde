@@ -28,6 +28,9 @@ class gamehandler {
   }
 
   void startScreen() {
+    if (soundScream.isPlaying()) {
+      soundScream.stop();
+    }
     loading = false;
     startScreen = true;
     playing = false;
@@ -75,6 +78,9 @@ class gamehandler {
   }
 
   void restart() {
+    if (soundScream.isPlaying()) {
+      soundScream.stop();
+    }
     status = "playing";
     loading = false;
     startScreen = false;

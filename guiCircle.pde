@@ -89,7 +89,7 @@ class guiCircle {
     noFill();
     stroke(colRing);
     strokeWeight(stroke);
-    arc(0, 0, 2 * (r + stroke / 2), 2 * (r + stroke / 2), 0, angel);
+    arc(0, 0, 2 * r + (stroke / 2), 2 * r + (stroke / 2), 0, angel);
     popMatrix();
   }
 }

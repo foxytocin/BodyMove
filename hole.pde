@@ -67,6 +67,8 @@ class hole {
           touched = true;
           collected = true;
           g.target++;
+          g.collectedPoints += points;
+          //println("Treffer! Plus " +points+ " Punkte. Aktueller Stand = " +g.collectedPoints+ " / Treffer: " +g.target+ " / Fehler: " +g.error+ " Quote: " +(g.target / (g.target + g.error)));
           return "goal";
         }
       } else if (touched && activ) {
