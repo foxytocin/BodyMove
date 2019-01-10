@@ -18,6 +18,13 @@ class trackMovement {
   trackMovement() {
   }
 
+  void reset() {
+    avgLeft = (height - detail);
+    avgRight = (height - detail);
+    posLeft = (height - detail);
+    posRight = (height - detail);
+  }
+
   void pixelTouched(pixel p, guiCircle button) {
     if (p.x > (button.x - button.r) &&  p.x < (button.x + button.r) && p.y > (button.y - button.r) && p.y < (button.y + button.r)) {
       button.pixelCount++;
@@ -30,7 +37,7 @@ class trackMovement {
     avgRight = 1;
     countLeft = 1;
     countRight = 1;
-    
+
     guiAgain.pixelCount = 0;
     guiExit.pixelCount = 0;
     guiMore.pixelCount = 0;
@@ -95,7 +102,7 @@ class trackMovement {
     avgLeft /= countLeft;
     avgRight /= countRight;
 
-    if (!gh.startScreen) {
+    if (!gh.startScreen && !b.shrinks) {
       if (!gh.endScreen && (countLeft < 4 || countRight < 4)) {
         gh.paused();
       } else if (!gh.endScreen) {
@@ -103,11 +110,11 @@ class trackMovement {
       }
     }
 
-    if (!gh.paused && !gh.endScreen && avgLeft != 1) {
+    if (!b.shrinks && !gh.paused && !gh.endScreen && avgLeft != 1) {
       posLeft = lerp(posLeft, avgLeft, 0.7);
     }
 
-    if (!gh.paused && !gh.endScreen && avgRight != 1) {
+    if (!b.shrinks && !gh.paused && !gh.endScreen && avgRight != 1) {
       posRight = lerp(posRight, avgRight, 0.7);
     }
 
