@@ -4,27 +4,28 @@ class circleAnimation {
   float circleAcc = 0;
   float x, y, r, alpha;
   color col;
-  color errorCol = color(252, 1, 31);
-  color goalCol = color(98, 252, 2);
   boolean finished = false;
 
-  circleAnimation() {}
+  circleAnimation() {
+  }
 
   circleAnimation(hole h_, String reason) {
     x = h_.x;
     y = h_.y;
     r = h_.circleSize;
     if (reason == "error")
-      col = errorCol;
+      col = red;
     if (reason == "goal")
-      col = goalCol;
+      col = green;
+    if (reason == "dead")
+      col = color(0);
   }
 
   void update() {
     circleAcc += 4;
     circleSize += circleAcc;
-    alpha = map(circleSize, r, 600, 250, 0);  
-    if(circleSize > 600)
+    alpha = map(circleSize, r, width / 2, 255, 0);  
+    if (circleSize > (width / 2))
       finished = true;
   }
 

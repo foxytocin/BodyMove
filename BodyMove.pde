@@ -2,13 +2,14 @@ import processing.video.*;
 import processing.sound.*;
 
 //Spielvriablen
-int holeAmount = 5;
+int holeAmount = 10;
 float contrast = 0.735;
 float threshold = 38;
 float scaleWidth;
 float scaleHeight;
 float circleSize = 60;
 int detail = 8;
+int frames = 60;
 
 color colorChange = color(0, 0, 0);
 color backgroundCol = color(100);
@@ -20,6 +21,7 @@ color textCol = color(50);
 ArrayList<pixel> rasterFrozen;
 ArrayList<pixel> raster;
 ArrayList<hole> holes;
+ArrayList<hole> deadHoles;
 ArrayList<circleAnimation> circleAnimations;
 boolean hideInput;
 color trackCol;
@@ -39,7 +41,7 @@ guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner, guiForceExit
 float nwX, nwY, noX, noY, soX, soY, swX, swY, centerX, centerY, border, radiusM;
 
 //Sound
-SoundFile soundCollect, soundError, soundRollingStone, soundButton, soundMusic, soundClock;
+SoundFile soundCollect, soundError, soundRollingStone, soundButton, soundMusic, soundClock, soundScream, soundWinner;
 
 void setup() {
   // Load a soundfile from the /data folder of the sketch and play it back
@@ -49,6 +51,8 @@ void setup() {
   soundButton = new SoundFile(this, "button.mp3");
   soundClock = new SoundFile(this, "clock.mp3");
   soundMusic = new SoundFile(this, "music.mp3");
+  soundScream = new SoundFile(this, "scream.mp3");
+  soundWinner = new SoundFile(this, "winner.mp3");
   soundButton.amp(0.5);
   soundMusic.amp(0.3);
   soundMusic.loop();
@@ -68,6 +72,7 @@ void setup() {
   raster = new ArrayList<pixel>();
   rasterFrozen = new ArrayList<pixel>();
   holes = new ArrayList<hole>();
+  deadHoles = new ArrayList<hole>();
   trackMovement = new trackMovement();
   rainbow = new rainbow();
 
@@ -102,8 +107,8 @@ void setup() {
 }
 
 void draw() {
-  frameRate(30);
-  println(frameRate);
+  frameRate(frames);
+  //println(frameRate);
   background(backgroundCol);
   scaleWidth = width / (float)video.width;
   scaleHeight = height / (float)video.height;
@@ -126,24 +131,33 @@ void draw() {
   case "playing":
     trackMovement.show();
     b.update();
-    l.show(); 
+    circleAnimation();
+    deadHoles();
+    l.show();
     b.show();
-    gameplay();
+    holes();
     break;
   case "paused":
     trackMovement.show();
-    l.show(); 
+    circleAnimation();
+    deadHoles();
+    l.show();
     b.show();
-    gameplay();
+    holes();
     break;
   case "endScreen":
     trackMovement.show();
+    circleAnimation();
+    deadHoles();
     l.show(); 
     b.show();
-    gameplay();
+    holes();
     break;
   }
   g.show();
+
+  if (frameCount % 30 == 0)
+    getContrast();
 }
 
 ArrayList<pixel> generateFrozen() {
@@ -162,18 +176,7 @@ void calcThreshold() {
   println("AUTO: Contrast: " +contrast+ " / NotTracked: " +trackMovement.anteilAnGesamt+ " / thresholdFreze: " +threshold);
 }
 
-void gameplay() {
-  //CircleAnimation abspielen / aus dem Array entfernen wenn die Animation beendet wurde
-  for (int i = circleAnimations.size() - 1; i >= 0; i--) {
-    circleAnimation ca = circleAnimations.get(i);
-    if (ca.finished) {
-      circleAnimations.remove(i);
-    } else {
-      ca.update();
-      ca.show();
-    }
-  }
-
+void holes() {
   //Ueberprüft ob ein Hole vom Ball beruerht wir, ob ein Target-Hole erfolgreich gesammelt wurde und ob ein neuen Target-Hole erzeugt werden muss.
   for (int i = holes.size() - 1; i >= 0; i--) {
     hole h = holes.get(i);
@@ -183,11 +186,38 @@ void gameplay() {
       circleAnimations.add(a);
     }
     if (h.collected) {
+      h.deadHole = true;
+      h.circleSize *= 1.5;
+      deadHoles.add(h);
       holes.remove(h);
       pickTarget();
     }
     h.update();
     h.show();
+  }
+}
+
+void deadHoles() {
+  for (hole dh : deadHoles) {
+    String todo = dh.ballMatchHole();
+    if (todo != null) {
+      circleAnimation a = new circleAnimation(dh, todo);
+      circleAnimations.add(a);
+    }
+    dh.update();
+    dh.show();
+  }
+}
+
+void circleAnimation() {
+  for (int i = circleAnimations.size() - 1; i >= 0; i--) {
+    circleAnimation ca = circleAnimations.get(i);
+    if (ca.finished) {
+      circleAnimations.remove(i);
+    } else {
+      ca.update();
+      ca.show();
+    }
   }
 }
 
@@ -202,11 +232,11 @@ void keyPressed() {
     } else if (keyCode == RIGHT) {
       if (threshold < 100)
         threshold += 1;
-        println(threshold);
+      println(threshold);
     } else if (keyCode == LEFT) {
       if (threshold >= 0)
         threshold -= 1;
-        println(threshold);
+      println(threshold);
     }
   }
   if (key == 't' && !trackMov) {
@@ -219,10 +249,10 @@ void keyPressed() {
   } else if (key == 'h' && hideInput) {
     hideInput = false;
   }
-  if (key==' ') {
+  if (key=='r') {
     gh.restart();
   }
-  if (key=='r') {
+  if (key=='s') {
     gh.startScreen();
   }
   if (key=='p') {
@@ -285,8 +315,9 @@ color extractColorFromImage(final PImage img) {
 
 void initHoles() {
   holes.clear();
+  deadHoles.clear();
   int noFreeSpaceCounter = 0;
-  while (holes.size() < holeAmount && noFreeSpaceCounter < 50) {
+  while (holes.size() < holeAmount && noFreeSpaceCounter < 1000) {
     float x = random(75, width - 75);
     float y = random(75, height - 250);
 
@@ -310,17 +341,46 @@ void pickTarget() {
     int r = (int)random(holes.size());
     holes.get(r).target = true;
   } else {
+    soundWinner.play();
+    g.endReason = "YOU WIN";
     gh.endScreen();
   }
 }
 
 boolean noOverlap(float x, float y) {
   for (hole h : holes) {
-    if (dist(x, y, h.x, h.y) > 2 * circleSize) {
+    if (dist(x, y, h.x, h.y) > circleSize * 1.7) {
       continue;
     } else {
       return false;
     }
   }
   return true;
+}
+
+float con = 0;
+float calls = 0;
+float sum = 0;
+void getContrast() {
+  calls++;
+  float brightness = 0;
+  float contrast = 0;
+  video.loadPixels();
+  for (int i=0; i < video.pixels.length; i++) {
+    brightness += brightness(video.pixels[i]);
+  }
+
+  float avgBrightness = brightness / video.pixels.length;
+  float diffBrightness = 0;
+  for (int i=0; i < video.pixels.length; i++) {
+    brightness = brightness(video.pixels[i]);
+    diffBrightness = brightness - avgBrightness;
+    diffBrightness = diffBrightness * diffBrightness;
+    contrast += diffBrightness;
+  }
+  contrast = contrast / video.pixels.length;
+
+  con += contrast;
+  sum = con / calls;
+  println("KONTRAST: " +(int)sum);
 }

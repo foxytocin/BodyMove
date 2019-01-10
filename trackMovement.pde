@@ -104,11 +104,11 @@ class trackMovement {
     }
 
     if (!gh.paused && !gh.endScreen && avgLeft != 1) {
-      posLeft = lerp(posLeft, avgLeft, 0.5);
+      posLeft = lerp(posLeft, avgLeft, 0.7);
     }
 
     if (!gh.paused && !gh.endScreen && avgRight != 1) {
-      posRight = lerp(posRight, avgRight, 0.5);
+      posRight = lerp(posRight, avgRight, 0.7);
     }
 
     //Indikator gut jeder Arm erkannt wird

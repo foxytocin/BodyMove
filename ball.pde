@@ -2,7 +2,7 @@ class ball {
 
   float x, y, circleSize;
   float mx = 0;
-  float speed = 1.5;
+  float speed = 2;
   float velocity = 0.0;
   float acceleration = 0.0;
   float damping = 0.8;
@@ -29,7 +29,7 @@ class ball {
       acceleration = (-mx * speed);
       velocity += acceleration;
       newX = x += velocity;
-      x = lerp(x, newX, 0.8);
+      x = lerp(x, newX, 0.7);
     }
   }
 
