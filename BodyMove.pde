@@ -4,7 +4,7 @@ import processing.sound.*;
 //Spielvriablen
 int holeAmount = 10;
 float contrast = 0.735;
-float threshold = 38;
+float threshold = 37;
 float scaleWidth;
 float scaleHeight;
 float circleSize = 60;
@@ -17,6 +17,7 @@ color green = color(98, 252, 2);
 color red = color(252, 1, 31);
 color orange = color(255, 178, 56);
 color textCol = color(50);
+float points = 0;
 
 ArrayList<pixel> rasterFrozen;
 ArrayList<pixel> raster;
@@ -41,7 +42,7 @@ guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner, guiForceExit
 float nwX, nwY, noX, noY, soX, soY, swX, swY, centerX, centerY, border, radiusM;
 
 //Sound
-SoundFile soundCollect, soundError, soundRollingStone, soundButton, soundMusic, soundClock, soundScream, soundWinner;
+SoundFile soundCollect, soundError, soundRollingStone, soundButton, soundMusic, soundClock, soundScream, soundWinner, soundSuck;
 
 void setup() {
   // Load a soundfile from the /data folder of the sketch and play it back
@@ -53,6 +54,7 @@ void setup() {
   soundMusic = new SoundFile(this, "music.mp3");
   soundScream = new SoundFile(this, "scream.mp3");
   soundWinner = new SoundFile(this, "winner.mp3");
+  soundSuck = new SoundFile(this, "suck.wav");
   soundButton.amp(0.5);
   soundMusic.amp(0.3);
   soundMusic.loop();
@@ -91,7 +93,7 @@ void setup() {
   centerY = height / 2;
   guiLoading = new guiCircle(centerX, centerY, 200, ("LOADING"), 1, 52, orange, color(100), orange, 10, 2, false);
   guiPause = new guiCircle(centerX, centerY, 200, "PAUSED\n\nIf time's up, you're\nout. To continue\nspread your arms", 7, 32, textCol, color(100), red, 10, 15, true);
-  guiWinner = new guiCircle(centerX, centerY, 200, ("WINNER TEXT"), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, false);
+  guiWinner = new guiCircle(centerX, centerY, 200, ("WINNER TEXT"), 8, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, false);
   guiCalibration = new guiCircle(centerX, centerY, 200, "CALIBRATING\n\nPlace yourself in the\nmiddle of the screen\n Lower your arms\nDon't move", 7, 32, orange, color(100), orange, 10, 1.5, false);
   guiNoHuman = new guiCircle(centerX, centerY, 200, "MISSING PLAYER\n\nCan't detect any motion\nStep in the middle of\nthe screen and\nwave your arms", 7, 32, red, color(100), red, 10, 1, false);
   guiStart = new guiCircle(centerX, centerY, 200, ("READY\n\nTo start, hover\neach hand over the\nleft and right\ncircle"), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 10, true);
@@ -156,8 +158,8 @@ void draw() {
   }
   g.show();
 
-  if (frameCount % 30 == 0)
-    getContrast();
+  //if (frameCount % 30 == 0)
+  //  getContrast();
 }
 
 ArrayList<pixel> generateFrozen() {
@@ -317,6 +319,7 @@ void initHoles() {
   holes.clear();
   deadHoles.clear();
   int noFreeSpaceCounter = 0;
+  points = 100 / holeAmount;
   while (holes.size() < holeAmount && noFreeSpaceCounter < 1000) {
     float x = random(75, width - 75);
     float y = random(75, height - 250);

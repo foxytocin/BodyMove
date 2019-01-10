@@ -2,28 +2,45 @@ class gui {
 
   float error = 0;
   float target = 0;
-  float qual = 100;
+  float collectedPoints = 0;
+  float qual = 0;
   int note = 1;
   int moreOrLessHoles = 0;
   boolean countDown = false;
   int pixelMin = 10;
   int pixelMax = 3;
   String endReason = "";
-  
+
   int max = 30;
   int min = 5;
-  
-String convertNoteToGrade(int note_) {
-      String note = String.valueOf(note_);
-      switch(note) {
-      case "1": return "A";
-      case "2": return "B";
-      case "3": return "C";
-      case "4": return "D";
-      case "5": return "E";
-      case "6": return "F";
-      default: return "ERROR";
-      }
+
+  String convertNoteToGrade(int note_) {
+    String note = String.valueOf(note_);
+    switch(note) {
+    case "1": 
+      return "A";
+    case "2": 
+      return "B";
+    case "3": 
+      return "C";
+    case "4": 
+      return "D";
+    case "5": 
+      return "E";
+    case "6": 
+      return "F";
+    default: 
+      return "ERROR";
+    }
+  }
+
+  void reset() {
+    error = 0;
+    target = 0;
+    qual = 0;
+    note = 1;
+    countDown = false;
+    collectedPoints = 0;
   }
 
   void show() {
@@ -45,7 +62,7 @@ String convertNoteToGrade(int note_) {
       color qualCol = rainbow.rainbow[b.rainbowIndex];
       guiWinner.colRing = qualCol;
       guiWinner.colText = qualCol;
-      guiWinner.label = endReason+ "\n\nYou reached " +(int)qual+ "%\nin quality\n\nGrade: " +grade;
+      guiWinner.label = endReason+ "\n\nYou reached\n" +(int)qual+ "%\nin quality\n\nGrade: " +grade;
 
       //MENU FORCE EXIT
       if ((guiExit.pixelCount < pixelMax) && (guiAgain.pixelCount < pixelMax) && (guiMore.pixelCount < pixelMax) && (guiLess.pixelCount < pixelMax)) {
@@ -158,17 +175,17 @@ String convertNoteToGrade(int note_) {
       guiMore.show();
       guiLess.show();
     }
+    
+    if (target > 0 || error > 0) {
+        qual = (target / (target + error)) * collectedPoints;
+        note = (int)map(qual - points, 0, 100, 6, 1);
+      }
 
     if (gh.playing) {
       noStroke();
       fill(100);
       rectMode(CORNER);
       rect(0, 0, detail * scaleWidth * 6, detail * scaleHeight * 3, 10);
-      if (target > 0 || error > 0) {
-        qual = target / (target + error) * 100;
-        note = (int)map(qual, 0, 100, 6, 1);
-      }
-      
       pushMatrix();
       translate(20, 30);
       textAlign(LEFT);
