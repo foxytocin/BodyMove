@@ -1,6 +1,6 @@
 class ball {
 
-  float x, y, circleSize;
+  float x, y, circleSize, circleSizeFix;
   float mx = 0;
   float speed = 2;
   float velocity = 0.0;
@@ -11,11 +11,15 @@ class ball {
   float volumeStone = 0;
   float panStone = 0.5;
   int rainbowIndex = 0;
+  int timer = 1;
+  float sec = 0.5;
+  boolean shrinks = false;
 
   ball(float x_, float y_, float circleSize_) {
     x = x_;
     y = y_;
     circleSize = circleSize_;
+    circleSizeFix = circleSize_;
   }
 
   void motion() {
@@ -34,11 +38,13 @@ class ball {
   }
 
   void update() {
-    calcPos();
-    bounceWall();
-    motion();
-    sound();
-    rainbowIndex = (int)map(g.qual, 100, 0, 2000, 20000);
+    if (!shrinks) {
+      calcPos();
+      bounceWall();
+      motion();
+      sound();
+      rainbowIndex = (int)map(g.qual, 100, 0, 2000, 20000);
+    }
   }
 
   void show() {
@@ -92,5 +98,28 @@ class ball {
   void collisionHole() {
     velocity *= -1;
     velocity *= damping;
+  }
+
+  boolean done() {
+    if (timer < (sec * frames)) {
+      shrinks = true;
+      timer++;
+      acceleration = 0;
+      velocity = 0;
+      circleSize = map(timer, 0, (sec * frames), circleSizeFix, 0);
+      return false;
+    }
+    circleSize = 0;
+    return true;
+  }
+
+  void reset() {
+    shrinks = false;
+    acceleration = 0;
+    velocity = 0;
+    circleSize = circleSizeFix;
+    timer = 3;
+    x = (width / 2);
+    y = (height - detail - circleSize / 2);
   }
 }

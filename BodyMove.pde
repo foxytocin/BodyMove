@@ -4,7 +4,7 @@ import processing.sound.*;
 //Spielvriablen
 int holeAmount = 10;
 float contrast = 0.735;
-float threshold = 38;
+float threshold = 30;
 float scaleWidth;
 float scaleHeight;
 float circleSize = 60;
@@ -41,7 +41,7 @@ guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner, guiForceExit
 float nwX, nwY, noX, noY, soX, soY, swX, swY, centerX, centerY, border, radiusM;
 
 //Sound
-SoundFile soundCollect, soundError, soundRollingStone, soundButton, soundMusic, soundClock, soundScream, soundWinner;
+SoundFile soundCollect, soundError, soundRollingStone, soundButton, soundMusic, soundClock, soundScream, soundWinner, soundSuck;
 
 void setup() {
   // Load a soundfile from the /data folder of the sketch and play it back
@@ -53,12 +53,13 @@ void setup() {
   soundMusic = new SoundFile(this, "music.mp3");
   soundScream = new SoundFile(this, "scream.mp3");
   soundWinner = new SoundFile(this, "winner.mp3");
+  soundSuck = new SoundFile(this, "suck.wav");
   soundButton.amp(0.5);
   soundMusic.amp(0.3);
   soundMusic.loop();
 
-  fullScreen();
-  //size(1280, 720);
+  //fullScreen();
+  size(1280, 720);
   //printArray(Capture.list());
   video = new Capture(this, Capture.list()[3]);
   video.start();
@@ -156,8 +157,8 @@ void draw() {
   }
   g.show();
 
-  if (frameCount % 30 == 0)
-    getContrast();
+  //if (frameCount % 30 == 0)
+  //  getContrast();
 }
 
 ArrayList<pixel> generateFrozen() {

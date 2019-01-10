@@ -15,6 +15,14 @@ class gamestart {
   gamestart() {
   }
 
+  void reset() {
+    calibrated = false;
+    timerAnimation = 0;
+    humanDetected = false;
+    readyRight = false;
+    readyLeft = false;
+  }
+
   void pixelTouched(pixel p, guiCircle button) {
     if (p.x > (button.x - button.r) &&  p.x < (button.x + button.r) && p.y > (button.y - button.r) && p.y < (button.y + button.r)) {
       button.pixelCount++;

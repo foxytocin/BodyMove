@@ -76,13 +76,19 @@ class hole {
       }
     } else if (deadHole) {
       if (gh.playing && !collected && dist < (circleSize / 6)) {
-        
-        if(!soundScream.isPlaying())
-          soundScream.play();
-          
-        g.endReason = "YOU LOSE";
-        gh.endScreen();
-        return "dead";
+        if (b.done()) {
+          if (!soundScream.isPlaying())
+            soundScream.play();
+          g.endReason = "YOU LOSE";
+          gh.endScreen();
+          return "dead";
+        } else {
+          if (!soundSuck.isPlaying()) {
+            soundSuck.play();
+          }
+          b.velocity = 0;
+          b.acceleration = 0;
+        }
       } else if (collected && dist > circleSize) {
         collected = false;
       }
