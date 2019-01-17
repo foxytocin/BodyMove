@@ -6,8 +6,6 @@ class ball {
   float velocity = 0.0;
   float acceleration = 0.0;
   float damping = 0.8;
-  boolean wallR = false;
-  boolean wallL = false;
   float volumeStone = 0;
   float panStone = 0.5;
   int rainbowIndex = 20000;
@@ -26,16 +24,11 @@ class ball {
   void motion() {
     float newX;
     acceleration = 0;
-    if (wallL && mx > 0 && abs(velocity) < 0.5) {
-      x = circleSize / 2;
-    } else if (wallR && mx < 0 && abs(velocity) < 0.5) {
-      x = width - circleSize / 2;
-    } else {
-      acceleration = (-mx * speed);
-      velocity += acceleration;
-      newX = x += velocity;
-      x = lerp(x, newX, 0.7);
-    }
+    acceleration = (-mx * speed);
+    velocity += acceleration;
+    newX = x += velocity;
+    x = lerp(x, newX, 0.7);
+    x = constrain(x, circleSize/2, width-circleSize/2);
   }
 
   void update() {
@@ -51,7 +44,6 @@ class ball {
   void colorFade() {
     value = lerp(value, g.qual, 0.01);
     rainbowIndex = (int)map(value, 100, 0, 2000, 20000);
-    //println("RainbowIndex: " +rainbowIndex);
   }
 
   void show() {
@@ -88,17 +80,12 @@ class ball {
   }
 
   void bounceWall() {
-    if (!wallL && x - circleSize / 2 < 0) {
-      wallL = true;
+    if (x - circleSize / 2 <= 0) {
       velocity *= -1;
       velocity *= damping;
-    } else if (!wallR && x > width - circleSize / 2) {
-      wallR = true;
+    } else if (x >= width - circleSize / 2) {
       velocity *= -1;
       velocity *= damping;
-    } else if (x > 1.5 * circleSize / 2 && x < width - 1.5 * circleSize / 2) {
-      wallR = false;
-      wallL = false;
     }
   }
 

@@ -46,7 +46,6 @@ class gui {
   void show() {
     //Pause
     if (gh.paused) {
-
       if (guiPause.done()) {
         gh.startScreen();
       }
