@@ -42,11 +42,9 @@ class gamestart {
       d = calcColorDifference(p, frozenPixel.col);
 
       if (!calibrated && (p.x > 50 && p.x < width / 5 || (p.x > ((width / 5) * 4) - detail) && p.x < width - 70)) {
-
         if (!humanDetected && d > 2 * threshold) {
           humanDetected = true;
         }
-
         if (d > threshold && (p.y < timerAnimation)) {
           count++;
           fill(red);
@@ -61,7 +59,6 @@ class gamestart {
         }
         noStroke();
         ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
-
         if (timerAnimation < height) {
           timerAnimation += 0.025;
         }
@@ -72,20 +69,17 @@ class gamestart {
         noStroke();
         ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
       }
-
       if (calibrated && (d > threshold)) {
         //Berechnung der Touchfelder für StartLeft und startRight
         pixelTouched(p, guiStartLeft);
         pixelTouched(p, guiStartRight);
       }
-
       if (calibrated && (p.x > 50 && p.x < width / 5 || (p.x > ((width / 5) * 4) - detail) && p.x < width - 70)) {
 
         if ((p.y < timerAnimation)) {
           fill(green);
           ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
         }
-
         if (timerAnimation >= 0) {
           timerAnimation -= 0.025;
         }
