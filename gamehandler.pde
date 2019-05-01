@@ -6,6 +6,7 @@ class gamehandler {
   boolean paused = false;
   boolean endScreen = false;
   boolean restart = false;
+  boolean refreshBackground = true;
   String status = "loading";
 
   gamehandler() {
@@ -32,6 +33,7 @@ class gamehandler {
       soundScream.stop();
     }
     loading = false;
+    hideInput = false;
     startScreen = true;
     playing = false;
     paused = false;
@@ -47,6 +49,8 @@ class gamehandler {
 
   void playing() {
     status = "playing";
+    refreshBackground = true;
+    hideInput = true;
     loading = false;
     startScreen = false;
     playing = true;
@@ -56,28 +60,35 @@ class gamehandler {
   }
 
   void paused() {
+    if(!gh.endScreen && refreshBackground) {
+      refreshBackground = false;
+      rasterFrozen = generateFrozen();
+    }
     status = "paused";
+    hideInput = false;
     loading = false;
     startScreen = false;
     playing = false;
     paused = true;
     endScreen = false;
     restart = false;
-    soundRollingStone.stop();
   }
 
   void endScreen() {
     status = "endScreen";
+    hideInput = false;
     loading = false;
     startScreen = false;
     playing = false;
     paused = false;
     endScreen = true;
     restart = false;
-    soundRollingStone.stop();
   }
 
   void restart() {
+    refreshBackground = false;
+    hideInput = true;
+    
     if (soundScream.isPlaying()) {
       soundScream.stop();
     }

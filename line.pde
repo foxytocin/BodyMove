@@ -6,7 +6,7 @@ class line {
   }
 
   void show() {
-    stroke(rainbow.rainbow[b.rainbowIndex]);
+    stroke(lineAndBall);
     strokeWeight(lheight);
     line(0, trackMovement.posLeft, width, trackMovement.posRight);
   }

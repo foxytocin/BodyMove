@@ -1,38 +1,31 @@
 class guiCircle {
 
   String label;
-  float x, y, r, rows, size;
+  float x, y, r, size;
   color colText, colText_Backup, colRing, colRing_Backup, colFill;
-
-  int stroke;
+  int stroke, timer, steps, pixelCount;
   float angel = TWO_PI;
-  int timer = 0;
-  float sec;
-  float offset;
+  float sec, offset;
   boolean ticks;
-  int steps = 0;
-  int pixelCount = 0;
 
-  guiCircle(float x_, float y_, float r_, String label_, float rows_, float size_, color colText_, color colFill_, color colRing_, int stroke_, float sec_, boolean ticks_) {
-    x = x_;
-    y = y_;
-    r = r_;
-    size = size_;
-    rows = rows_;
-    label = label_;
-    colText = colText_;
-    colText_Backup = colText_;
-    colRing = colRing_;
-    colRing_Backup = colRing_;
-    colFill = colFill_;
-    stroke = stroke_;
-    sec = sec_;
-    ticks = ticks_;
-    if (rows > 1) {
-      offset = -((size * rows) / 2);
-    } else {
-      offset = (size / 2);
-    }
+  //Constructor für die Circle-Elemente
+  guiCircle(float x, float y, float r, String label, float size, color colText, color colFill, color colRing, int stroke, float sec, boolean ticks) {
+    this.x = x;
+    this.y = y;
+    this.r = r;
+    this.size = size;
+    this.label = label;
+    this.colText = colText;
+    this.colText_Backup = colText;
+    this.colRing = colRing;
+    this.colRing_Backup = colRing;
+    this.colFill = colFill;
+    this.stroke = stroke;
+    this.sec = sec;
+    this.ticks = ticks;
+    timer = 0;
+    steps = 0;
+    pixelCount = 0;
   }
 
   void reset() {
@@ -72,19 +65,13 @@ class guiCircle {
   void show() {
     pushMatrix();
     translate(x, y);
-
-    //Schatten
-    //noStroke();
-    //fill(50);
-    //ellipse(8, 8, (2 * r), (2 * r));
-
     noStroke();
     fill(colFill);
     ellipse(0, 0, 2 * r, 2 * r);
     textSize(size);
-    textAlign(CENTER);
+    textAlign(CENTER, CENTER);
     fill(colText);
-    text(label, 0, offset);
+    text(label, 0, 0);
     rotate(-PI/2);
     noFill();
     stroke(colRing);

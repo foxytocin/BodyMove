@@ -6,19 +6,17 @@ class ball {
   float velocity = 0.0;
   float acceleration = 0.0;
   float damping = 0.8;
-  float volumeStone = 0;
-  float panStone = 0.5;
   int rainbowIndex = 20000;
   int timer = 1;
   float sec = 0.5;
   boolean shrinks = false;
   float value = 0;
 
-  ball(float x_, float y_, float circleSize_) {
-    x = x_;
-    y = y_;
-    circleSize = circleSize_;
-    circleSizeFix = circleSize_;
+  ball(float x, float y, float circleSize) {
+    this.x = x;
+    this.y = y;
+    this.circleSize = circleSize;
+    this.circleSizeFix = circleSize;
   }
 
   void motion() {
@@ -27,58 +25,42 @@ class ball {
     acceleration = (-mx * speed);
     velocity += acceleration;
     newX = x += velocity;
-    x = lerp(x, newX, 0.7);
+    x = lerp(x, newX, 0.8);
     x = constrain(x, circleSize/2, width-circleSize/2);
   }
 
   void update() {
     if (!shrinks) {
+      colorFade();
       calcPos();
       bounceWall();
       motion();
-      sound();
-      colorFade();
     }
   }
 
+  //Berechnet die Farbe von "lineAndBall" anhand der aktuellen Punktzahl
   void colorFade() {
     value = lerp(value, g.qual, 0.01);
     rainbowIndex = (int)map(value, 100, 0, 2000, 20000);
+    lineAndBall = rainbow.rainbow[rainbowIndex];
   }
 
   void show() {
     stroke(100);
     strokeWeight(3);
-    fill(rainbow.rainbow[rainbowIndex]);
+    fill(lineAndBall);
     ellipseMode(CENTER);
     ellipse(x, y, circleSize, circleSize);
   }
 
+  //Berechnet die Position des Balls ueber der Line (Balken der von dem Spieler gesteuert wird)
+  //Berechnung ueber Lineare Funktion
   void calcPos() {
     mx = (trackMovement.posLeft - trackMovement.posRight) / width;
     y = trackMovement.posLeft - (x * mx) - (circleSize / 2);
   }
 
-
-  void sound() {
-    float sound = abs(acceleration * velocity);
-    //Sound des Balls
-    if (sound > 0.005) {
-      volumeStone = map(sound, 0.005, 30, 0.0001, 0.5);
-    } else {
-      volumeStone = 0;
-      soundRollingStone.stop();
-    }
-    panStone = map(x, (circleSize / 2), width - circleSize / 2, -1, 1);
-    panStone = constrain(panStone, -1, 1);
-    soundRollingStone.pan(panStone);
-    volumeStone = constrain(volumeStone, 0.1, 1);
-    soundRollingStone.amp(volumeStone);
-    if (!soundRollingStone.isPlaying() && sound > 0.005) {
-      soundRollingStone.play();
-    }
-  }
-
+  //Abprallverhalten beim auftreffen an einer Bildschirmkante
   void bounceWall() {
     if (x - circleSize / 2 <= 0) {
       velocity *= -1;
@@ -89,11 +71,13 @@ class ball {
     }
   }
 
+  //Abprallverhalten beim auftreffen auf ein Hole
   void collisionHole() {
     velocity *= -1;
     velocity *= damping;
   }
 
+  //Schrumpfanimation wenn der Ball in ein deadHole gesaugt wird
   boolean done() {
     if (timer < (sec * frames)) {
       shrinks = true;

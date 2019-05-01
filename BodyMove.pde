@@ -2,21 +2,21 @@ import processing.video.*;
 import processing.sound.*;
 
 //Spielvriablen
-int holeAmount = 10;
-float contrast = 0.735;
-float threshold = 37;
-float scaleWidth;
-float scaleHeight;
+int holeAmount = 5;
+float threshold = 60;
+float scaleWidth = 0;
+float scaleHeight = 0;
 float circleSize = 60;
 int detail = 8;
 int frames = 60;
 
 color colorChange = color(0, 0, 0);
-color backgroundCol = color(100);
+color backgroundCol = color(120);
 color green = color(98, 252, 2);
 color red = color(252, 1, 31);
 color orange = color(255, 178, 56);
 color textCol = color(50);
+color lineAndBall = color(50);
 float points = 0;
 
 ArrayList<pixel> rasterFrozen;
@@ -24,10 +24,9 @@ ArrayList<pixel> raster;
 ArrayList<hole> holes;
 ArrayList<hole> deadHoles;
 ArrayList<circleAnimation> circleAnimations;
+ArrayList<explosion> explosions;
 boolean hideInput;
-color trackCol;
-int closestX, closestY;
-boolean trackMov = false;
+boolean tracking = false;
 rainbow rainbow;
 Capture video;
 trackMovement trackMovement;
@@ -42,21 +41,22 @@ guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner, guiForceExit
 float nwX, nwY, noX, noY, soX, soY, swX, swY, centerX, centerY, border, radiusM;
 
 //Sound
-SoundFile soundCollect, soundError, soundRollingStone, soundButton, soundMusic, soundClock, soundScream, soundWinner, soundSuck;
+SoundFile soundCollect, soundError, soundButton, soundMusic, soundClock, soundScream, soundWinner, soundSuck;
 
 void setup() {
   // Load a soundfile from the /data folder of the sketch and play it back
   soundCollect = new SoundFile(this, "collect.wav");
   soundError = new SoundFile(this, "error.wav");
-  soundRollingStone = new SoundFile(this, "rollingstone.wav");
   soundButton = new SoundFile(this, "button.mp3");
   soundClock = new SoundFile(this, "clock.mp3");
-  soundMusic = new SoundFile(this, "music.mp3");
+  soundMusic = new SoundFile(this, "mine.mp3");
   soundScream = new SoundFile(this, "scream.mp3");
   soundWinner = new SoundFile(this, "winner.mp3");
   soundSuck = new SoundFile(this, "suck.wav");
   soundButton.amp(0.5);
   soundMusic.amp(0.3);
+  soundScream.amp(0.3);
+  soundWinner.amp(0.3);
   soundMusic.loop();
 
   fullScreen();
@@ -64,13 +64,11 @@ void setup() {
   //printArray(Capture.list());
   video = new Capture(this, Capture.list()[3]);
   video.start();
-  trackCol = color(255, 0, 0);
-  hideInput = true;
-
   b = new ball(width / 2, height - 150, circleSize);
   l = new line();
   g = new gui();
   circleAnimations = new ArrayList<circleAnimation>();
+  explosions = new ArrayList<explosion>();
   raster = new ArrayList<pixel>();
   rasterFrozen = new ArrayList<pixel>();
   holes = new ArrayList<hole>();
@@ -91,35 +89,34 @@ void setup() {
   swY = height - border;
   centerX = width / 2;
   centerY = height / 2;
-  guiLoading = new guiCircle(centerX, centerY, 200, ("LOADING"), 1, 52, orange, color(100), orange, 10, 2, false);
-  guiPause = new guiCircle(centerX, centerY, 200, "PAUSED\n\nIf time's up, you're\nout. To continue\nspread your arms", 7, 32, textCol, color(100), red, 10, 15, true);
-  guiWinner = new guiCircle(centerX, centerY, 200, ("WINNER TEXT"), 8, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, false);
-  guiCalibration = new guiCircle(centerX, centerY, 200, "CALIBRATING\n\nPlace yourself in the\nmiddle of the screen\n Lower your arms\nDon't move", 7, 32, orange, color(100), orange, 10, 1.5, false);
-  guiNoHuman = new guiCircle(centerX, centerY, 200, "MISSING PLAYER\n\nCan't detect any motion\nStep in the middle of\nthe screen and\nwave your arms", 7, 32, red, color(100), red, 10, 1, false);
-  guiStart = new guiCircle(centerX, centerY, 200, ("READY\n\nTo start, hover\neach hand over the\nleft and right\ncircle"), 7, 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 10, true);
-  guiForceExit = new guiCircle(nwX, nwY, radiusM, "LEAVING", 1, 32, red, color(100), red, 6, 15, true);
-  guiExit = new guiCircle(nwX, nwY, radiusM, "EXIT", 1, 32, red, color(100), red, 6, 1, false);
-  guiAgain = new guiCircle(noX, noY, radiusM, "AGAIN", 1, 32, green, color(100), green, 6, 1, false);
-  guiMore = new guiCircle(soX, soY, radiusM, "MORE", 1, 32, orange, color(100), orange, 6, 0.5, false);
-  guiLess = new guiCircle(swX, swY, radiusM, "LESS", 1, 32, orange, color(100), orange, 6, 0.5, false);
-  guiStartRight = new guiCircle(soX, soY, radiusM, "RIGHT", 1, 32, green, color(100), green, 6, 0.5, false);
-  guiStartLeft = new guiCircle(swX, swY, radiusM, "LEFT", 1, 32, green, color(100), green, 6, 0.5, false);
-
+  guiLoading = new guiCircle(centerX, centerY, 200, ("LOADING"), 52, orange, color(100), orange, 10, 2, false);
+  guiPause = new guiCircle(centerX, centerY, 200, "PAUSED\n\nIf time's up, you're\nout. To continue\nspread your arms\n", 32, textCol, color(100), red, 10, 15, true);
+  guiWinner = new guiCircle(centerX, centerY, 200, ("WINNER TEXT"), 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, false);
+  guiCalibration = new guiCircle(centerX, centerY, 200, "CALIBRATING\n\nPlace yourself in the\nmiddle of the screen\n Lower your arms\nDon't move", 32, orange, color(100), orange, 10, 1.5, false);
+  guiNoHuman = new guiCircle(centerX, centerY, 200, "MISSING PLAYER\n\nCan't detect any motion\nStep in the middle of\nthe screen and\nwave your arms", 32, red, color(100), red, 10, 1, false);
+  guiStart = new guiCircle(centerX, centerY, 200, ("READY\n\nTo start, hover\neach hand over the\nleft and right\ncircle"), 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 10, true);
+  guiForceExit = new guiCircle(nwX, nwY, radiusM, "LEAVING", 32, red, color(100), red, 8, 15, true);
+  guiExit = new guiCircle(nwX, nwY, radiusM, "EXIT", 32, red, color(100), red, 8, 0.75, false);
+  guiAgain = new guiCircle(noX, noY, radiusM, "AGAIN", 32, green, color(100), green, 8, 0.75, false);
+  guiMore = new guiCircle(soX, soY, radiusM, "MORE", 32, orange, color(100), orange, 8, 0.5, false);
+  guiLess = new guiCircle(swX, swY, radiusM, "LESS", 32, orange, color(100), orange, 8, 0.5, false);
+  guiStartRight = new guiCircle(soX, soY, radiusM, "RIGHT", 32, green, color(100), green, 8, 0.5, false);
+  guiStartLeft = new guiCircle(swX, swY, radiusM, "LEFT", 32, green, color(100), green, 8, 0.5, false);
   initHoles();
 }
 
 void draw() {
+  noCursor();
   frameRate(frames);
-  //println(frameRate);
   background(backgroundCol);
   scaleWidth = width / (float)video.width;
   scaleHeight = height / (float)video.height;
   raster = calcRaster();
-
   if (rasterFrozen.size() <= 0) {
     rasterFrozen = generateFrozen();
   }
-
+  
+  //Elemente abhängig vom Gamestate
   switch(gh.status) {
   case "loading":
     if (guiLoading.done()) {
@@ -134,6 +131,7 @@ void draw() {
     trackMovement.show();
     b.update();
     circleAnimation();
+    explosionAnimation();
     deadHoles();
     l.show();
     b.show();
@@ -142,6 +140,7 @@ void draw() {
   case "paused":
     trackMovement.show();
     circleAnimation();
+    explosionAnimation();
     deadHoles();
     l.show();
     b.show();
@@ -150,6 +149,7 @@ void draw() {
   case "endScreen":
     trackMovement.show();
     circleAnimation();
+    explosionAnimation();
     deadHoles();
     l.show(); 
     b.show();
@@ -157,35 +157,24 @@ void draw() {
     break;
   }
   g.show();
-
-  //if (frameCount % 30 == 0)
-  //  getContrast();
 }
 
+//Erstellt das neutrale Hintergrundbild
 ArrayList<pixel> generateFrozen() {
   ArrayList<pixel> rasterFrozen = new ArrayList<pixel>();
   rasterFrozen.addAll(raster);
   return rasterFrozen;
 }
 
-void calcThreshold() {
-  if (trackMovement.anteilAnGesamt < contrast - 0.02 || trackMovement.anteilAnGesamt > contrast + 0.02) {
-  } else if (trackMovement.anteilAnGesamt < contrast) {
-    threshold += 1;
-  } else if (trackMovement.anteilAnGesamt > contrast) {
-    threshold -= 1;
-  }
-  println("AUTO: Contrast: " +contrast+ " / NotTracked: " +trackMovement.anteilAnGesamt+ " / thresholdFreze: " +threshold);
-}
-
+//Ueberprueft ob ein Hole vom Ball beruehrt wir, ob ein Target-Hole erfolgreich gesammelt wurde und ob ein neuen Target-Hole erzeugt werden muss.
+//Durchlauft des Array rueckwaerts um beim Entfernen eines Holes kein Error zur erzeugen
 void holes() {
-  //Ueberprüft ob ein Hole vom Ball beruerht wir, ob ein Target-Hole erfolgreich gesammelt wurde und ob ein neuen Target-Hole erzeugt werden muss.
   for (int i = holes.size() - 1; i >= 0; i--) {
     hole h = holes.get(i);
     String todo = h.ballMatchHole();
     if (todo != null) {
-      circleAnimation a = new circleAnimation(h, todo);
-      circleAnimations.add(a);
+      circleAnimations.add(new circleAnimation(h, todo));
+      explosions.add(new explosion(h.x, h.y, circleSize, todo));
     }
     if (h.collected) {
       h.deadHole = true;
@@ -199,18 +188,16 @@ void holes() {
   }
 }
 
+//Updated und zeichnet alle deadHoles
 void deadHoles() {
   for (hole dh : deadHoles) {
-    String todo = dh.ballMatchHole();
-    if (todo != null) {
-      circleAnimation a = new circleAnimation(dh, todo);
-      circleAnimations.add(a);
-    }
+    dh.ballMatchHole();
     dh.update();
     dh.show();
   }
 }
 
+//Zeichnet noch nicht beendete circleAnimations und entfernt beendete Animationen aus dem Array
 void circleAnimation() {
   for (int i = circleAnimations.size() - 1; i >= 0; i--) {
     circleAnimation ca = circleAnimations.get(i);
@@ -223,15 +210,22 @@ void circleAnimation() {
   }
 }
 
+//Zeichnet noch nicht beendete exploaionAnimations und entfernt beendete Animationen aus dem Array
+void explosionAnimation() {
+  for (int i = explosions.size() - 1; i >= 0; i--) {
+    explosion e = explosions.get(i);
+    if (e.finished) {
+      explosions.remove(i);
+    } else {
+      e.show();
+    }
+  }
+}
+
+//Manueller Steuerung ueber Tasten
 void keyPressed() {
   if (key == CODED) {
-    if (keyCode == UP) {
-      if (contrast < 0.95)
-        contrast += 0.05;
-    } else if (keyCode == DOWN) {
-      if (contrast >= 0.1)
-        contrast -= 0.05;
-    } else if (keyCode == RIGHT) {
+    if (keyCode == RIGHT) {
       if (threshold < 100)
         threshold += 1;
       println(threshold);
@@ -241,15 +235,15 @@ void keyPressed() {
       println(threshold);
     }
   }
-  if (key == 't' && !trackMov) {
-    trackMov = true;
-  } else if (key == 'r' && trackMov) {
-    trackMov = false;
-  }
   if (key == 'h' && !hideInput) {
     hideInput = true;
   } else if (key == 'h' && hideInput) {
     hideInput = false;
+  }
+  if (key == 't' && !tracking) {
+    tracking = true;
+  } else if (key == 't' && tracking) {
+    tracking = false;
   }
   if (key=='r') {
     gh.restart();
@@ -268,10 +262,12 @@ void keyPressed() {
   }
 }
 
+//Ueberprueft ob es ein neues Videoframe gibt
 void captureEvent(Capture video) {
   video.read();
 }
 
+//Berechnet das Inputvideo und rastert es in als "detail" festgelegte groessen
 ArrayList<pixel> calcRaster() {
   ArrayList<pixel> raster = new ArrayList<pixel>();
   for (int i = 0; i < video.height; i += detail) {
@@ -285,12 +281,7 @@ ArrayList<pixel> calcRaster() {
   return raster;
 }
 
-void showRaster() {
-  for (pixel p : raster) {
-    p.show();
-  }
-}
-
+//Berrechnet die "Entfernung" zwischen zwei Farben
 float calcColorDifference(pixel p, color trackCol) {
   float r1 = p.col >> 020 & 0xFF;
   float g1 = p.col >> 010 & 0xFF;
@@ -301,6 +292,7 @@ float calcColorDifference(pixel p, color trackCol) {
   return dist(r1, g1, b1, r2, g2, b2);
 }
 
+//Errechnet den durchschnittlichen Farbwert aller Pixel innerhalb von "img"
 color extractColorFromImage(final PImage img) {
   img.loadPixels();
   color r = 0, g = 0, b = 0;
@@ -315,6 +307,7 @@ color extractColorFromImage(final PImage img) {
   return color(r, g, b);
 }
 
+//Erzeugt die Holes und ueberwacht das es keinerlei Ueberlappungen gibt
 void initHoles() {
   holes.clear();
   deadHoles.clear();
@@ -322,8 +315,7 @@ void initHoles() {
   points = 100 / holeAmount;
   while (holes.size() < holeAmount && noFreeSpaceCounter < 1000) {
     float x = random(75, width - 75);
-    float y = random(75, height - 250);
-
+    float y = random(150, height - 250);
     if (holes.size() == 0) {
       hole h = new hole(x, y, circleSize);
       holes.add(h);
@@ -339,6 +331,8 @@ void initHoles() {
   pickTarget();
 }
 
+//Waehlt aus allen Holes zufaellig eines aus das als nachstes / aktuelles Ziel markiert wird
+//Wenn kein weiteres Hole mehr verfuegbar ist, wird der WINNER-Screen angezeigt
 void pickTarget() {
   if (holes.size() > 0) {
     int r = (int)random(holes.size());
@@ -350,6 +344,7 @@ void pickTarget() {
   }
 }
 
+//Kontrolliert ob das zu erzeugende Hole sich nicht mit einem anderen uberschneidet
 boolean noOverlap(float x, float y) {
   for (hole h : holes) {
     if (dist(x, y, h.x, h.y) > circleSize * 1.7) {
@@ -359,31 +354,4 @@ boolean noOverlap(float x, float y) {
     }
   }
   return true;
-}
-
-float con = 0;
-float calls = 0;
-float sum = 0;
-void getContrast() {
-  calls++;
-  float brightness = 0;
-  float contrast = 0;
-  video.loadPixels();
-  for (int i=0; i < video.pixels.length; i++) {
-    brightness += brightness(video.pixels[i]);
-  }
-
-  float avgBrightness = brightness / video.pixels.length;
-  float diffBrightness = 0;
-  for (int i=0; i < video.pixels.length; i++) {
-    brightness = brightness(video.pixels[i]);
-    diffBrightness = brightness - avgBrightness;
-    diffBrightness = diffBrightness * diffBrightness;
-    contrast += diffBrightness;
-  }
-  contrast = contrast / video.pixels.length;
-
-  con += contrast;
-  sum = con / calls;
-  println("KONTRAST: " +(int)sum);
 }

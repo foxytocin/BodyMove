@@ -1,20 +1,12 @@
 class pixel {
 
-  float x;
-  float y;
+  float x, y, size;
   int col;
-  float size;
 
-  pixel(float x_, float y_, float size_, int col_) {
-    x = x_;
-    y = y_;
-    col = col_;
-    size = size_;
-  }
-
-  void show() {
-    fill(col);
-    noStroke();
-    rect(x, y, size, size);
+  pixel(float x, float y, float size, int col) {
+    this.x = x;
+    this.y = y;
+    this.col = col;
+    this.size = size;
   }
 }

@@ -1,8 +1,7 @@
 class hole {
 
   float x, y, circleSize;
-  color fillCol = color(255, 255, 255);
-  color strokeCol = color(100);
+  color fillCol, strokeCol;
   boolean activ = false;
   boolean target = false;
   boolean touched = false;
@@ -10,10 +9,10 @@ class hole {
   boolean deadHole = false;
   float panStone = 0.5;
 
-  hole(float x_, float y_, float circleSize_) {
-    x = x_;
-    y = y_;
-    circleSize = circleSize_;
+  hole(float x, float y, float circleSize) {
+    this.x = x;
+    this.y = y;
+    this.circleSize = circleSize;
   }
 
   void update() {
@@ -23,6 +22,7 @@ class hole {
         fillCol = color(red, 150);
       } else if (target) {
         fillCol = color(green);
+        strokeCol = color(100);
       } else if (!activ) {
         strokeCol = color(100);
         fillCol = color(255, 255, 255);
@@ -45,6 +45,7 @@ class hole {
     panStone = constrain(panStone, -1, 1);
     soundError.pan(panStone);
     soundCollect.pan(panStone);
+    soundSuck.pan(panStone);
   }
 
   String ballMatchHole() {
@@ -85,6 +86,7 @@ class hole {
           return "dead";
         } else {
           if (!soundSuck.isPlaying()) {
+            calStereo(x);
             soundSuck.play();
           }
           b.velocity = 0;

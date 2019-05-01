@@ -1,24 +1,24 @@
 class circleAnimation {
 
-  float circleSize = 0;
-  float circleAcc = 0;
-  float x, y, r, alpha;
+  float x, y, r, alpha, circleSize, circleAcc;
   color col;
   boolean finished = false;
-
-  circleAnimation() {
-  }
-
-  circleAnimation(hole h_, String reason) {
-    x = h_.x;
-    y = h_.y;
-    r = h_.circleSize;
-    if (reason == "error")
-      col = red;
-    if (reason == "goal")
-      col = green;
-    if (reason == "dead")
-      col = color(0);
+  
+  circleAnimation(hole h, String reason) {
+    circleAcc = 0;
+    circleSize = 0;
+    x = h.x;
+    y = h.y;
+    r = h.circleSize;
+    switch(reason) {
+      case "error":
+        col = red;
+        break;
+      case "goal":
+        col = green;
+        break;
+      default: break;
+    }
   }
 
   void update() {

@@ -10,27 +10,18 @@ class gui {
   int pixelMin = 10;
   int pixelMax = 3;
   String endReason = "";
-
   int max = 30;
   int min = 5;
 
-  String convertNoteToGrade(int note_) {
-    String note = String.valueOf(note_);
-    switch(note) {
-    case "1": 
-      return "A";
-    case "2": 
-      return "B";
-    case "3": 
-      return "C";
-    case "4": 
-      return "D";
-    case "5": 
-      return "E";
-    case "6": 
-      return "F";
-    default: 
-      return "ERROR";
+  String convertNoteToGrade(int note) {
+    switch(String.valueOf(note)) {
+    case "1": return "A";
+    case "2": return "B";
+    case "3": return "C";
+    case "4": return "D";
+    case "5": return "E";
+    case "6": return "F";
+    default: return "ERROR";
     }
   }
 
@@ -54,7 +45,7 @@ class gui {
       guiPause.reset();
     }
 
-    //Ende Screen WINNER
+    //Ende Screen WINNER / LOSER
     if (gh.endScreen) {
       //WINNER LABEL  
       String grade = convertNoteToGrade(note);
@@ -84,7 +75,7 @@ class gui {
         if (guiExit.done()) {
           gh.startScreen();
         }
-      } else if (guiExit.running()) {
+      } else if (guiExit.running() && gh.endScreen) {
         guiExit.reset();
         soundButton.stop();
       }
@@ -97,7 +88,7 @@ class gui {
         if (guiAgain.done()) {
           gh.restart();
         }
-      } else if (guiAgain.running()) {
+      } else if (guiAgain.running() && gh.endScreen) {
         guiAgain.reset();
         soundButton.stop();
       }
@@ -175,32 +166,34 @@ class gui {
       guiLess.show();
     }
     
+    //Berechnet die Punkte
     if (target > 0 || error > 0) {
         qual = (target / (target + error)) * collectedPoints;
         note = (int)map(qual - points, 0, 100, 6, 1);
       }
 
+    //Wenn der Gamestatus = playing ist, wird in der linken oberen Ecke der aktuelle Punktestand angezeigt
     if (gh.playing) {
       noStroke();
-      fill(100);
+      fill(backgroundCol);
       rectMode(CORNER);
-      rect(0, 0, detail * scaleWidth * 6, detail * scaleHeight * 3, 10);
+      rect(0, 0, detail * scaleWidth * 8, detail * scaleHeight * 3, 10);
       pushMatrix();
-      translate(20, 30);
+      translate(20, 25);
       textAlign(LEFT);
       textSize(22);
       fill(textCol);
       text("Errors:", 0, 0);
       textSize(22);
       fill(textCol);
-      text("Points:", 0, 31);
+      text("Points:", 0, 29);
       textAlign(RIGHT);
       textSize(22);
       fill(textCol);
       text((int)error, 105, 0);
       textSize(22);
       fill(textCol);
-      text((int)target, 105, 31);
+      text((int)target, 105, 29);
       popMatrix();
     }
   }
