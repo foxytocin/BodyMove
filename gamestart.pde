@@ -22,13 +22,25 @@ class gamestart {
     readyLeft = false;
   }
 
+  //Zaehlt wieviele Pixel in der Naehe eines Buttons aktiv sind (beruehrt werden)
   void pixelTouched(pixel p, guiCircle button) {
-    if (p.x > (button.x - button.r) &&  p.x < (button.x + button.r) && p.y > (button.y - button.r) && p.y < (button.y + button.r)) {
+    if (dist(p.x, p.y, button.x, button.y) <= button.r / 2) {
       button.pixelCount++;
     }
   }
+  
+  boolean touchArea(pixel p, float r) {
+    float d = dist(width/2 - detail/2, height/2, p.x, p.y);
+    return (d > r);
+  }
 
   void show() {
+    
+    stroke(255);
+    strokeWeight(5);
+    rect(50, 50, 100, 100);
+    ellipse(640, 360, 600, 300);
+    
     guiStartLeft.pixelCount = 0;
     guiStartRight.pixelCount = 0;
     background(backgroundCol);
@@ -39,8 +51,10 @@ class gamestart {
       //Pixel die kontrolliert werden
       frozenPixel = rasterFrozen.get(pixelIndex);
       d = calcColorDifference(p, frozenPixel.col);
+      float dotSize = map(brightness(p.col), 255, 0, 0.2, 1);
+      dotSize *= p.size;
 
-      if (!calibrated && (p.x > 50 && p.x < width / 5 || (p.x > ((width / 5) * 4) - detail) && p.x < width - 70)) {
+      if (!calibrated && touchArea(p, width * 0.4)) {
         if (!humanDetected && d > 2 * threshold) {
           humanDetected = true;
         }
@@ -54,28 +68,29 @@ class gamestart {
             fill(red);
           }
         } else {
-          fill(p.col);
+          fill(brightness(p.col));
         }
         noStroke();
-        ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
+        ellipse(p.x + p.size / 2, p.y + p.size / 2, dotSize, dotSize);
         if (timerAnimation < height) {
           timerAnimation += 0.025;
         }
       } else {
-        //Pixel bei denen eine Veraenderung erkannt wurde
-        fill(p.col);
+        //Pixel außerhalb der Messfelder bekommen die Farbe des Kamerabildes
+        fill(brightness(p.col));
         noStroke();
-        ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
+        ellipse(p.x + p.size / 2, p.y + p.size / 2, dotSize, dotSize);
       }
+      
       if (calibrated && (d > threshold)) {
         //Berechnung der Touchfelder für startLeft und startRight
         pixelTouched(p, guiStartLeft);
         pixelTouched(p, guiStartRight);
       }
-      if (calibrated && (p.x > 50 && p.x < width / 5 || (p.x > ((width / 5) * 4) - detail) && p.x < width - 70)) {
+      if (calibrated && touchArea(p, width * 0.4)) {
         if ((p.y < timerAnimation)) {
           fill(green);
-          ellipse(p.x + p.size / 2, p.y + p.size / 2, p.size * 0.8, p.size * 0.8);
+          ellipse(p.x + p.size / 2, p.y + p.size / 2,  dotSize, dotSize);
         }
         if (timerAnimation >= 0) {
           timerAnimation -= 0.025;

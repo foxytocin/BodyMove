@@ -3,7 +3,7 @@ import processing.sound.*;
 
 //Spielvriablen
 int holeAmount = 5;
-float threshold = 60;
+float threshold = 50;
 float scaleWidth = 0;
 float scaleHeight = 0;
 float circleSize = 60;
@@ -44,7 +44,7 @@ float nwX, nwY, noX, noY, soX, soY, swX, swY, centerX, centerY, border, radiusM;
 SoundFile soundCollect, soundError, soundButton, soundMusic, soundClock, soundScream, soundWinner, soundSuck;
 
 void setup() {
-  // Load a soundfile from the /data folder of the sketch and play it back
+  //Laden der Soundfiles
   soundCollect = new SoundFile(this, "collect.wav");
   soundError = new SoundFile(this, "error.wav");
   soundButton = new SoundFile(this, "button.mp3");
@@ -91,10 +91,10 @@ void setup() {
   centerY = height / 2;
   guiLoading = new guiCircle(centerX, centerY, 200, ("LOADING"), 52, orange, color(100), orange, 10, 2, false);
   guiPause = new guiCircle(centerX, centerY, 200, "PAUSED\n\nIf time's up, you're\nout. To continue\nspread your arms\n", 32, textCol, color(100), red, 10, 15, true);
-  guiWinner = new guiCircle(centerX, centerY, 200, ("WINNER TEXT"), 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 15, false);
+  guiWinner = new guiCircle(centerX, centerY, 200, ("WINNER TEXT"), 32, lineAndBall, color(100), lineAndBall, 10, 15, false);
   guiCalibration = new guiCircle(centerX, centerY, 200, "CALIBRATING\n\nPlace yourself in the\nmiddle of the screen\n Lower your arms\nDon't move", 32, orange, color(100), orange, 10, 1.5, false);
   guiNoHuman = new guiCircle(centerX, centerY, 200, "MISSING PLAYER\n\nCan't detect any motion\nStep in the middle of\nthe screen and\nwave your arms", 32, red, color(100), red, 10, 1, false);
-  guiStart = new guiCircle(centerX, centerY, 200, ("READY\n\nTo start, hover\neach hand over the\nleft and right\ncircle"), 32, rainbow.rainbow[b.rainbowIndex], color(100), rainbow.rainbow[b.rainbowIndex], 10, 10, true);
+  guiStart = new guiCircle(centerX, centerY, 200, ("READY\n\nTo start, hover\neach hand over the\nleft and right\ncircle"), 32, green, color(100), green, 10, 10, true);
   guiForceExit = new guiCircle(nwX, nwY, radiusM, "LEAVING", 32, red, color(100), red, 8, 15, true);
   guiExit = new guiCircle(nwX, nwY, radiusM, "EXIT", 32, red, color(100), red, 8, 0.75, false);
   guiAgain = new guiCircle(noX, noY, radiusM, "AGAIN", 32, green, color(100), green, 8, 0.75, false);
@@ -106,8 +106,9 @@ void setup() {
 }
 
 void draw() {
-  noCursor();
   frameRate(frames);
+  //println(frameRate);
+  noCursor();
   background(backgroundCol);
   scaleWidth = width / (float)video.width;
   scaleHeight = height / (float)video.height;
