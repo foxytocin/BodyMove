@@ -1,14 +1,15 @@
 class trackMovement {
 
   float avgLeft, avgRight, posLeft, posRight;
-  float centerX = width/2  - detail/2;
-  float centerY = height/2;
+  float centerX = width/2 - detail/2;
+  float centerY = height/2 + 70;
   int countLeft, countRight, rainbowIndex;
   pixel frozenPixel;
   float anteilAnGesamt, drawSize;
   boolean movement = false;
   boolean error = false;
   boolean goal = false;
+  float touchAreaRadius = width * 0.35;
 
   trackMovement() {
     reset();
@@ -63,16 +64,17 @@ class trackMovement {
         }
 
         //Berechnung im Spiel. Linker und rechter Streifen zur Berechnung der Handposition
-        if (p.x < width / 2 && touchArea(p, width * 0.4)) {
-          countLeft++;
-          avgLeft += p.y;
-          if(hideInput)
+        if (touchArea(p, touchAreaRadius)) {
+          if (tracking && hideInput)
             fill(red);
-        } else if (p.x > width / 2 && touchArea(p, width * 0.4)) {
-          countRight++;
-          avgRight += p.y;
-          if(hideInput)
-            fill(green);
+
+          if (p.x < centerX) {
+            countLeft++;
+            avgLeft += p.y;
+          } else {
+            countRight++;
+            avgRight += p.y;
+          }
         }
 
         //Berechnung der Touchfelder für EXIT, AGAIN, MORE and LESS wenn der End-Screen angezeigt wird
@@ -85,29 +87,38 @@ class trackMovement {
 
         //Pixel die sich im Verhaeltniss zum rasterFreze geaendert haben
         noStroke();
-        ellipse(p.x + p.size / 2, p.y + p.size / 2, pixelWeight, pixelWeight);
+        float pixelFactor = p.size / 2;
+        ellipse(p.x + pixelFactor, p.y + pixelFactor, pixelWeight, pixelWeight);
       } else {
         //Pixel bei denen keine Veraenderung erkannt wurde
-        pixelNotChanged++;
         if (error) {
           fill(color(red));
+          noStroke();
+          float pixelFactor = p.size / 2;
+          ellipse(p.x + pixelFactor, p.y + pixelFactor, pixelWeight, pixelWeight);
         } else if (goal) {
           fill(color(green));
-        } else {
-          fill(75);
+          noStroke();
+          float pixelFactor = p.size / 2;
+          ellipse(p.x + pixelFactor, p.y + pixelFactor, pixelWeight, pixelWeight);
         }
         if (!hideInput) {
+          pixelNotChanged++;
           fill(brightness(p.col));
+          noStroke();
+          float pixelFactor = p.size / 2;
+          ellipse(p.x + pixelFactor, p.y + pixelFactor, drawSize, drawSize);
         }
-        noStroke();
-        ellipse(p.x + p.size / 2, p.y + p.size / 2, drawSize, drawSize);
       }
       pixelIndex++;
     }
 
+    if (!hideInput) {
+      anteilAnGesamt = pixelNotChanged / (float)raster.size();
+      drawSize = map(anteilAnGesamt, 0.6, 1, 0, detail * scaleWidth);
+    }
+
     //Anzeige und Steuerung
-    anteilAnGesamt = pixelNotChanged / (float)raster.size();
-    drawSize = map(anteilAnGesamt, 0.6, 1, 0, detail * scaleWidth);
     avgLeft /= countLeft;
     avgRight /= countRight;
 
@@ -120,11 +131,13 @@ class trackMovement {
     }
 
     //Berechnet die Position der linken und rechten Koordinate für den Balken
-    if (!b.shrinks && !gh.paused && !gh.endScreen && avgLeft != 1) {
-      posLeft = lerp(posLeft, avgLeft, 0.7);
-    }
-    if (!b.shrinks && !gh.paused && !gh.endScreen && avgRight != 1) {
-      posRight = lerp(posRight, avgRight, 0.7);
+    if (!b.shrinks && !gh.paused && !gh.endScreen) {
+      if (avgLeft != 1) {
+        posLeft = lerp(posLeft, avgLeft, 0.7);
+      }
+      if (avgRight != 1) {
+        posRight = lerp(posRight, avgRight, 0.7);
+      }
     }
 
     //Indikator wie gut jeder Arm erkannt wird. Wird mit der Taste "t" getoggelt
