@@ -8,7 +8,7 @@ float scaleWidth = 0;
 float scaleHeight = 0;
 float circleSize = 60;
 int detail = 8;
-int frames = 120;
+int frames = 60;
 
 color colorChange = color(0, 0, 0);
 color backgroundCol = color(120);
@@ -59,8 +59,8 @@ void setup() {
   soundWinner.amp(0.3);
   soundMusic.loop();
 
-  //fullScreen();
-  size(1280, 720);
+  fullScreen();
+  //size(1280, 720);
   printArray(Capture.list());
   video = new Capture(this, Capture.list()[3]);
   video.start();
@@ -107,7 +107,7 @@ void setup() {
 
 void draw() {
   frameRate(frames);
-  println(frameRate);
+  //println(frameRate);
   noCursor();
   background(backgroundCol);
   scaleWidth = width / (float)video.width;

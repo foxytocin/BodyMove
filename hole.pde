@@ -56,7 +56,7 @@ class hole {
         if (!touched && !target) {
           b.collisionHole();
           soundError.play();
-          trackMovement.error = true;
+          background(color(red));
           touched = true;
           activ = true;
           g.error++;
@@ -64,7 +64,7 @@ class hole {
         } else if (!touched && target) {
           b.collisionHole();
           soundCollect.play();
-          trackMovement.goal = true;
+          background(color(green));
           touched = true;
           collected = true;
           g.target++;

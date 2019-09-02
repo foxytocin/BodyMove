@@ -30,7 +30,7 @@ class gamestart {
   }
   
   boolean touchArea(pixel p, float r) {
-    float d = dist(centerX - detail/2, centerY + 70, p.x, p.y);
+    float d = dist(centerX - detail/2, centerY + 50, p.x, p.y);
     return (d > r);
   }
 

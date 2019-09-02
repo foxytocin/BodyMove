@@ -2,13 +2,11 @@ class trackMovement {
 
   float avgLeft, avgRight, posLeft, posRight;
   float centerX = width/2 - detail/2;
-  float centerY = height/2 + 70;
+  float centerY = height/2 + 50;
   int countLeft, countRight, rainbowIndex;
   pixel frozenPixel;
   float anteilAnGesamt, drawSize;
   boolean movement = false;
-  boolean error = false;
-  boolean goal = false;
   float touchAreaRadius = width * 0.35;
 
   trackMovement() {
@@ -51,10 +49,11 @@ class trackMovement {
     for (pixel p : raster) {
       frozenPixel = rasterFrozen.get(pixelIndex);
       float d = calcColorDifference(p, frozenPixel.col);
-      float pixelWeight = (d / (detail * scaleWidth));
-      pixelWeight = constrain(pixelWeight, 0, (detail * scaleWidth));
 
       if (d > threshold) {
+        float pixelWeight = (d / (detail * scaleWidth));
+        pixelWeight = constrain(pixelWeight, 0, (detail * scaleWidth));
+
         if (!hideInput) {
           fill(brightness(p.col));
           pixelWeight = map(brightness(p.col), 255, 0, 0, 1);
@@ -89,26 +88,13 @@ class trackMovement {
         noStroke();
         float pixelFactor = p.size / 2;
         ellipse(p.x + pixelFactor, p.y + pixelFactor, pixelWeight, pixelWeight);
-      } else {
-        //Pixel bei denen keine Veraenderung erkannt wurde
-        if (error) {
-          fill(color(red));
-          noStroke();
-          float pixelFactor = p.size / 2;
-          ellipse(p.x + pixelFactor, p.y + pixelFactor, pixelWeight, pixelWeight);
-        } else if (goal) {
-          fill(color(green));
-          noStroke();
-          float pixelFactor = p.size / 2;
-          ellipse(p.x + pixelFactor, p.y + pixelFactor, pixelWeight, pixelWeight);
-        }
-        if (!hideInput) {
-          pixelNotChanged++;
-          fill(brightness(p.col));
-          noStroke();
-          float pixelFactor = p.size / 2;
-          ellipse(p.x + pixelFactor, p.y + pixelFactor, drawSize, drawSize);
-        }
+        
+      } else if (!hideInput) {
+        pixelNotChanged++;
+        fill(brightness(p.col));
+        noStroke();
+        float pixelFactor = p.size / 2;
+        ellipse(p.x + pixelFactor, p.y + pixelFactor, drawSize, drawSize);
       }
       pixelIndex++;
     }
@@ -133,10 +119,10 @@ class trackMovement {
     //Berechnet die Position der linken und rechten Koordinate für den Balken
     if (!b.shrinks && !gh.paused && !gh.endScreen) {
       if (avgLeft != 1) {
-        posLeft = lerp(posLeft, avgLeft, 0.7);
+        posLeft = lerp(posLeft, avgLeft, 0.65);
       }
       if (avgRight != 1) {
-        posRight = lerp(posRight, avgRight, 0.7);
+        posRight = lerp(posRight, avgRight, 0.65);
       }
     }
 
@@ -147,7 +133,5 @@ class trackMovement {
       ellipse(100, posLeft, countLeft, countLeft);
       ellipse(video.width * scaleWidth - 100, posRight, countRight, countRight);
     }
-    error = false;
-    goal = false;
   }
 }
