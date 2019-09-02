@@ -11,6 +11,8 @@ class gamestart {
   int pixelMin = 10;
   int pixelMax = 3;
   float timerAnimation = 0;
+  int touchAreaRadius = floor(width * circleSizeMeasure);
+  
   gamestart() {
   }
 
@@ -29,9 +31,9 @@ class gamestart {
     }
   }
   
-  boolean touchArea(pixel p, float r) {
-    float d = dist(centerX - detail/2, centerY + 50, p.x, p.y);
-    return (d > r);
+  boolean touchArea(pixel p, int r) {
+    int d = floor(dist(centerX - detail/2, centerY, p.x, p.y));
+    return (d > r && d < centerX);
   }
 
   void show() {
@@ -54,7 +56,7 @@ class gamestart {
       float dotSize = map(brightness(p.col), 255, 0, 0.2, 1);
       dotSize *= p.size;
 
-      if (!calibrated && touchArea(p, width * 0.35)) {
+      if (!calibrated && touchArea(p, touchAreaRadius)) {
         if (!humanDetected && d > 2 * threshold) {
           humanDetected = true;
         }
@@ -87,7 +89,7 @@ class gamestart {
         pixelTouched(p, guiStartLeft);
         pixelTouched(p, guiStartRight);
       }
-      if (calibrated && touchArea(p, width * 0.35)) {
+      if (calibrated && touchArea(p, touchAreaRadius)) {
         if ((p.y < timerAnimation)) {
           fill(green);
           ellipse(p.x + p.size / 2, p.y + p.size / 2,  dotSize, dotSize);

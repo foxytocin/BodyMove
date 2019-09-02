@@ -1,13 +1,17 @@
 class trackMovement {
 
   float avgLeft, avgRight;
-  float centerX = width/2 - detail/2;
-  float centerY = height/2 + 50;
+  int centerX = width/2 - detail;
+  int centerY = height/2 + 40;
   int countLeft, countRight, rainbowIndex;
   pixel frozenPixel;
   float anteilAnGesamt, drawSize;
   boolean movement = false;
-  float touchAreaRadius = width * 0.35;
+  boolean circleMethode = true;
+  int touchAreaRadius = floor(width * circleSizeMeasure);
+  int leftInnerBorder = width / 5;
+  int rightInnerBorder = ((width / 5) * 4) - detail;
+  int rightOuterBorder = width - 70;
 
   trackMovement() {
     reset();
@@ -16,8 +20,6 @@ class trackMovement {
   void reset() {
     avgLeft = (height - detail);
     avgRight = (height - detail);
-    //posLeft = (height - detail);
-    //posRight = (height - detail);
   }
 
   //Zaehlt wieviele Pixel in der Naehe eines Buttons aktiv sind (beruehrt werden)
@@ -27,10 +29,11 @@ class trackMovement {
     }
   }
 
-  boolean touchArea(pixel p, float r) {
-    float d = dist(centerX, centerY, p.x, p.y);
-    return (d > r);
+  boolean touchArea(pixel p, int r) {
+    int d = floor(dist(centerX, centerY, p.x, p.y));
+    return (d > r && d < centerX);
   }
+
 
   void show() {
     avgLeft = 1;
@@ -48,7 +51,7 @@ class trackMovement {
     int pixelNotChanged = 0;
     for (pixel p : raster) {
       frozenPixel = rasterFrozen.get(pixelIndex);
-      float d = calcColorDifference(p, frozenPixel.col);
+      int d = calcColorDifference(p, frozenPixel.col);
 
       if (d > threshold) {
         float pixelWeight = (d / (detail * scaleWidth));
@@ -62,17 +65,30 @@ class trackMovement {
           fill(rainbow.rainbow[(rainbowIndex + floor(p.y * 5)) % 60000]);
         }
 
-        //Berechnung im Spiel. Linker und rechter Streifen zur Berechnung der Handposition
-        if (touchArea(p, touchAreaRadius)) {
+        // (RUND) Berechnung im Spiel. Linker und rechter Streifen zur Berechnung der Handposition
+        if (!gh.endScreen && circleMethode && touchArea(p, touchAreaRadius)) {
           if (tracking && hideInput)
-            fill(red);
-
+            fill(rainbow.rainbow[(rainbowIndex + 30000 + floor(p.y * 5)) % 60000]);
           if (p.x < centerX) {
             countLeft++;
             avgLeft += p.y;
           } else {
             countRight++;
             avgRight += p.y;
+          }
+        } else if (!gh.endScreen && !circleMethode) {
+          // (LINIEN) Berechnung im Spiel. Linker und rechter Streifen zur Berechnung der Handposition
+          if (p.x > 50 && p.x < leftInnerBorder) {
+            countLeft++;
+            avgLeft += p.y;
+            if (tracking && hideInput)
+              fill(rainbow.rainbow[(rainbowIndex + 30000 + floor(p.y * 5)) % 60000]);
+          }
+          if  (p.x > rightInnerBorder && p.x < rightOuterBorder) {
+            countRight++;
+            avgRight += p.y;
+            if (tracking && hideInput)
+              fill(rainbow.rainbow[(rainbowIndex + 30000 + floor(p.y * 5)) % 60000]);
           }
         }
 
@@ -88,7 +104,6 @@ class trackMovement {
         noStroke();
         float pixelFactor = p.size / 2;
         ellipse(p.x + pixelFactor, p.y + pixelFactor, pixelWeight, pixelWeight);
-        
       } else if (!hideInput) {
         pixelNotChanged++;
         fill(brightness(p.col));

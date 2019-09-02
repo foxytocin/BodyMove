@@ -1,6 +1,7 @@
 class hole {
 
-  float x, y, circleSize;
+  int x, y;
+  float circleSize;
   color fillCol, strokeCol;
   boolean activ = false;
   boolean target = false;
@@ -9,7 +10,7 @@ class hole {
   boolean deadHole = false;
   float panStone = 0.5;
 
-  hole(float x, float y, float circleSize) {
+  hole(int x, int y, float circleSize) {
     this.x = x;
     this.y = y;
     this.circleSize = circleSize;
@@ -40,7 +41,7 @@ class hole {
     ellipse(x, y, circleSize, circleSize);
   }
 
-  void calStereo(float x_) {
+  void calStereo(int x_) {
     panStone = map(x_, 0, width, -1, 1);
     panStone = constrain(panStone, -1, 1);
     soundError.pan(panStone);

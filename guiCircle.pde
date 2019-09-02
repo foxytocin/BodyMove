@@ -1,15 +1,14 @@
 class guiCircle {
 
   String label;
-  float x, y, r, size;
+  int x, y, r, size, stroke, timer, steps, pixelCount;
   color colText, colText_Backup, colRing, colRing_Backup, colFill;
-  int stroke, timer, steps, pixelCount;
   float angel = TWO_PI;
   float sec, offset;
   boolean ticks;
 
   //Constructor für die Circle-Elemente
-  guiCircle(float x, float y, float r, String label, float size, color colText, color colFill, color colRing, int stroke, float sec, boolean ticks) {
+  guiCircle(int x, int y, int r, String label, int size, color colText, color colFill, color colRing, int stroke, float sec, boolean ticks) {
     this.x = x;
     this.y = y;
     this.r = r;

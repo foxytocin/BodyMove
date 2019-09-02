@@ -1,6 +1,6 @@
 class line {
 
-  float lheight = 10;
+  int lheight = 10;
   float posLeft = 0;
   float posRight = 0;
 

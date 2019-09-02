@@ -169,7 +169,7 @@ class gui {
     //Berechnet die Punkte
     if (target > 0 || error > 0) {
         qual = (target / (target + error)) * collectedPoints;
-        note = (int)map(qual - points, 0, 100, 6, 1);
+        note = (int)map(qual, 0, 100, 6, 1);
       }
 
     //Wenn der Gamestatus = playing ist, wird in der linken oberen Ecke der aktuelle Punktestand angezeigt

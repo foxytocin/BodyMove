@@ -3,10 +3,11 @@ import processing.sound.*;
 
 //Spielvriablen
 int holeAmount = 5;
-float threshold = 50;
+int threshold = 50;
 float scaleWidth = 0;
 float scaleHeight = 0;
 float circleSize = 60;
+float circleSizeMeasure = 0.35;
 int detail = 8;
 int frames = 60;
 
@@ -33,12 +34,12 @@ trackMovement trackMovement;
 ball b;
 line l;
 gui g;
-gamehandler gh = new gamehandler();
-gamestart gs = new gamestart();
+gamehandler gh;
+gamestart gs;
 
 //Gui Elemente
 guiCircle guiPause, guiExit, guiAgain, guiMore, guiLess, guiWinner, guiForceExit, guiCalibration, guiStart, guiStartLeft, guiStartRight, guiLoading, guiNoHuman;
-float nwX, nwY, noX, noY, soX, soY, swX, swY, centerX, centerY, border, radiusM;
+int nwX, nwY, noX, noY, soX, soY, swX, swY, centerX, centerY, border, radiusM;
 
 //Sound
 SoundFile soundCollect, soundError, soundButton, soundMusic, soundClock, soundScream, soundWinner, soundSuck;
@@ -75,6 +76,8 @@ void setup() {
   deadHoles = new ArrayList<hole>();
   trackMovement = new trackMovement();
   rainbow = new rainbow();
+  gh = new gamehandler();
+  gs = new gamestart();
 
   //Gui Elemente
   border = 150;
@@ -116,7 +119,7 @@ void draw() {
   if (rasterFrozen.size() <= 0) {
     rasterFrozen = generateFrozen();
   }
-  
+
   //Elemente abhängig vom Gamestate
   switch(gh.status) {
   case "loading":
@@ -235,11 +238,31 @@ void keyPressed() {
         threshold -= 1;
       println(threshold);
     }
+    if (keyCode == UP) {
+      if (circleSizeMeasure < 1) {
+        circleSizeMeasure += 0.01;
+        trackMovement.touchAreaRadius = floor(width * circleSizeMeasure);
+        gs.touchAreaRadius = floor(width * circleSizeMeasure);
+        println(circleSizeMeasure);
+      }
+    } else if (keyCode == DOWN) {
+      if (circleSizeMeasure > 0) {
+        circleSizeMeasure -= 0.01;
+        trackMovement.touchAreaRadius = floor(width * circleSizeMeasure);
+        gs.touchAreaRadius = floor(width * circleSizeMeasure);
+        println(circleSizeMeasure);
+      }
+    }
   }
   if (key == 'h' && !hideInput) {
     hideInput = true;
   } else if (key == 'h' && hideInput) {
     hideInput = false;
+  }
+  if (key == 'm' && !trackMovement.circleMethode) {
+    trackMovement.circleMethode = true;
+  } else if (key == 'm' && trackMovement.circleMethode) {
+    trackMovement.circleMethode = false;
   }
   if (key == 't' && !tracking) {
     tracking = true;
@@ -266,6 +289,7 @@ void keyPressed() {
 //Ueberprueft ob es ein neues Videoframe gibt
 void captureEvent(Capture video) {
   video.read();
+  //println(frameRate);
 }
 
 //Berechnet das Inputvideo und rastert es in als "detail" festgelegte groessen
@@ -283,14 +307,14 @@ ArrayList<pixel> calcRaster() {
 }
 
 //Berrechnet die "Entfernung" zwischen zwei Farben
-float calcColorDifference(pixel p, color trackCol) {
-  float r1 = p.col >> 020 & 0xFF;
-  float g1 = p.col >> 010 & 0xFF;
-  float b1 = p.col        & 0xFF;
-  float r2 = trackCol >> 020 & 0xFF;
-  float g2 = trackCol >> 010 & 0xFF;
-  float b2 = trackCol        & 0xFF;
-  return dist(r1, g1, b1, r2, g2, b2);
+int calcColorDifference(pixel p, color trackCol) {
+  int r1 = p.col >> 020 & 0xFF;
+  int g1 = p.col >> 010 & 0xFF;
+  int b1 = p.col        & 0xFF;
+  int r2 = trackCol >> 020 & 0xFF;
+  int g2 = trackCol >> 010 & 0xFF;
+  int b2 = trackCol        & 0xFF;
+  return floor(dist(r1, g1, b1, r2, g2, b2));
 }
 
 //Errechnet den durchschnittlichen Farbwert aller Pixel innerhalb von "img"
@@ -315,8 +339,8 @@ void initHoles() {
   int noFreeSpaceCounter = 0;
   points = 100 / holeAmount;
   while (holes.size() < holeAmount && noFreeSpaceCounter < 1000) {
-    float x = random(75, width - 75);
-    float y = random(150, height - 250);
+    int x = floor(random(75, width - 75));
+    int y = floor(random(150, height - 250));
     if (holes.size() == 0) {
       hole h = new hole(x, y, circleSize);
       holes.add(h);
@@ -336,7 +360,7 @@ void initHoles() {
 //Wenn kein weiteres Hole mehr verfuegbar ist, wird der WINNER-Screen angezeigt
 void pickTarget() {
   if (holes.size() > 0) {
-    int r = (int)random(holes.size());
+    int r = floor(random(holes.size()));
     holes.get(r).target = true;
   } else {
     soundWinner.play();
@@ -346,7 +370,7 @@ void pickTarget() {
 }
 
 //Kontrolliert ob das zu erzeugende Hole sich nicht mit einem anderen uberschneidet
-boolean noOverlap(float x, float y) {
+boolean noOverlap(int x, int y) {
   for (hole h : holes) {
     if (dist(x, y, h.x, h.y) > circleSize * 1.7) {
       continue;
