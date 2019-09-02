@@ -1,6 +1,8 @@
 class line {
 
   float lheight = 10;
+  float posLeft = 0;
+  float posRight = 0;
 
   line() {
   }
@@ -8,6 +10,6 @@ class line {
   void show() {
     stroke(lineAndBall);
     strokeWeight(lheight);
-    line(0, trackMovement.posLeft, width, trackMovement.posRight);
+    line(0, posLeft, width, posRight);
   }
 }

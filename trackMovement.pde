@@ -1,6 +1,6 @@
 class trackMovement {
 
-  float avgLeft, avgRight, posLeft, posRight;
+  float avgLeft, avgRight;
   float centerX = width/2 - detail/2;
   float centerY = height/2 + 50;
   int countLeft, countRight, rainbowIndex;
@@ -16,8 +16,8 @@ class trackMovement {
   void reset() {
     avgLeft = (height - detail);
     avgRight = (height - detail);
-    posLeft = (height - detail);
-    posRight = (height - detail);
+    //posLeft = (height - detail);
+    //posRight = (height - detail);
   }
 
   //Zaehlt wieviele Pixel in der Naehe eines Buttons aktiv sind (beruehrt werden)
@@ -119,10 +119,10 @@ class trackMovement {
     //Berechnet die Position der linken und rechten Koordinate für den Balken
     if (!b.shrinks && !gh.paused && !gh.endScreen) {
       if (avgLeft != 1) {
-        posLeft = lerp(posLeft, avgLeft, 0.65);
+        l.posLeft = lerp(l.posLeft, avgLeft, 0.65);
       }
       if (avgRight != 1) {
-        posRight = lerp(posRight, avgRight, 0.65);
+        l.posRight = lerp(l.posRight, avgRight, 0.65);
       }
     }
 
@@ -130,8 +130,8 @@ class trackMovement {
     if (tracking) {
       fill(100);
       noStroke();
-      ellipse(100, posLeft, countLeft, countLeft);
-      ellipse(video.width * scaleWidth - 100, posRight, countRight, countRight);
+      ellipse(100, l.posLeft, countLeft, countLeft);
+      ellipse(video.width * scaleWidth - 100, l.posRight, countRight, countRight);
     }
   }
 }

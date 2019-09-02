@@ -56,8 +56,8 @@ class ball {
   //Berechnet die Position des Balls ueber der Line (Balken der von dem Spieler gesteuert wird)
   //Berechnung ueber Lineare Funktion
   void calcPos() {
-    mx = (trackMovement.posLeft - trackMovement.posRight) / width;
-    y = trackMovement.posLeft - (x * mx) - (circleSize / 2);
+    mx = (l.posLeft - l.posRight) / width;
+    y = l.posLeft - (x * mx) - (circleSize / 2);
   }
 
   //Abprallverhalten beim auftreffen an einer Bildschirmkante
