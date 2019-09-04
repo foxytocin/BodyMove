@@ -1,3 +1,5 @@
+// Andreas Fuchs www.anfuchs.de
+
 import processing.video.*;
 import processing.sound.*;
 
